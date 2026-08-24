@@ -3696,24 +3696,26 @@ html, body {
   
 
 
-
 <!-- ========================================================================= -->
 <!-- SECTION 4: ENHANCED TASKS, LISTS, KANBAN & DRAG-DROP AUTOMATIONS          -->
 <!-- ========================================================================= -->
 <section id="view-tasks" class="app-view hidden space-y-3 sm:space-y-4 md:space-y-6 max-w-7xl mx-auto w-full pb-36 px-1 sm:px-0">
 
-  <!-- Top Responsive Header Toolbar (Fixed z-index stack: z-10 to prevent sidebar overlap) -->
-  <div class="glass-card rounded-2xl p-3 sm:p-4 md:p-5 border border-slate-800 flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3 relative z-10">
+  <!-- Top Responsive Header Toolbar (Fixed z-index stack: z-10) -->
+  <div class="glass-card rounded-2xl p-3 sm:p-4 md:p-5 border border-purple-500/20 bg-purple-500/[0.02] flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3 relative z-10">
     <div class="flex items-center justify-between w-full sm:w-auto min-w-0">
       <div class="min-w-0">
         <h2 class="text-base sm:text-lg md:text-xl font-extrabold text-white tracking-tight flex items-center gap-2 truncate">
-          <i data-lucide="check-square" class="w-5 h-5 app-accent-text shrink-0"></i>
+          <i data-lucide="check-square" class="w-5 h-5 text-purple-400 shrink-0"></i>
           <span class="truncate">Task Engine &amp; Kanban</span>
+          <span class="text-[9px] sm:text-[10px] px-2 py-0.5 bg-purple-500/15 text-purple-300 rounded-full border border-purple-500/30 font-semibold font-mono hidden sm:inline-block">
+            Tasks Matrix
+          </span>
         </h2>
       </div>
 
       <!-- Quick Action Mobile Button -->
-      <button type="button" onclick="openAddTaskModal()" class="sm:hidden shrink-0 px-3 py-1.5 app-accent-bg text-slate-950 font-bold text-xs rounded-xl transition flex items-center gap-1 shadow-lg shadow-emerald-600/20 active:scale-95 touch-manipulation">
+      <button type="button" onclick="openAddTaskModal()" class="sm:hidden shrink-0 px-3 py-1.5 bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs rounded-xl transition flex items-center gap-1 shadow-lg shadow-purple-600/20 active:scale-95 touch-manipulation">
         <i data-lucide="plus" class="w-4 h-4 shrink-0"></i>
         <span>Task</span>
       </button>
@@ -3724,44 +3726,44 @@ html, body {
       <!-- Search Bar -->
       <div class="relative flex-1 sm:flex-none sm:w-48 min-w-[140px]">
         <i data-lucide="search" class="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none"></i>
-        <input id="task-search-input" type="text" onkeyup="searchTasks(this.value)" placeholder="Search tasks, #tag..." class="w-full bg-slate-950 border border-slate-800 rounded-xl pl-8 pr-7 py-2 text-xs text-slate-200 outline-none focus:border-emerald-500 transition" />
+        <input id="task-search-input" type="text" onkeyup="searchTasks(this.value)" placeholder="Search tasks, #tag..." class="w-full bg-slate-950 border border-slate-800 rounded-xl pl-8 pr-7 py-2 text-xs text-slate-200 outline-none focus:border-purple-400 transition" />
         <button type="button" onclick="clearTaskSearchQuery()" id="task-search-clear-btn" class="hidden absolute right-2 top-1/2 -translate-y-1/2 text-slate-500 hover:text-white p-0.5 text-xs">✕</button>
       </div>
 
       <!-- View Switcher -->
       <div class="flex items-center bg-slate-950 p-1 rounded-xl border border-slate-800 text-[11px] font-medium shrink-0">
-        <button type="button" onclick="setTaskViewMode('list')" id="task-view-btn-list" class="px-3 py-1 bg-emerald-600 text-white font-bold rounded-lg transition touch-manipulation">List</button>
+        <button type="button" onclick="setTaskViewMode('list')" id="task-view-btn-list" class="px-3 py-1 bg-purple-600 text-white font-bold rounded-lg transition touch-manipulation shadow-sm">List</button>
         <button type="button" onclick="setTaskViewMode('kanban')" id="task-view-btn-kanban" class="px-3 py-1 text-slate-400 hover:text-white rounded-lg transition touch-manipulation">Kanban</button>
       </div>
 
       <!-- Export & Batch Action Dropdown -->
       <div class="relative inline-block text-left shrink-0" id="task-action-dropdown-wrapper">
-        <button type="button" onclick="toggleTaskActionMenu(event)" class="px-3 py-2 bg-slate-900 border border-slate-800 hover:border-slate-700 text-slate-300 font-semibold rounded-xl transition flex items-center gap-1.5 shadow-sm active:scale-95 touch-manipulation">
-          <i data-lucide="more-horizontal" class="w-3.5 h-3.5 text-sky-400 shrink-0"></i>
+        <button type="button" onclick="toggleTaskActionMenu(event)" class="px-3 py-2 bg-slate-900 border border-slate-800 hover:border-purple-500/40 text-slate-300 font-semibold rounded-xl transition flex items-center gap-1.5 shadow-sm active:scale-95 touch-manipulation">
+          <i data-lucide="more-horizontal" class="w-3.5 h-3.5 text-purple-400 shrink-0"></i>
           <span class="hidden sm:inline">Actions</span>
           <i data-lucide="chevron-down" class="w-3 h-3 text-slate-500 shrink-0"></i>
         </button>
         <div id="task-action-dropdown" class="hidden absolute right-0 mt-2 w-48 bg-slate-900/95 border border-slate-800 rounded-xl shadow-2xl py-1.5 z-50 text-xs backdrop-blur-xl divide-y divide-slate-800/60">
-          <button type="button" onclick="clearAllCompletedTasks(); toggleTaskActionMenu(event);" class="w-full px-3 py-2.5 text-left text-slate-300 hover:bg-slate-800 hover:text-white flex items-center gap-2 font-medium transition">
-            <i data-lucide="check-check" class="w-3.5 h-3.5 text-emerald-400 shrink-0"></i> Clear Completed
+          <button type="button" onclick="clearAllCompletedTasks(); toggleTaskActionMenu(event);" class="w-full px-3 py-2.5 text-left text-slate-300 hover:bg-purple-950/30 hover:text-purple-300 flex items-center gap-2 font-medium transition">
+            <i data-lucide="check-check" class="w-3.5 h-3.5 text-purple-400 shrink-0"></i> Clear Completed
           </button>
-          <button type="button" onclick="exportTasksCSV(); toggleTaskActionMenu(event);" class="w-full px-3 py-2.5 text-left text-slate-300 hover:bg-slate-800 hover:text-white flex items-center gap-2 font-medium transition">
-            <i data-lucide="file-spreadsheet" class="w-3.5 h-3.5 text-sky-400 shrink-0"></i> Export CSV (.csv)
+          <button type="button" onclick="exportTasksCSV(); toggleTaskActionMenu(event);" class="w-full px-3 py-2.5 text-left text-slate-300 hover:bg-purple-950/30 hover:text-purple-300 flex items-center gap-2 font-medium transition">
+            <i data-lucide="file-spreadsheet" class="w-3.5 h-3.5 text-purple-400 shrink-0"></i> Export CSV (.csv)
           </button>
-          <button type="button" onclick="exportTasksAudit(); toggleTaskActionMenu(event);" class="w-full px-3 py-2.5 text-left text-slate-300 hover:bg-slate-800 hover:text-white flex items-center gap-2 font-medium transition">
-            <i data-lucide="file-text" class="w-3.5 h-3.5 text-amber-400 shrink-0"></i> Export Tasks (.txt)
+          <button type="button" onclick="exportTasksAudit(); toggleTaskActionMenu(event);" class="w-full px-3 py-2.5 text-left text-slate-300 hover:bg-purple-950/30 hover:text-purple-300 flex items-center gap-2 font-medium transition">
+            <i data-lucide="file-text" class="w-3.5 h-3.5 text-purple-400 shrink-0"></i> Export Tasks (.txt)
           </button>
         </div>
       </div>
 
       <!-- New List Button -->
-      <button type="button" onclick="openCreateTaskListModal()" class="px-3 py-2 bg-slate-900 border border-slate-800 hover:border-slate-700 text-amber-400 font-semibold rounded-xl transition flex items-center gap-1.5 shadow-sm active:scale-95 touch-manipulation shrink-0">
-        <i data-lucide="folder-plus" class="w-3.5 h-3.5 shrink-0"></i>
+      <button type="button" onclick="openCreateTaskListModal()" class="px-3 py-2 bg-slate-900 border border-slate-800 hover:border-purple-500/40 text-purple-300 font-semibold rounded-xl transition flex items-center gap-1.5 shadow-sm active:scale-95 touch-manipulation shrink-0">
+        <i data-lucide="folder-plus" class="w-3.5 h-3.5 text-purple-400 shrink-0"></i>
         <span>New List</span>
       </button>
 
       <!-- Desktop Create Task Button -->
-      <button type="button" onclick="openAddTaskModal()" class="hidden sm:flex px-3.5 py-2 app-accent-bg font-bold text-xs text-slate-950 rounded-xl shadow-lg transition items-center gap-1.5 active:scale-95 touch-manipulation shrink-0">
+      <button type="button" onclick="openAddTaskModal()" class="hidden sm:flex px-3.5 py-2 bg-purple-600 hover:bg-purple-500 font-bold text-xs text-white rounded-xl shadow-lg shadow-purple-600/20 transition items-center gap-1.5 active:scale-95 touch-manipulation shrink-0">
         <i data-lucide="plus-circle" class="w-4 h-4 shrink-0"></i>
         <span>Create Task</span>
       </button>
@@ -3771,25 +3773,25 @@ html, body {
   <!-- Dynamic HashTag Quick Filter Bar -->
   <div id="task-hashtag-filter-bar" class="hidden flex items-center gap-1.5 overflow-x-auto pb-1 text-xs">
     <span class="text-[10px] font-bold uppercase tracking-wider text-slate-500 shrink-0 mr-1 flex items-center gap-1">
-      <i data-lucide="hash" class="w-3 h-3"></i> Tags:
+      <i data-lucide="hash" class="w-3 h-3 text-purple-400"></i> Tags:
     </span>
     <div id="task-hashtag-chips-container" class="flex items-center gap-1.5 flex-nowrap"></div>
   </div>
 
-  <!-- KPI Overview Metrics & Progress Bar -->
+  <!-- KPI Overview Metrics -->
   <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3 md:gap-4">
-    <div class="glass-card p-3 sm:p-4 rounded-2xl border border-slate-800/80 space-y-1 hover:border-emerald-500/30 transition">
+    <div class="glass-card p-3 sm:p-4 rounded-2xl border border-purple-500/20 bg-purple-500/[0.03] space-y-1 hover:border-purple-500/40 transition">
       <div class="flex justify-between items-center text-xs font-bold text-slate-400">
         <span class="uppercase tracking-wider text-[9px]">Total Tasks</span>
-        <div class="p-1 bg-emerald-500/10 text-emerald-400 rounded-lg shrink-0">
+        <div class="p-1 bg-purple-500/10 text-purple-400 rounded-lg shrink-0">
           <i data-lucide="list-todo" class="w-3.5 h-3.5"></i>
         </div>
       </div>
       <div id="task-metric-total" class="text-base sm:text-lg md:text-xl font-black text-slate-100">0</div>
-      <p id="task-metric-rate" class="text-[10px] text-emerald-400 font-mono">0% Completed</p>
+      <p id="task-metric-rate" class="text-[10px] text-purple-400 font-mono">0% Completed</p>
     </div>
 
-    <div class="glass-card p-3 sm:p-4 rounded-2xl border border-slate-800/80 space-y-1 hover:border-amber-500/30 transition">
+    <div class="glass-card p-3 sm:p-4 rounded-2xl border border-purple-500/20 bg-purple-500/[0.03] space-y-1 hover:border-amber-500/40 transition">
       <div class="flex justify-between items-center text-xs font-bold text-slate-400">
         <span class="uppercase tracking-wider text-[9px]">Due Today / Soon</span>
         <div class="p-1 bg-amber-500/10 text-amber-400 rounded-lg shrink-0">
@@ -3800,7 +3802,7 @@ html, body {
       <p id="task-metric-overdue" class="text-[10px] text-rose-400 font-mono">0 Overdue</p>
     </div>
 
-    <div class="glass-card p-3 sm:p-4 rounded-2xl border border-slate-800/80 space-y-1 hover:border-rose-500/30 transition">
+    <div class="glass-card p-3 sm:p-4 rounded-2xl border border-purple-500/20 bg-purple-500/[0.03] space-y-1 hover:border-rose-500/40 transition">
       <div class="flex justify-between items-center text-xs font-bold text-slate-400">
         <span class="uppercase tracking-wider text-[9px]">High Priority</span>
         <div class="p-1 bg-rose-500/10 text-rose-400 rounded-lg shrink-0">
@@ -3811,14 +3813,14 @@ html, body {
       <p class="text-[10px] text-slate-500 font-mono">Urgent attention</p>
     </div>
 
-    <div class="glass-card p-3 sm:p-4 rounded-2xl border border-slate-800/80 space-y-1 hover:border-sky-500/30 transition">
+    <div class="glass-card p-3 sm:p-4 rounded-2xl border border-purple-500/20 bg-purple-500/[0.03] space-y-1 hover:border-purple-500/40 transition">
       <div class="flex justify-between items-center text-xs font-bold text-slate-400">
         <span class="uppercase tracking-wider text-[9px]">Completed</span>
-        <div class="p-1 bg-sky-500/10 text-sky-400 rounded-lg shrink-0">
+        <div class="p-1 bg-purple-500/10 text-purple-300 rounded-lg shrink-0">
           <i data-lucide="check-circle-2" class="w-3.5 h-3.5"></i>
         </div>
       </div>
-      <div id="task-metric-done" class="text-base sm:text-lg md:text-xl font-black text-sky-400">0</div>
+      <div id="task-metric-done" class="text-base sm:text-lg md:text-xl font-black text-purple-300">0</div>
       <p class="text-[10px] text-slate-500 font-mono">Finished records</p>
     </div>
   </div>
@@ -3826,13 +3828,13 @@ html, body {
   <!-- 1. LIST VIEW CONTAINER -->
   <div id="task-container-list-view" class="grid grid-cols-1 lg:grid-cols-12 gap-3 sm:gap-4 items-start">
     
-    <!-- Left Sidebar: Task Category Lists & Mindmap Active Folders -->
-    <div class="lg:col-span-4 glass-card rounded-2xl p-3.5 sm:p-4 space-y-3 border border-slate-800">
+    <!-- Left Sidebar: Task Category Lists, Node Folders & Goal Folders -->
+    <div class="lg:col-span-4 glass-card rounded-2xl p-3.5 sm:p-4 space-y-3 border border-purple-500/20 bg-purple-500/[0.02]">
       <div class="flex justify-between items-center px-1 border-b border-slate-800/80 pb-2">
         <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
-          <i data-lucide="folders" class="w-3.5 h-3.5 text-amber-400"></i> Category Lists
+          <i data-lucide="folders" class="w-3.5 h-3.5 text-purple-400"></i> Category Lists
         </h3>
-        <button type="button" onclick="openCreateTaskListModal()" class="text-[11px] text-amber-400 hover:underline font-bold">
+        <button type="button" onclick="openCreateTaskListModal()" class="text-[11px] text-purple-400 hover:underline font-bold">
           + New List
         </button>
       </div>
@@ -3843,15 +3845,24 @@ html, body {
     </div>
 
     <!-- Right Main Task Panel -->
-    <div class="lg:col-span-8 glass-card rounded-2xl p-3.5 sm:p-5 space-y-3.5 border border-slate-800 flex flex-col">
+    <div class="lg:col-span-8 glass-card rounded-2xl p-3.5 sm:p-5 space-y-3.5 border border-purple-500/20 bg-purple-500/[0.02] flex flex-col">
       <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between border-b border-slate-800/80 pb-3 gap-2">
         <div class="min-w-0">
-          <h3 id="active-todo-list-name" class="text-sm sm:text-base font-extrabold text-white truncate">General Tasks</h3>
-          <p id="active-todo-stats" class="text-[11px] text-slate-400 font-mono">0 of 0 tasks completed</p>
+          <div class="flex items-center gap-2 flex-wrap">
+            <h3 id="active-todo-list-name" class="text-sm sm:text-base font-extrabold text-white truncate">General Tasks</h3>
+            <span id="active-todo-list-badge" class="hidden text-[10px] px-2 py-0.5 rounded-full font-bold font-mono"></span>
+          </div>
+          <p id="active-todo-stats" class="text-[11px] text-purple-300/80 font-mono mt-0.5">0 of 0 tasks completed</p>
         </div>
         
         <div class="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-end">
-          <select id="todo-status-filter" onchange="renderTodoItems()" class="bg-slate-950 border border-slate-800 text-slate-200 rounded-xl px-2.5 py-1.5 text-xs outline-none focus:border-emerald-500 font-medium">
+          <!-- Folder Metric Inclusion Toggle -->
+          <button type="button" id="btn-toggle-folder-metrics" onclick="toggleActiveFolderMetricInclusion()" class="px-2.5 py-1.5 bg-slate-950 border border-slate-800 hover:border-purple-500/40 rounded-xl text-[11px] font-semibold flex items-center gap-1.5 transition text-slate-400" title="Toggle whether this folder counts in Total Tasks and global stats">
+            <i data-lucide="calculator" class="w-3.5 h-3.5 text-purple-400"></i>
+            <span id="folder-metric-toggle-label">Include in Total</span>
+          </button>
+
+          <select id="todo-status-filter" onchange="renderTodoItems()" class="bg-slate-950 border border-slate-800 text-slate-200 rounded-xl px-2.5 py-1.5 text-xs outline-none focus:border-purple-400 font-medium">
             <option value="ALL">All Statuses</option>
             <option value="ACTIVE">⏳ Pending Only</option>
             <option value="TODAY_NEAR">📅 Due Today / Soon</option>
@@ -3868,14 +3879,14 @@ html, body {
 
       <!-- Quick Inline Task Input Bar -->
       <div class="grid grid-cols-1 sm:grid-cols-12 gap-2 bg-slate-950 p-2 sm:p-2.5 rounded-xl border border-slate-800 text-xs">
-        <input id="todo-input" type="text" placeholder="Add task or hashtag (#dev, #urgent)..." onkeypress="if(event.key === 'Enter') addTodoItem()" class="sm:col-span-5 bg-transparent text-slate-100 outline-none px-2 py-1.5 text-xs placeholder:text-slate-500" />
-        <input id="todo-due-date" type="date" class="sm:col-span-3 bg-slate-900 border border-slate-800 text-slate-300 rounded-lg text-[10px] px-2 py-1 outline-none font-mono" title="Due Date" />
-        <select id="todo-priority-input" class="sm:col-span-2 bg-slate-900 border border-slate-800 text-slate-300 rounded-lg text-[11px] px-2 py-1 outline-none font-medium">
+        <input id="todo-input" type="text" placeholder="Add task or hashtag (#dev, #urgent)..." onkeypress="if(event.key === 'Enter') addTodoItem()" class="sm:col-span-5 bg-transparent text-slate-100 outline-none px-2 py-1.5 text-xs placeholder:text-slate-500 focus:border-purple-400" />
+        <input id="todo-due-date" type="date" class="sm:col-span-3 bg-slate-900 border border-slate-800 text-slate-300 rounded-lg text-[10px] px-2 py-1 outline-none font-mono focus:border-purple-400" title="Due Date" />
+        <select id="todo-priority-input" class="sm:col-span-2 bg-slate-900 border border-slate-800 text-slate-300 rounded-lg text-[11px] px-2 py-1 outline-none font-medium focus:border-purple-400">
           <option value="Normal">Normal</option>
           <option value="High">🔥 High</option>
           <option value="Low">Low</option>
         </select>
-        <button type="button" onclick="addTodoItem()" class="sm:col-span-2 py-1.5 app-accent-bg font-bold rounded-lg transition text-slate-950 flex items-center justify-center gap-1 shadow-md active:scale-95">
+        <button type="button" onclick="addTodoItem()" class="sm:col-span-2 py-1.5 bg-purple-600 hover:bg-purple-500 font-bold rounded-lg transition text-white flex items-center justify-center gap-1 shadow-md active:scale-95 shadow-purple-600/20">
           <i data-lucide="plus" class="w-3.5 h-3.5"></i> Add
         </button>
       </div>
@@ -3892,7 +3903,7 @@ html, body {
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5 min-w-[300px] sm:min-w-[700px] lg:min-w-full">
       
       <!-- Column 1: Backlog -->
-      <div class="glass-card p-3.5 rounded-2xl border border-slate-800 space-y-3 flex flex-col justify-start kanban-drop-zone" data-status="backlog" ondragover="handleKanbanDragOver(event)" ondragleave="handleKanbanDragLeave(event)" ondrop="handleKanbanDrop(event, 'backlog')">
+      <div class="glass-card p-3.5 rounded-2xl border border-purple-500/20 bg-purple-500/[0.02] space-y-3 flex flex-col justify-start kanban-drop-zone" data-status="backlog" ondragover="handleKanbanDragOver(event)" ondragleave="handleKanbanDragLeave(event)" ondrop="handleKanbanDrop(event, 'backlog')">
         <div class="flex justify-between items-center border-b border-slate-800 pb-2">
           <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-2">
             <span class="w-2 h-2 rounded-full bg-slate-500"></span> Backlog
@@ -3903,18 +3914,18 @@ html, body {
       </div>
 
       <!-- Column 2: In Progress -->
-      <div class="glass-card p-3.5 rounded-2xl border border-slate-800 space-y-3 flex flex-col justify-start kanban-drop-zone" data-status="progress" ondragover="handleKanbanDragOver(event)" ondragleave="handleKanbanDragLeave(event)" ondrop="handleKanbanDrop(event, 'progress')">
+      <div class="glass-card p-3.5 rounded-2xl border border-purple-500/20 bg-purple-500/[0.02] space-y-3 flex flex-col justify-start kanban-drop-zone" data-status="progress" ondragover="handleKanbanDragOver(event)" ondragleave="handleKanbanDragLeave(event)" ondrop="handleKanbanDrop(event, 'progress')">
         <div class="flex justify-between items-center border-b border-slate-800 pb-2">
-          <h4 class="text-xs font-bold text-sky-400 uppercase tracking-wider flex items-center gap-2">
-            <span class="w-2 h-2 rounded-full bg-sky-400"></span> In Progress
+          <h4 class="text-xs font-bold text-purple-400 uppercase tracking-wider flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-purple-400"></span> In Progress
           </h4>
-          <span id="kanban-count-progress" class="text-[10px] px-2 py-0.5 rounded-full bg-sky-500/20 text-sky-300 font-mono font-bold border border-sky-500/30">0</span>
+          <span id="kanban-count-progress" class="text-[10px] px-2 py-0.5 rounded-full bg-purple-500/20 text-purple-300 font-mono font-bold border border-purple-500/30">0</span>
         </div>
         <div id="kanban-col-progress" class="space-y-2 min-h-[260px]"></div>
       </div>
 
       <!-- Column 3: In Review -->
-      <div class="glass-card p-3.5 rounded-2xl border border-slate-800 space-y-3 flex flex-col justify-start kanban-drop-zone" data-status="review" ondragover="handleKanbanDragOver(event)" ondragleave="handleKanbanDragLeave(event)" ondrop="handleKanbanDrop(event, 'review')">
+      <div class="glass-card p-3.5 rounded-2xl border border-purple-500/20 bg-purple-500/[0.02] space-y-3 flex flex-col justify-start kanban-drop-zone" data-status="review" ondragover="handleKanbanDragOver(event)" ondragleave="handleKanbanDragLeave(event)" ondrop="handleKanbanDrop(event, 'review')">
         <div class="flex justify-between items-center border-b border-slate-800 pb-2">
           <h4 class="text-xs font-bold text-amber-400 uppercase tracking-wider flex items-center gap-2">
             <span class="w-2 h-2 rounded-full bg-amber-400"></span> In Review
@@ -3925,12 +3936,12 @@ html, body {
       </div>
 
       <!-- Column 4: Done -->
-      <div class="glass-card p-3.5 rounded-2xl border border-slate-800 space-y-3 flex flex-col justify-start kanban-drop-zone" data-status="done" ondragover="handleKanbanDragOver(event)" ondragleave="handleKanbanDragLeave(event)" ondrop="handleKanbanDrop(event, 'done')">
+      <div class="glass-card p-3.5 rounded-2xl border border-purple-500/20 bg-purple-500/[0.02] space-y-3 flex flex-col justify-start kanban-drop-zone" data-status="done" ondragover="handleKanbanDragOver(event)" ondragleave="handleKanbanDragLeave(event)" ondrop="handleKanbanDrop(event, 'done')">
         <div class="flex justify-between items-center border-b border-slate-800 pb-2">
-          <h4 class="text-xs font-bold text-emerald-400 uppercase tracking-wider flex items-center gap-2">
-            <span class="w-2 h-2 rounded-full bg-emerald-400"></span> Done
+          <h4 class="text-xs font-bold text-purple-300 uppercase tracking-wider flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-purple-400"></span> Done
           </h4>
-          <span id="kanban-count-done" class="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 font-mono font-bold border border-emerald-500/30">0</span>
+          <span id="kanban-count-done" class="text-[10px] px-2 py-0.5 rounded-full bg-purple-500/20 text-purple-300 font-mono font-bold border border-purple-500/30">0</span>
         </div>
         <div id="kanban-col-done" class="space-y-2 min-h-[260px]"></div>
       </div>
@@ -3938,18 +3949,17 @@ html, body {
     </div>
   </div>
 
- 
 </section>
 
 <!-- ========================================================================= -->
-<!-- SECTION 4 JAVASCRIPT LOGIC MODULE                                        -->
+<!-- SECTION 4 JAVASCRIPT LOGIC MODULE & FIREBASE AUTO-SYNC                     -->
 <!-- ========================================================================= -->
 <script>
   (function() {
     let taskSearchQuery = '';
     let activeTagFilter = '';
-    let modalTempSubtasks = [];
     let draggedTaskId = null;
+    let isFirebaseListenerAttached = false;
 
     function escapeHtml(str) {
       if (!str) return '';
@@ -3989,7 +3999,7 @@ html, body {
       } else if (diffDays === 0) {
         return `<span class="text-[9px] px-1.5 py-0.2 rounded bg-amber-500/20 text-amber-300 font-bold border border-amber-500/30">⚡ Today</span>`;
       } else if (diffDays === 1) {
-        return `<span class="text-[9px] px-1.5 py-0.2 rounded bg-sky-500/20 text-sky-300 font-bold border border-sky-500/30">Tomorrow</span>`;
+        return `<span class="text-[9px] px-1.5 py-0.2 rounded bg-purple-500/20 text-purple-300 font-bold border border-purple-500/30">Tomorrow</span>`;
       } else if (diffDays <= 3) {
         return `<span class="text-[9px] px-1.5 py-0.2 rounded bg-purple-500/20 text-purple-300 font-bold border border-purple-500/30">In ${diffDays}d</span>`;
       }
@@ -4013,6 +4023,119 @@ html, body {
       }
     });
 
+    /* Automatic Synchronization of Folders for Both Mindmap Nodes and Goals */
+    function syncGoalAndNodeFolders() {
+      if (!window.appState) window.appState = {};
+      if (!Array.isArray(window.appState.taskLists)) window.appState.taskLists = [];
+
+      // 1. Sync from Mindmap Nodes
+      const mindmapNodes = window.appState.mindmapNodes || [];
+      mindmapNodes.forEach(node => {
+        const nodeTag = (node.entityTag || node.text || '').trim();
+        const nodeText = (node.text || nodeTag).trim();
+        if (!nodeTag && !nodeText) return;
+
+        let existing = window.appState.taskLists.find(l => 
+          (l.nodeTag && l.nodeTag.toLowerCase() === nodeTag.toLowerCase()) ||
+          (l.name && l.name.toLowerCase() === nodeText.toLowerCase())
+        );
+
+        if (!existing) {
+          window.appState.taskLists.push({
+            id: 'list_node_' + (node.id || Date.now()),
+            name: nodeText,
+            nodeTag: nodeTag,
+            nodeText: nodeText,
+            isNodeFolder: true,
+            folderType: 'node',
+            excludeFromTotal: false,
+            createdAt: new Date().toISOString()
+          });
+        } else {
+          existing.isNodeFolder = true;
+          existing.folderType = 'node';
+          if (!existing.nodeTag) existing.nodeTag = nodeTag;
+        }
+      });
+
+      // 2. Sync from Goals & Milestones
+      const goals = window.appState.goals || [];
+      goals.forEach(goal => {
+        const goalTitle = (goal.title || '').trim();
+        if (!goalTitle) return;
+
+        let existing = window.appState.taskLists.find(l => 
+          l.goalId === goal.id || 
+          (l.isGoalFolder && l.name.toLowerCase().includes(goalTitle.toLowerCase()))
+        );
+
+        if (!existing) {
+          window.appState.taskLists.push({
+            id: 'list_goal_' + (goal.id || Date.now()),
+            name: `🎯 ${goalTitle}`,
+            goalId: goal.id,
+            goalTitle: goalTitle,
+            isGoalFolder: true,
+            folderType: 'goal',
+            excludeFromTotal: false,
+            createdAt: new Date().toISOString()
+          });
+        } else {
+          existing.isGoalFolder = true;
+          existing.folderType = 'goal';
+          existing.goalId = goal.id;
+        }
+      });
+
+      // 3. Match all current & legacy tasks to their respective Goal Folders
+      const allTasks = window.appState.tasks || [];
+      allTasks.forEach(task => {
+        if (!task.goalId) {
+          const matchingGoal = goals.find(g => 
+            (task.title && task.title.toLowerCase().includes((g.title || '').toLowerCase())) ||
+            (g.nodeTag && task.title && task.title.toLowerCase().includes(g.nodeTag.toLowerCase()))
+          );
+          if (matchingGoal) task.goalId = matchingGoal.id;
+        }
+
+        if (task.goalId) {
+          const targetGoalFolder = window.appState.taskLists.find(l => l.goalId === task.goalId);
+          if (targetGoalFolder && (!task.listId || task.listId === 'list-general')) {
+            task.listId = targetGoalFolder.id;
+          }
+        }
+      });
+    }
+
+    /* Auto-Connect Firebase Firestore Realtime Sync */
+    function attachFirebaseAutoSync() {
+      if (isFirebaseListenerAttached) return;
+      if (!window.db || !window.auth) return;
+
+      window.auth.onAuthStateChanged(user => {
+        if (!user) return;
+        isFirebaseListenerAttached = true;
+
+        window.db.collection('users').doc(user.uid).onSnapshot(doc => {
+          if (!doc.exists) return;
+          const data = doc.data() || {};
+          
+          if (Array.isArray(data.tasks)) window.appState.tasks = data.tasks;
+          if (Array.isArray(data.taskLists)) window.appState.taskLists = data.taskLists;
+          if (Array.isArray(data.goals)) window.appState.goals = data.goals;
+          if (Array.isArray(data.mindmapNodes)) window.appState.mindmapNodes = data.mindmapNodes;
+
+          syncGoalAndNodeFolders();
+          updateTaskMetrics();
+          window.renderTodoListsNav();
+          window.renderTodoItems();
+          if (window.appState.taskViewMode === 'kanban') window.renderKanbanBoard();
+        }, err => {
+          console.warn('Firebase sync listener warning:', err);
+        });
+      });
+    }
+
     function ensureTasksInitialized() {
       if (!window.appState) window.appState = {};
 
@@ -4020,15 +4143,11 @@ html, body {
         try {
           const storedLists = localStorage.getItem('pros_task_lists');
           window.appState.taskLists = storedLists ? JSON.parse(storedLists) : [
-            { id: 'list-general', name: 'General', createdAt: new Date().toISOString() }
+            { id: 'list-general', name: 'General', excludeFromTotal: false, createdAt: new Date().toISOString() }
           ];
         } catch(e) {
-          window.appState.taskLists = [{ id: 'list-general', name: 'General', createdAt: new Date().toISOString() }];
+          window.appState.taskLists = [{ id: 'list-general', name: 'General', excludeFromTotal: false, createdAt: new Date().toISOString() }];
         }
-      }
-
-      if (!window.appState.activeListId && window.appState.taskLists.length > 0) {
-        window.appState.activeListId = window.appState.taskLists[0].id;
       }
 
       if (!Array.isArray(window.appState.tasks)) {
@@ -4038,6 +4157,12 @@ html, body {
         } catch(e) {
           window.appState.tasks = [];
         }
+      }
+
+      syncGoalAndNodeFolders();
+
+      if (!window.appState.activeListId && window.appState.taskLists.length > 0) {
+        window.appState.activeListId = window.appState.taskLists[0].id;
       }
     }
 
@@ -4061,6 +4186,28 @@ html, body {
       }
     }
 
+    /* Toggle Active Folder Exclusion from Total Count Metrics */
+    window.toggleActiveFolderMetricInclusion = function() {
+      ensureTasksInitialized();
+      const activeList = (window.appState.taskLists || []).find(l => l.id === window.appState.activeListId);
+      if (!activeList) return;
+
+      activeList.excludeFromTotal = !activeList.excludeFromTotal;
+      persistTasksAndSync();
+      updateTaskMetrics();
+      window.renderTodoListsNav();
+      window.renderTodoItems();
+
+      if (window.showToast) {
+        window.showToast(
+          activeList.excludeFromTotal 
+            ? `Tasks in '${activeList.name}' excluded from Total Count` 
+            : `Tasks in '${activeList.name}' included in Total Count`,
+          'info'
+        );
+      }
+    };
+
     /* View Switcher */
     window.setTaskViewMode = function(mode) {
       triggerHaptic();
@@ -4075,13 +4222,13 @@ html, body {
       if (mode === 'kanban') {
         if (listView) listView.classList.add('hidden');
         if (kanbanView) kanbanView.classList.remove('hidden');
-        if (kanbanBtn) kanbanBtn.className = 'px-3 py-1 bg-emerald-600 text-white font-bold rounded-lg transition touch-manipulation';
+        if (kanbanBtn) kanbanBtn.className = 'px-3 py-1 bg-purple-600 text-white font-bold rounded-lg transition touch-manipulation shadow-sm';
         if (listBtn) listBtn.className = 'px-3 py-1 text-slate-400 hover:text-white rounded-lg transition touch-manipulation';
         window.renderKanbanBoard();
       } else {
         if (kanbanView) kanbanView.classList.add('hidden');
         if (listView) listView.classList.remove('hidden');
-        if (listBtn) listBtn.className = 'px-3 py-1 bg-emerald-600 text-white font-bold rounded-lg transition touch-manipulation';
+        if (listBtn) listBtn.className = 'px-3 py-1 bg-purple-600 text-white font-bold rounded-lg transition touch-manipulation shadow-sm';
         if (kanbanBtn) kanbanBtn.className = 'px-3 py-1 text-slate-400 hover:text-white rounded-lg transition touch-manipulation';
         window.renderTodoListsNav();
         window.renderTodoItems();
@@ -4138,11 +4285,10 @@ html, body {
       bar.classList.remove('hidden');
       container.innerHTML = '';
 
-      // "All Tags" chip
       const allChip = document.createElement('button');
       allChip.type = 'button';
       allChip.className = `px-2 py-0.5 rounded-lg text-[10px] font-mono font-bold transition shrink-0 ${
-        !activeTagFilter ? 'bg-emerald-600 text-white' : 'bg-slate-900 text-slate-400 hover:text-white border border-slate-800'
+        !activeTagFilter ? 'bg-purple-600 text-white' : 'bg-slate-900 text-slate-400 hover:text-white border border-slate-800'
       }`;
       allChip.textContent = 'All';
       allChip.onclick = () => {
@@ -4158,7 +4304,7 @@ html, body {
         chip.type = 'button';
         const isSelected = (activeTagFilter === tag);
         chip.className = `px-2 py-0.5 rounded-lg text-[10px] font-mono font-bold transition shrink-0 ${
-          isSelected ? 'bg-sky-600 text-white' : 'bg-slate-900 text-sky-400 hover:bg-slate-800 border border-slate-800'
+          isSelected ? 'bg-purple-600 text-white' : 'bg-slate-900 text-purple-300 hover:bg-slate-800 border border-slate-800'
         }`;
         chip.textContent = tag;
         chip.onclick = () => {
@@ -4171,17 +4317,21 @@ html, body {
       });
     }
 
-    /* KPI Metrics Calculator */
+    /* KPI Metrics Calculator (Honors excludeFromTotal Toggle) */
     function updateTaskMetrics() {
       ensureTasksInitialized();
       const allTasks = window.appState.tasks || [];
+      const taskLists = window.appState.taskLists || [];
+      const excludedListIds = new Set(taskLists.filter(l => l.excludeFromTotal).map(l => l.id));
+
+      const countableTasks = allTasks.filter(t => !excludedListIds.has(t.listId));
       const today = new Date().toISOString().split('T')[0];
 
-      const totalCount = allTasks.length;
-      const doneCount = allTasks.filter(t => t.completed || t.status === 'done').length;
-      const todayCount = allTasks.filter(t => t.dueDate === today && !t.completed).length;
-      const overdueCount = allTasks.filter(t => t.dueDate && t.dueDate < today && !t.completed).length;
-      const highCount = allTasks.filter(t => t.priority === 'High' && !t.completed).length;
+      const totalCount = countableTasks.length;
+      const doneCount = countableTasks.filter(t => t.completed || t.status === 'done').length;
+      const todayCount = countableTasks.filter(t => t.dueDate === today && !t.completed).length;
+      const overdueCount = countableTasks.filter(t => t.dueDate && t.dueDate < today && !t.completed).length;
+      const highCount = countableTasks.filter(t => t.priority === 'High' && !t.completed).length;
       const completionRate = totalCount > 0 ? Math.round((doneCount / totalCount) * 100) : 0;
 
       const metricTotal = document.getElementById('task-metric-total');
@@ -4203,7 +4353,7 @@ html, body {
       if (metricDone) metricDone.textContent = doneCount;
     }
 
-    /* Category List Sidebar: Auto-hides empty mindmap node folders */
+    /* Category List Sidebar */
     window.renderTodoListsNav = function() {
       ensureTasksInitialized();
       const container = document.getElementById('todo-lists-nav');
@@ -4211,24 +4361,17 @@ html, body {
       container.innerHTML = '';
 
       const taskLists = window.appState.taskLists || [];
-      const mindmapNodes = window.appState.mindmapNodes || [];
-      const nodeTagsAndTexts = mindmapNodes.flatMap(n => [
-        (n.entityTag || '').toLowerCase().trim(),
-        (n.text || '').toLowerCase().trim()
-      ]).filter(Boolean);
-
       const fragment = document.createDocumentFragment();
 
       taskLists.forEach(list => {
-        const lNameLower = (list.name || '').toLowerCase().trim();
-        const lTagLower = (list.nodeTag || '').toLowerCase().trim();
-        const isNodeList = list.isNodeFolder || !!list.nodeTag || nodeTagsAndTexts.some(t => t && (lNameLower === t || lTagLower === t));
-        
+        const isNodeList = list.isNodeFolder || list.folderType === 'node';
+        const isGoalList = list.isGoalFolder || list.folderType === 'goal';
+        const isExcluded = !!list.excludeFromTotal;
+
         const totalListTasks = (window.appState.tasks || []).filter(t => t.listId === list.id);
         const pendingCount = totalListTasks.filter(t => !t.completed && t.status !== 'done').length;
 
-        // Smart Filter Rule: If it's a node folder, do NOT display if it has 0 linked tasks
-        if (isNodeList && totalListTasks.length === 0 && list.id !== 'list-general') {
+        if ((isNodeList || isGoalList) && totalListTasks.length === 0 && list.id !== 'list-general') {
           return;
         }
 
@@ -4236,31 +4379,46 @@ html, body {
         const btn = document.createElement('button');
         btn.type = 'button';
 
-        if (isNodeList) {
+        if (isGoalList) {
           btn.className = `w-full text-left p-2.5 rounded-xl text-xs font-semibold flex items-center justify-between transition min-w-0 ${
             isActive 
-              ? 'bg-emerald-600/30 text-emerald-100 border border-emerald-400/60 shadow-md' 
-              : 'bg-emerald-950/20 text-emerald-300/90 border border-emerald-500/20 hover:bg-emerald-900/30'
+              ? 'bg-rose-600/30 text-rose-100 border border-rose-400/60 shadow-md' 
+              : 'bg-rose-950/20 text-rose-300/90 border border-rose-500/20 hover:bg-rose-900/30'
+          }`;
+        } else if (isNodeList) {
+          btn.className = `w-full text-left p-2.5 rounded-xl text-xs font-semibold flex items-center justify-between transition min-w-0 ${
+            isActive 
+              ? 'bg-purple-600/30 text-purple-100 border border-purple-400/60 shadow-md' 
+              : 'bg-purple-950/20 text-purple-300/90 border border-purple-500/20 hover:bg-purple-900/30'
           }`;
         } else {
           btn.className = `w-full text-left p-2.5 rounded-xl text-xs font-semibold flex items-center justify-between transition min-w-0 ${
             isActive 
-              ? 'bg-slate-900 text-white border border-slate-700 shadow-md' 
+              ? 'bg-slate-900 text-white border border-purple-500/40 shadow-md' 
               : 'text-slate-400 hover:bg-slate-900/60 border border-transparent'
           }`;
         }
 
+        let iconMarkup = '<i data-lucide="folder" class="w-3.5 h-3.5 text-purple-400/60 shrink-0"></i>';
+        let badgeMarkup = '';
+
+        if (isGoalList) {
+          iconMarkup = '<div class="p-1 rounded-md bg-rose-500/20 text-rose-400 shrink-0 border border-rose-500/30"><i data-lucide="target" class="w-3.5 h-3.5"></i></div>';
+          badgeMarkup = '<span class="text-[9px] px-1.5 py-0.2 rounded bg-rose-500/20 text-rose-300 font-bold border border-rose-500/40 uppercase">Goal</span>';
+        } else if (isNodeList) {
+          iconMarkup = '<div class="p-1 rounded-md bg-purple-500/20 text-purple-400 shrink-0 border border-purple-500/30"><i data-lucide="brain-circuit" class="w-3.5 h-3.5"></i></div>';
+          badgeMarkup = '<span class="text-[9px] px-1.5 py-0.2 rounded bg-purple-500/20 text-purple-300 font-bold border border-purple-500/40 uppercase">Node</span>';
+        }
+
         btn.innerHTML = `
           <div class="flex items-center gap-2 truncate pr-2 min-w-0">
-            ${isNodeList 
-              ? '<div class="p-1 rounded-md bg-emerald-500/20 text-emerald-400 shrink-0 border border-emerald-500/30"><i data-lucide="brain-circuit" class="w-3.5 h-3.5"></i></div>' 
-              : '<i data-lucide="folder" class="w-3.5 h-3.5 text-slate-500 shrink-0"></i>'
-            }
-            <span class="truncate ${isNodeList ? 'font-bold text-emerald-200' : ''}">${escapeHtml(list.name)}</span>
+            ${iconMarkup}
+            <span class="truncate ${isGoalList ? 'font-bold text-rose-200' : isNodeList ? 'font-bold text-purple-200' : ''}">${escapeHtml(list.name)}</span>
           </div>
           <div class="flex items-center gap-1.5 shrink-0">
-            ${isNodeList ? '<span class="text-[9px] px-1.5 py-0.2 rounded bg-emerald-500/20 text-emerald-300 font-bold border border-emerald-500/40 uppercase">Node</span>' : ''}
-            ${pendingCount > 0 ? `<span class="px-2 py-0.5 text-[10px] ${isNodeList ? 'bg-emerald-500/30 text-emerald-200' : 'bg-slate-800 text-slate-300'} rounded-full font-bold font-mono">${pendingCount}</span>` : ''}
+            ${isExcluded ? '<span class="text-[9px] px-1 py-0.2 rounded bg-slate-800 text-slate-400 border border-slate-700" title="Excluded from total count">∅</span>' : ''}
+            ${badgeMarkup}
+            ${pendingCount > 0 ? `<span class="px-2 py-0.5 text-[10px] ${isGoalList ? 'bg-rose-500/30 text-rose-200' : isNodeList ? 'bg-purple-500/30 text-purple-200' : 'bg-slate-800 text-slate-300'} rounded-full font-bold font-mono">${pendingCount}</span>` : ''}
           </div>
         `;
 
@@ -4287,8 +4445,35 @@ html, body {
 
       const activeList = (window.appState.taskLists || []).find(l => l.id === window.appState.activeListId) || window.appState.taskLists[0];
       const titleEl = document.getElementById('active-todo-list-name');
-      if (titleEl && activeList) {
-        titleEl.textContent = activeList.name;
+      const badgeEl = document.getElementById('active-todo-list-badge');
+      const toggleLabel = document.getElementById('folder-metric-toggle-label');
+      const toggleBtn = document.getElementById('btn-toggle-folder-metrics');
+
+      if (activeList) {
+        if (titleEl) titleEl.textContent = activeList.name;
+        if (badgeEl) {
+          if (activeList.isGoalFolder || activeList.folderType === 'goal') {
+            badgeEl.className = 'text-[10px] px-2 py-0.5 rounded-full font-bold font-mono bg-rose-500/20 text-rose-300 border border-rose-500/30';
+            badgeEl.textContent = 'Goal Folder';
+            badgeEl.classList.remove('hidden');
+          } else if (activeList.isNodeFolder || activeList.folderType === 'node') {
+            badgeEl.className = 'text-[10px] px-2 py-0.5 rounded-full font-bold font-mono bg-purple-500/20 text-purple-300 border border-purple-500/30';
+            badgeEl.textContent = 'Node Folder';
+            badgeEl.classList.remove('hidden');
+          } else {
+            badgeEl.classList.add('hidden');
+          }
+        }
+
+        if (toggleLabel && toggleBtn) {
+          if (activeList.excludeFromTotal) {
+            toggleLabel.textContent = 'Excluded from Total';
+            toggleBtn.className = 'px-2.5 py-1.5 bg-amber-500/20 border border-amber-500/40 rounded-xl text-[11px] font-semibold flex items-center gap-1.5 transition text-amber-300';
+          } else {
+            toggleLabel.textContent = 'Include in Total';
+            toggleBtn.className = 'px-2.5 py-1.5 bg-slate-950 border border-slate-800 hover:border-purple-500/40 rounded-xl text-[11px] font-semibold flex items-center gap-1.5 transition text-slate-400';
+          }
+        }
       }
 
       const filterStatus = document.getElementById('todo-status-filter')?.value || 'ALL';
@@ -4341,7 +4526,7 @@ html, body {
 
         let recurringBadge = '';
         if (task.recurring && task.recurring !== 'none') {
-          recurringBadge = `<span class="text-[9px] px-1.5 py-0.2 rounded bg-sky-500/20 text-sky-300 font-bold border border-sky-500/30 shrink-0">🔁 ${task.recurring.toUpperCase()}</span>`;
+          recurringBadge = `<span class="text-[9px] px-1.5 py-0.2 rounded bg-purple-500/20 text-purple-300 font-bold border border-purple-500/30 shrink-0">🔁 ${task.recurring.toUpperCase()}</span>`;
         }
 
         let subtasksHtml = '';
@@ -4354,12 +4539,12 @@ html, body {
                 <span>${pct}%</span>
               </div>
               <div class="w-full bg-slate-900 h-1 rounded-full overflow-hidden">
-                <div class="bg-emerald-500 h-full transition-all duration-300" style="width: ${pct}%"></div>
+                <div class="bg-purple-500 h-full transition-all duration-300" style="width: ${pct}%"></div>
               </div>
               <div class="space-y-1 pt-0.5">
                 ${subtasks.map(s => `
                   <label class="flex items-center gap-2 text-[11px] text-slate-300 cursor-pointer">
-                    <input type="checkbox" onchange="toggleInlineSubtask('${task.id}', '${s.id}')" ${s.completed ? 'checked' : ''} class="w-3 h-3 rounded accent-emerald-500 cursor-pointer shrink-0" />
+                    <input type="checkbox" onchange="toggleInlineSubtask('${task.id}', '${s.id}')" ${s.completed ? 'checked' : ''} class="w-3 h-3 rounded accent-purple-500 cursor-pointer shrink-0" />
                     <span class="${s.completed ? 'line-through text-slate-500' : ''}">${escapeHtml(s.title)}</span>
                   </label>
                 `).join('')}
@@ -4370,13 +4555,13 @@ html, body {
 
         const row = document.createElement('div');
         row.className = `p-3 bg-slate-950 border rounded-xl flex flex-col justify-between text-xs transition gap-2 ${
-          isDone ? 'border-slate-800/60 opacity-60 bg-slate-950/40' : 'border-slate-800 hover:border-slate-700'
+          isDone ? 'border-slate-800/60 opacity-60 bg-slate-950/40' : 'border-slate-800 hover:border-purple-500/40'
         }`;
 
         row.innerHTML = `
           <div class="flex items-start justify-between gap-2.5 min-w-0">
             <label class="flex items-start gap-2.5 cursor-pointer flex-1 min-w-0">
-              <input type="checkbox" ${isDone ? 'checked' : ''} onchange="toggleTaskComplete('${task.id}')" class="w-4 h-4 mt-0.5 rounded accent-emerald-500 cursor-pointer shrink-0" />
+              <input type="checkbox" ${isDone ? 'checked' : ''} onchange="toggleTaskComplete('${task.id}')" class="w-4 h-4 mt-0.5 rounded accent-purple-500 cursor-pointer shrink-0" />
               <div class="min-w-0 flex-1 space-y-0.5">
                 <div class="flex items-center gap-1.5 flex-wrap">
                   <span class="${isDone ? 'line-through text-slate-500' : 'text-slate-100 font-bold'} truncate">${escapeHtml(task.title)}</span>
@@ -4390,7 +4575,7 @@ html, body {
 
             <div class="flex items-center gap-1.5 shrink-0">
               ${getRelativeDueBadge(task.dueDate, isDone)}
-              <button type="button" onclick="duplicateTask('${task.id}')" class="text-slate-500 hover:text-sky-400 p-1 rounded hover:bg-slate-900 transition" title="Duplicate Task"><i data-lucide="copy" class="w-3.5 h-3.5"></i></button>
+              <button type="button" onclick="duplicateTask('${task.id}')" class="text-slate-500 hover:text-purple-400 p-1 rounded hover:bg-slate-900 transition" title="Duplicate Task"><i data-lucide="copy" class="w-3.5 h-3.5"></i></button>
               <button type="button" onclick="editTask('${task.id}')" class="text-slate-500 hover:text-amber-400 p-1 rounded hover:bg-slate-900 transition" title="Edit Task"><i data-lucide="edit-3" class="w-3.5 h-3.5"></i></button>
               <button type="button" onclick="deleteTask('${task.id}')" class="text-slate-500 hover:text-rose-400 p-1 rounded hover:bg-slate-900 transition" title="Delete Task"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
             </div>
@@ -4418,25 +4603,25 @@ html, body {
     window.handleKanbanDragEnd = function(e) {
       draggedTaskId = null;
       if (e.target) e.target.classList.remove('opacity-40');
-      document.querySelectorAll('.kanban-drop-zone').forEach(z => z.classList.remove('border-emerald-500/60', 'bg-emerald-950/20'));
+      document.querySelectorAll('.kanban-drop-zone').forEach(z => z.classList.remove('border-purple-500/60', 'bg-purple-950/20'));
     };
 
     window.handleKanbanDragOver = function(e) {
       e.preventDefault();
       e.dataTransfer.dropEffect = 'move';
       const zone = e.currentTarget;
-      if (zone) zone.classList.add('border-emerald-500/60', 'bg-emerald-950/20');
+      if (zone) zone.classList.add('border-purple-500/60', 'bg-purple-950/20');
     };
 
     window.handleKanbanDragLeave = function(e) {
       const zone = e.currentTarget;
-      if (zone) zone.classList.remove('border-emerald-500/60', 'bg-emerald-950/20');
+      if (zone) zone.classList.remove('border-purple-500/60', 'bg-purple-950/20');
     };
 
     window.handleKanbanDrop = function(e, targetStatus) {
       e.preventDefault();
       const zone = e.currentTarget;
-      if (zone) zone.classList.remove('border-emerald-500/60', 'bg-emerald-950/20');
+      if (zone) zone.classList.remove('border-purple-500/60', 'bg-purple-950/20');
 
       const taskId = e.dataTransfer.getData('text/plain') || draggedTaskId;
       if (!taskId) return;
@@ -4490,7 +4675,7 @@ html, body {
               <div class="flex items-center gap-2 text-[10px] text-slate-400 font-mono pt-1">
                 <span>Checklist: ${completedSubtasks}/${subtasks.length}</span>
                 <div class="flex-1 bg-slate-900 h-1 rounded-full overflow-hidden">
-                  <div class="bg-emerald-500 h-full" style="width:${Math.round((completedSubtasks/subtasks.length)*100)}%"></div>
+                  <div class="bg-purple-500 h-full" style="width:${Math.round((completedSubtasks/subtasks.length)*100)}%"></div>
                 </div>
               </div>
             `;
@@ -4501,23 +4686,23 @@ html, body {
           card.ondragstart = (e) => handleKanbanDragStart(e, t.id);
           card.ondragend = (e) => handleKanbanDragEnd(e);
           card.className = `glass-card p-3 rounded-xl border text-xs space-y-2 cursor-grab active:cursor-grabbing transition ${
-            isDone ? 'border-slate-800/60 opacity-70' : 'border-slate-800 hover:border-slate-700'
+            isDone ? 'border-slate-800/60 opacity-70' : 'border-slate-800 hover:border-purple-500/40'
           }`;
 
           card.innerHTML = `
             <div class="flex items-start justify-between gap-2">
               <span class="font-bold text-white ${isDone ? 'line-through text-slate-500' : ''} truncate flex-1">${escapeHtml(t.title)}</span>
               <div class="flex items-center gap-1 shrink-0">
-                <button type="button" onclick="duplicateTask('${t.id}')" class="text-slate-500 hover:text-sky-400 p-0.5" title="Duplicate"><i data-lucide="copy" class="w-3 h-3"></i></button>
-                <button type="button" onclick="editTask('${t.id}')" class="text-slate-500 hover:text-amber-400 p-0.5"><i data-lucide="edit-3" class="w-3 h-3"></i></button>
-                <button type="button" onclick="deleteTask('${t.id}')" class="text-slate-500 hover:text-rose-400 p-0.5"><i data-lucide="trash-2" class="w-3 h-3"></i></button>
+                <button type="button" onclick="duplicateTask('${t.id}')" class="text-slate-500 hover:text-purple-400 p-0.5" title="Duplicate"><i data-lucide="copy" class="w-3 h-3"></i></button>
+                <button type="button" onclick="editTask('${t.id}')" class="text-slate-500 hover:text-amber-400 p-0.5"><i data-lucide="edit-3" class="w-3.5 h-3.5"></i></button>
+                <button type="button" onclick="deleteTask('${t.id}')" class="text-slate-500 hover:text-rose-400 p-0.5"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
               </div>
             </div>
             ${t.notes ? `<p class="text-[10px] text-slate-400 line-clamp-2">${escapeHtml(t.notes)}</p>` : ''}
             ${subProgress}
             <div class="flex justify-between items-center text-[10px] text-slate-400 pt-1.5 border-t border-slate-800/60">
               ${getRelativeDueBadge(t.dueDate, isDone)}
-              <select onchange="updateTaskKanbanStatus('${t.id}', this.value)" class="bg-slate-950 border border-slate-800 text-slate-300 rounded-lg px-2 py-0.5 outline-none font-semibold text-[10px]">
+              <select onchange="updateTaskKanbanStatus('${t.id}', this.value)" class="bg-slate-950 border border-slate-800 text-slate-300 rounded-lg px-2 py-0.5 outline-none font-semibold text-[10px] focus:border-purple-400">
                 <option value="backlog" ${col==='backlog'?'selected':''}>Backlog</option>
                 <option value="progress" ${col==='progress'?'selected':''}>In Progress</option>
                 <option value="review" ${col==='review'?'selected':''}>In Review</option>
@@ -4558,7 +4743,7 @@ html, body {
       if (window.showToast) window.showToast('Task duplicated!', 'success');
     };
 
-    /* Actions & Form Submissions with Auto-Recurring Engine */
+    /* Actions & Form Submissions */
     window.addTodoItem = function() {
       ensureTasksInitialized();
       const input = document.getElementById('todo-input');
@@ -4605,7 +4790,6 @@ html, body {
         task.completed = !task.completed;
         task.status = task.completed ? 'done' : 'progress';
 
-        // Auto-advancing recurring logic
         if (task.completed && task.recurring && task.recurring !== 'none') {
           const nextDate = new Date(task.dueDate || new Date());
           if (task.recurring === 'daily') nextDate.setDate(nextDate.getDate() + 1);
@@ -4668,7 +4852,6 @@ html, body {
       if (window.showToast) window.showToast('Task deleted.', 'info');
     };
 
-    /* Batch Actions & Exports */
     window.clearAllCompletedTasks = function() {
       ensureTasksInitialized();
       const initialCount = (window.appState.tasks || []).length;
@@ -4736,33 +4919,17 @@ html, body {
       if (window.showToast) window.showToast('Exported Tasks Audit Report!', 'success');
     };
 
-    /* Category List Creation & Deletion */
     window.openCreateTaskListModal = function() {
-      const input = document.getElementById('new-tasklist-name');
-      if (input) input.value = '';
-      if (window.openModal) window.openModal('add-tasklist-modal');
-      else document.getElementById('add-tasklist-modal')?.classList.remove('hidden');
-    };
-
-    window.confirmCreateTaskList = function() {
-      ensureTasksInitialized();
-      const input = document.getElementById('new-tasklist-name');
-      if (!input) return;
-      const name = input.value.trim();
+      const name = prompt('Enter new task list name:');
       if (!name) return;
-
+      ensureTasksInitialized();
       const id = 'list_' + Date.now();
-      window.appState.taskLists.push({ id, name, createdAt: new Date().toISOString() });
+      window.appState.taskLists.push({ id, name: name.trim(), excludeFromTotal: false, createdAt: new Date().toISOString() });
       window.appState.activeListId = id;
-
-      input.value = '';
-      if (window.closeModal) window.closeModal('add-tasklist-modal');
-      else document.getElementById('add-tasklist-modal')?.classList.add('hidden');
-
       persistTasksAndSync();
       window.renderTodoListsNav();
       window.renderTodoItems();
-      if (window.showToast) window.showToast(`Task List '${name}' created!`, 'success');
+      if (window.showToast) window.showToast(`List '${name}' created!`, 'success');
     };
 
     window.deleteActiveTodoList = function() {
@@ -4785,176 +4952,32 @@ html, body {
       }
     };
 
-    /* Full Modal Task Editor Engine */
+    // Route to global task modal
     window.openAddTaskModal = function() {
-      ensureTasksInitialized();
-      modalTempSubtasks = [];
-
-      document.getElementById('task-edit-id').value = '';
-      document.getElementById('task-input-title').value = '';
-      document.getElementById('task-input-priority').value = 'Normal';
-      document.getElementById('task-input-recurring').value = 'none';
-      document.getElementById('task-input-status').value = 'progress';
-      document.getElementById('task-input-due-date').value = new Date().toISOString().split('T')[0];
-      document.getElementById('task-input-notes').value = '';
-
-      populateTaskListModalDropdown(window.appState.activeListId);
-      renderModalSubtasksList();
-
-      const titleEl = document.getElementById('modal-task-title');
-      if (titleEl) titleEl.innerHTML = '<i data-lucide="plus-circle" class="w-4 h-4 text-emerald-400 shrink-0"></i> <span>Create Action Task</span>';
-
-      if (window.openModal) window.openModal('task-editor-modal');
-      else document.getElementById('task-editor-modal')?.classList.remove('hidden');
-
-      refreshIconsScoped(document.getElementById('task-editor-modal'));
+      if (typeof window.openGlobalTaskModal === 'function') {
+        window.openGlobalTaskModal();
+      } else {
+        const modal = document.getElementById('task-editor-modal');
+        if (modal) {
+          if (typeof window.openModal === 'function') window.openModal('task-editor-modal');
+          else modal.classList.remove('hidden');
+        }
+      }
     };
 
     window.editTask = function(taskId) {
-      ensureTasksInitialized();
       const task = (window.appState.tasks || []).find(t => t.id === taskId);
       if (!task) return;
-
-      modalTempSubtasks = Array.isArray(task.subtasks) ? JSON.parse(JSON.stringify(task.subtasks)) : [];
-
-      document.getElementById('task-edit-id').value = task.id;
-      document.getElementById('task-input-title').value = task.title || '';
-      document.getElementById('task-input-priority').value = task.priority || 'Normal';
-      document.getElementById('task-input-recurring').value = task.recurring || 'none';
-      document.getElementById('task-input-status').value = task.status || (task.completed ? 'done' : 'progress');
-      document.getElementById('task-input-due-date').value = task.dueDate || '';
-      document.getElementById('task-input-notes').value = task.notes || '';
-
-      populateTaskListModalDropdown(task.listId || window.appState.activeListId);
-      renderModalSubtasksList();
-
-      const titleEl = document.getElementById('modal-task-title');
-      if (titleEl) titleEl.innerHTML = '<i data-lucide="edit-3" class="w-4 h-4 text-amber-400 shrink-0"></i> <span>Edit Action Task</span>';
-
-      if (window.openModal) window.openModal('task-editor-modal');
-      else document.getElementById('task-editor-modal')?.classList.remove('hidden');
-
-      refreshIconsScoped(document.getElementById('task-editor-modal'));
-    };
-
-    function populateTaskListModalDropdown(selectedListId) {
-      const select = document.getElementById('task-input-list');
-      if (!select) return;
-      select.innerHTML = '';
-
-      (window.appState.taskLists || []).forEach(list => {
-        const opt = document.createElement('option');
-        opt.value = list.id;
-        opt.textContent = list.name;
-        if (list.id === selectedListId) opt.selected = true;
-        select.appendChild(opt);
-      });
-    }
-
-    window.addSubtaskToModal = function() {
-      const input = document.getElementById('new-subtask-input');
-      const text = input ? input.value.trim() : '';
-      if (!text) return;
-
-      modalTempSubtasks.push({
-        id: 'sub_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4),
-        title: text,
-        completed: false
-      });
-
-      if (input) input.value = '';
-      renderModalSubtasksList();
-    };
-
-    window.toggleModalSubtask = function(subId) {
-      const sub = modalTempSubtasks.find(s => s.id === subId);
-      if (sub) {
-        sub.completed = !sub.completed;
-        renderModalSubtasksList();
+      if (typeof window.openGlobalTaskModal === 'function') {
+        window.openGlobalTaskModal(task.title || '', task.listId || '');
+        const idInput = document.getElementById('gtask-id');
+        if (idInput) idInput.value = task.id;
       }
-    };
-
-    window.deleteModalSubtask = function(subId) {
-      modalTempSubtasks = modalTempSubtasks.filter(s => s.id !== subId);
-      renderModalSubtasksList();
-    };
-
-    function renderModalSubtasksList() {
-      const container = document.getElementById('modal-subtasks-container');
-      const progressText = document.getElementById('modal-subtask-progress');
-      if (!container) return;
-
-      container.innerHTML = '';
-      const completedCount = modalTempSubtasks.filter(s => s.completed).length;
-      if (progressText) progressText.textContent = `${completedCount}/${modalTempSubtasks.length}`;
-
-      modalTempSubtasks.forEach(s => {
-        const item = document.createElement('div');
-        item.className = 'flex items-center justify-between gap-2 p-1.5 bg-slate-900/80 rounded-lg border border-slate-800/80 text-xs';
-        item.innerHTML = `
-          <label class="flex items-center gap-2 flex-1 min-w-0 cursor-pointer">
-            <input type="checkbox" onchange="toggleModalSubtask('${s.id}')" ${s.completed ? 'checked' : ''} class="w-3.5 h-3.5 rounded accent-emerald-500 cursor-pointer shrink-0" />
-            <span class="truncate ${s.completed ? 'line-through text-slate-500' : 'text-slate-200'}">${escapeHtml(s.title)}</span>
-          </label>
-          <button type="button" onclick="deleteModalSubtask('${s.id}')" class="text-slate-500 hover:text-rose-400 p-0.5 text-xs">✕</button>
-        `;
-        container.appendChild(item);
-      });
-    }
-
-    window.submitFullTaskForm = function(e) {
-      e.preventDefault();
-      ensureTasksInitialized();
-
-      const editId = document.getElementById('task-edit-id')?.value;
-      const title = document.getElementById('task-input-title')?.value.trim();
-      const listId = document.getElementById('task-input-list')?.value || window.appState.activeListId;
-      const priority = document.getElementById('task-input-priority')?.value || 'Normal';
-      const recurring = document.getElementById('task-input-recurring')?.value || 'none';
-      const status = document.getElementById('task-input-status')?.value || 'progress';
-      const dueDate = document.getElementById('task-input-due-date')?.value || '';
-      const notes = document.getElementById('task-input-notes')?.value.trim() || '';
-      const isDone = (status === 'done');
-
-      if (!title) return;
-
-      if (editId) {
-        const item = window.appState.tasks.find(t => t.id === editId);
-        if (item) {
-          Object.assign(item, {
-            title, listId, priority, recurring, status, dueDate, notes,
-            completed: isDone,
-            subtasks: modalTempSubtasks
-          });
-        }
-      } else {
-        window.appState.tasks.unshift({
-          id: 't_' + Date.now(),
-          listId,
-          title,
-          priority,
-          recurring,
-          status,
-          dueDate,
-          notes,
-          completed: isDone,
-          subtasks: modalTempSubtasks,
-          createdAt: Date.now()
-        });
-      }
-
-      if (window.closeModal) window.closeModal('task-editor-modal');
-      else document.getElementById('task-editor-modal')?.classList.add('hidden');
-
-      persistTasksAndSync();
-      if (window.appState.taskViewMode === 'kanban') window.renderKanbanBoard();
-      else window.renderTodoItems();
-      window.renderTodoListsNav();
-      if (window.showToast) window.showToast(editId ? 'Task updated!' : 'Task created!', 'success');
     };
 
     // Auto-boot on load
     ensureTasksInitialized();
+    attachFirebaseAutoSync();
     window.renderTodoListsNav();
     window.renderTodoItems();
   })();
@@ -4962,25 +4985,26 @@ html, body {
 <!-- ========================================================================= -->
 <!-- END SECTION 4: TASKS, LISTS & KANBAN VIEW                                 -->
 <!-- ========================================================================= -->
-
-
 <!-- ========================================================================= -->
 <!-- SECTION 5: GOALS, OKRs & DUAL EXECUTION CHECKLIST ENGINE                  -->
 <!-- ========================================================================= -->
 <section id="view-goals" class="app-view hidden space-y-3 sm:space-y-4 md:space-y-6 max-w-7xl mx-auto w-full pb-36 px-1 sm:px-0">
 
   <!-- Top Header Toolbar (z-10 stack to prevent sidebar overlap) -->
-  <div class="glass-card rounded-2xl p-3 sm:p-4 md:p-5 border border-slate-800 flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3 relative z-10">
+  <div class="glass-card rounded-2xl p-3 sm:p-4 md:p-5 border border-rose-500/20 bg-rose-500/[0.02] flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3 relative z-10">
     <div class="flex items-center justify-between w-full sm:w-auto min-w-0">
       <div class="min-w-0">
         <h2 class="text-base sm:text-lg md:text-xl font-extrabold text-white tracking-tight flex items-center gap-2 truncate">
-          <i data-lucide="target" class="w-5 h-5 app-accent-text shrink-0"></i>
+          <i data-lucide="target" class="w-5 h-5 text-rose-400 shrink-0"></i>
           <span class="truncate">Goals, OKRs &amp; Spheres</span>
+          <span class="text-[9px] sm:text-[10px] px-2 py-0.5 bg-rose-500/15 text-rose-300 rounded-full border border-rose-500/30 font-semibold font-mono hidden sm:inline-block">
+            Milestones Matrix
+          </span>
         </h2>
       </div>
 
       <!-- Mobile Quick Action Button -->
-      <button type="button" onclick="openCreateGoalModal()" class="sm:hidden shrink-0 px-3 py-1.5 app-accent-bg text-slate-950 font-bold text-xs rounded-xl transition flex items-center gap-1 shadow-lg shadow-emerald-600/20 active:scale-95 touch-manipulation">
+      <button type="button" onclick="openCreateGoalModal()" class="sm:hidden shrink-0 px-3 py-1.5 bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs rounded-xl transition flex items-center gap-1 shadow-lg shadow-rose-600/20 active:scale-95 touch-manipulation">
         <i data-lucide="plus" class="w-4 h-4 shrink-0"></i>
         <span>Goal</span>
       </button>
@@ -4991,32 +5015,32 @@ html, body {
       <!-- Search Bar -->
       <div class="relative flex-1 sm:flex-none sm:w-48 min-w-[140px]">
         <i data-lucide="search" class="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none"></i>
-        <input id="goal-search-input" type="text" onkeyup="searchGoals(this.value)" placeholder="Search targets & OKRs..." class="w-full bg-slate-950 border border-slate-800 rounded-xl pl-8 pr-7 py-2 text-xs text-slate-200 outline-none focus:border-emerald-500 transition" />
+        <input id="goal-search-input" type="text" onkeyup="searchGoals(this.value)" placeholder="Search targets &amp; OKRs..." class="w-full bg-slate-950 border border-slate-800 rounded-xl pl-8 pr-7 py-2 text-xs text-slate-200 outline-none focus:border-rose-400 transition" />
         <button type="button" onclick="clearGoalSearchQuery()" id="goal-search-clear-btn" class="hidden absolute right-2 top-1/2 -translate-y-1/2 text-slate-500 hover:text-white p-0.5 text-xs">✕</button>
       </div>
 
       <!-- Quick Filter Pills -->
       <div class="flex items-center bg-slate-950 p-1 rounded-xl border border-slate-800 text-[11px] font-medium shrink-0">
-        <button type="button" onclick="setGoalStatusFilter('ALL')" id="goal-filter-all" class="goal-pill-btn bg-emerald-600 text-white font-bold px-2.5 py-1 rounded-lg transition touch-manipulation">All</button>
+        <button type="button" onclick="setGoalStatusFilter('ALL')" id="goal-filter-all" class="goal-pill-btn bg-rose-600 text-white font-bold px-2.5 py-1 rounded-lg transition touch-manipulation shadow-sm">All</button>
         <button type="button" onclick="setGoalStatusFilter('ACTIVE')" id="goal-filter-active" class="goal-pill-btn text-slate-400 hover:text-white px-2.5 py-1 rounded-lg transition touch-manipulation">Active</button>
         <button type="button" onclick="setGoalStatusFilter('URGENT')" id="goal-filter-urgent" class="goal-pill-btn text-slate-400 hover:text-white px-2.5 py-1 rounded-lg transition touch-manipulation">Due Soon</button>
         <button type="button" onclick="setGoalStatusFilter('ARCHIVED')" id="goal-filter-archived" class="goal-pill-btn text-slate-400 hover:text-white px-2.5 py-1 rounded-lg transition touch-manipulation">Archive</button>
       </div>
 
       <!-- Manage Custom Categories Modal Trigger -->
-      <button type="button" onclick="openManageGoalCategoriesModal()" class="px-3 py-2 bg-slate-900 border border-slate-800 hover:border-slate-700 text-amber-400 font-semibold rounded-xl transition flex items-center gap-1.5 shadow-sm active:scale-95 touch-manipulation shrink-0">
-        <i data-lucide="tag" class="w-3.5 h-3.5 shrink-0"></i>
+      <button type="button" onclick="openManageGoalCategoriesModal()" class="px-3 py-2 bg-slate-900 border border-slate-800 hover:border-rose-500/40 text-rose-300 font-semibold rounded-xl transition flex items-center gap-1.5 shadow-sm active:scale-95 touch-manipulation shrink-0">
+        <i data-lucide="tag" class="w-3.5 h-3.5 text-rose-400 shrink-0"></i>
         <span>Categories</span>
       </button>
 
       <!-- New Collection Button -->
-      <button type="button" onclick="openCreateGoalFolderModal()" class="px-3 py-2 bg-slate-900 border border-slate-800 hover:border-slate-700 text-slate-300 font-semibold rounded-xl transition flex items-center gap-1.5 shadow-sm active:scale-95 touch-manipulation shrink-0">
-        <i data-lucide="folder-plus" class="w-3.5 h-3.5 text-sky-400 shrink-0"></i>
+      <button type="button" onclick="openCreateGoalFolderModal()" class="px-3 py-2 bg-slate-900 border border-slate-800 hover:border-rose-500/40 text-slate-300 font-semibold rounded-xl transition flex items-center gap-1.5 shadow-sm active:scale-95 touch-manipulation shrink-0">
+        <i data-lucide="folder-plus" class="w-3.5 h-3.5 text-rose-400 shrink-0"></i>
         <span>Folder</span>
       </button>
 
       <!-- Desktop Create Goal Button -->
-      <button type="button" onclick="openCreateGoalModal()" class="hidden sm:flex px-3.5 py-2 app-accent-bg font-bold text-xs text-slate-950 rounded-xl shadow-lg transition items-center gap-1.5 active:scale-95 touch-manipulation shrink-0">
+      <button type="button" onclick="openCreateGoalModal()" class="hidden sm:flex px-3.5 py-2 bg-rose-600 hover:bg-rose-500 font-bold text-xs text-white rounded-xl shadow-lg shadow-rose-600/20 transition items-center gap-1.5 active:scale-95 touch-manipulation shrink-0">
         <i data-lucide="plus-circle" class="w-4 h-4 shrink-0"></i>
         <span>Set Goal</span>
       </button>
@@ -5025,10 +5049,10 @@ html, body {
 
   <!-- KPI Overview Metrics -->
   <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3 md:gap-4">
-    <div class="glass-card p-3 sm:p-4 rounded-2xl border border-slate-800/80 space-y-1 hover:border-emerald-500/30 transition">
+    <div class="glass-card p-3 sm:p-4 rounded-2xl border border-rose-500/20 bg-rose-500/[0.03] space-y-1 hover:border-rose-500/40 transition">
       <div class="flex justify-between items-center text-xs font-bold text-slate-400">
         <span class="uppercase tracking-wider text-[9px]">Active Targets</span>
-        <div class="p-1 bg-emerald-500/10 text-emerald-400 rounded-lg shrink-0">
+        <div class="p-1 bg-rose-500/10 text-rose-400 rounded-lg shrink-0">
           <i data-lucide="compass" class="w-3.5 h-3.5"></i>
         </div>
       </div>
@@ -5036,29 +5060,29 @@ html, body {
       <p id="goal-stat-total-sub" class="text-[10px] text-slate-500 font-mono">0 Collections active</p>
     </div>
 
-    <div class="glass-card p-3 sm:p-4 rounded-2xl border border-slate-800/80 space-y-1 hover:border-teal-500/30 transition">
+    <div class="glass-card p-3 sm:p-4 rounded-2xl border border-rose-500/20 bg-rose-500/[0.03] space-y-1 hover:border-rose-500/40 transition">
       <div class="flex justify-between items-center text-xs font-bold text-slate-400">
         <span class="uppercase tracking-wider text-[9px]">Avg OKR Velocity</span>
-        <div class="p-1 bg-teal-500/10 text-teal-400 rounded-lg shrink-0">
+        <div class="p-1 bg-rose-500/10 text-rose-300 rounded-lg shrink-0">
           <i data-lucide="trending-up" class="w-3.5 h-3.5"></i>
         </div>
       </div>
-      <div id="goal-stat-avg" class="text-base sm:text-lg md:text-xl font-black text-teal-400">0%</div>
+      <div id="goal-stat-avg" class="text-base sm:text-lg md:text-xl font-black text-rose-400">0%</div>
       <p class="text-[10px] text-slate-500 font-mono">Overall OKR progress</p>
     </div>
 
-    <div class="glass-card p-3 sm:p-4 rounded-2xl border border-slate-800/80 space-y-1 hover:border-sky-500/30 transition">
+    <div class="glass-card p-3 sm:p-4 rounded-2xl border border-rose-500/20 bg-rose-500/[0.03] space-y-1 hover:border-rose-500/40 transition">
       <div class="flex justify-between items-center text-xs font-bold text-slate-400">
         <span class="uppercase tracking-wider text-[9px]">Completed</span>
-        <div class="p-1 bg-sky-500/10 text-sky-400 rounded-lg shrink-0">
+        <div class="p-1 bg-rose-500/10 text-rose-400 rounded-lg shrink-0">
           <i data-lucide="check-circle-2" class="w-3.5 h-3.5"></i>
         </div>
       </div>
-      <div id="goal-stat-completed" class="text-base sm:text-lg md:text-xl font-black text-sky-400">0</div>
+      <div id="goal-stat-completed" class="text-base sm:text-lg md:text-xl font-black text-rose-300">0</div>
       <p class="text-[10px] text-slate-500 font-mono">Targets achieved</p>
     </div>
 
-    <div class="glass-card p-3 sm:p-4 rounded-2xl border border-slate-800/80 space-y-1 hover:border-amber-500/30 transition">
+    <div class="glass-card p-3 sm:p-4 rounded-2xl border border-rose-500/20 bg-rose-500/[0.03] space-y-1 hover:border-amber-500/40 transition">
       <div class="flex justify-between items-center text-xs font-bold text-slate-400">
         <span class="uppercase tracking-wider text-[9px]">Near Deadline</span>
         <div class="p-1 bg-amber-500/10 text-amber-400 rounded-lg shrink-0">
@@ -5071,22 +5095,22 @@ html, body {
   </div>
 
   <!-- COLLAPSIBLE & SELECTIVE CATEGORY BREAKDOWN BAR -->
-  <div class="glass-card rounded-2xl p-3.5 sm:p-4 border border-slate-800 space-y-2.5">
+  <div class="glass-card rounded-2xl p-3.5 sm:p-4 border border-rose-500/20 bg-rose-500/[0.02] space-y-2.5">
     <div class="flex items-center justify-between border-b border-slate-800/80 pb-2 gap-2">
       <div class="flex items-center gap-2">
-        <button type="button" onclick="toggleRadarVisibility()" class="p-1 rounded-lg bg-slate-900 border border-slate-800 hover:border-slate-700 text-slate-400 hover:text-white transition" title="Show / Hide Breakdown Panel">
-          <i id="radar-toggle-icon" data-lucide="chevron-down" class="w-3.5 h-3.5"></i>
+        <button type="button" onclick="toggleRadarVisibility()" class="p-1 rounded-lg bg-slate-900 border border-slate-800 hover:border-rose-500/40 text-slate-400 hover:text-white transition" title="Show / Hide Breakdown Panel">
+          <i id="radar-toggle-icon" data-lucide="chevron-down" class="w-3.5 h-3.5 text-rose-400"></i>
         </button>
         <h3 class="text-xs font-extrabold text-white uppercase tracking-wider flex items-center gap-1.5">
-          <i data-lucide="pie-chart" class="w-4 h-4 text-emerald-400 shrink-0"></i> Pinned Category Breakdown
+          <i data-lucide="pie-chart" class="w-4 h-4 text-rose-400 shrink-0"></i> Pinned Category Breakdown
         </h3>
       </div>
       
       <div class="flex items-center gap-2">
-        <button type="button" onclick="openRadarFilterModal()" class="text-[11px] text-sky-400 hover:underline font-bold flex items-center gap-1">
-          <i data-lucide="sliders-horizontal" class="w-3 h-3"></i> Select Cards (<span id="radar-pinned-count">0</span>)
+        <button type="button" onclick="openRadarFilterModal()" class="text-[11px] text-rose-300 hover:underline font-bold flex items-center gap-1">
+          <i data-lucide="sliders-horizontal" class="w-3 h-3 text-rose-400"></i> Select Cards (<span id="radar-pinned-count">0</span>)
         </button>
-        <button type="button" onclick="openManageGoalCategoriesModal()" class="text-[11px] text-amber-400 hover:underline font-bold">
+        <button type="button" onclick="openManageGoalCategoriesModal()" class="text-[11px] text-rose-400 hover:underline font-bold">
           + Categories
         </button>
       </div>
@@ -5104,20 +5128,20 @@ html, body {
   <div class="grid grid-cols-1 lg:grid-cols-12 gap-3 sm:gap-4 items-start">
 
     <!-- Left Navigation Panel -->
-    <div class="lg:col-span-4 glass-card rounded-2xl p-3.5 sm:p-4 space-y-3.5 border border-slate-800">
+    <div class="lg:col-span-4 glass-card rounded-2xl p-3.5 sm:p-4 space-y-3.5 border border-rose-500/20 bg-rose-500/[0.02]">
       
       <!-- Category & Sort Controls inside Sidebar -->
       <div class="grid grid-cols-2 gap-2 text-xs">
         <div>
           <label class="text-[10px] text-slate-400 font-semibold block mb-1">Filter Category</label>
-          <select id="goal-category-filter" onchange="renderGoalsView()" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2 text-[11px] text-slate-200 outline-none focus:border-emerald-500 transition font-medium truncate">
+          <select id="goal-category-filter" onchange="renderGoalsView()" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2 text-[11px] text-slate-200 outline-none focus:border-rose-400 transition font-medium truncate">
             <!-- Dynamically populated from custom categories -->
           </select>
         </div>
 
         <div>
           <label class="text-[10px] text-slate-400 font-semibold block mb-1">Sort By</label>
-          <select id="goal-sort-by" onchange="renderGoalsView()" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2 text-[11px] text-slate-200 outline-none focus:border-emerald-500 transition font-medium truncate">
+          <select id="goal-sort-by" onchange="renderGoalsView()" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2 text-[11px] text-slate-200 outline-none focus:border-rose-400 transition font-medium truncate">
             <option value="DATE">Target Date</option>
             <option value="PROGRESS_DESC">Highest Progress</option>
             <option value="PROGRESS_ASC">Lowest Progress</option>
@@ -5147,14 +5171,12 @@ html, body {
 
   </div>
 
-  
-
   <!-- MODAL 2: MANAGE & CREATE CUSTOM GOAL CATEGORIES -->
   <div id="manage-goal-categories-modal" class="hidden fixed inset-0 z-50 modal-backdrop flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
     <div class="w-full max-w-md bg-slate-900 border border-slate-800 rounded-2xl sm:rounded-3xl p-4 sm:p-6 shadow-2xl space-y-3.5 max-h-[88vh] overflow-y-auto my-auto relative box-border">
       <div class="flex justify-between items-center border-b border-slate-800 pb-2.5">
         <h3 class="text-sm font-bold text-white flex items-center gap-2 truncate">
-          <i data-lucide="tag" class="w-4 h-4 text-amber-400 shrink-0"></i>
+          <i data-lucide="tag" class="w-4 h-4 text-rose-400 shrink-0"></i>
           <span class="truncate">Custom Goal Categories</span>
         </h3>
         <button type="button" onclick="closeModalDirect('manage-goal-categories-modal')" class="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-slate-800 transition"><i data-lucide="x" class="w-5 h-5"></i></button>
@@ -5165,8 +5187,8 @@ html, body {
         <div class="p-3 bg-slate-950 rounded-xl border border-slate-800 space-y-2">
           <label class="block text-slate-300 font-bold">Add New Category / Sphere</label>
           <div class="flex gap-2">
-            <input id="new-goal-category-name" type="text" placeholder="e.g. Travel & Adventure, Real Estate" class="flex-1 bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-slate-100 outline-none focus:border-amber-500 transition text-xs" />
-            <button type="button" onclick="addNewGoalCategory()" class="px-4 py-2 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold rounded-xl transition shrink-0 active:scale-95">Add</button>
+            <input id="new-goal-category-name" type="text" placeholder="e.g. Travel &amp; Adventure, Real Estate" class="flex-1 bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-slate-100 outline-none focus:border-rose-400 transition text-xs" />
+            <button type="button" onclick="addNewGoalCategory()" class="px-4 py-2 bg-rose-600 hover:bg-rose-500 text-white font-bold rounded-xl transition shrink-0 active:scale-95 shadow-md shadow-rose-600/20">Add</button>
           </div>
         </div>
 
@@ -5174,7 +5196,7 @@ html, body {
         <div class="space-y-2">
           <div class="flex justify-between items-center px-0.5">
             <span class="text-slate-400 font-bold uppercase tracking-wider text-[11px]">Active Spheres</span>
-            <button type="button" onclick="restoreDefaultGoalCategories()" class="text-[10px] text-slate-500 hover:text-amber-400 underline font-mono">
+            <button type="button" onclick="restoreDefaultGoalCategories()" class="text-[10px] text-slate-500 hover:text-rose-400 underline font-mono">
               Reset Defaults
             </button>
           </div>
@@ -5191,9 +5213,9 @@ html, body {
     <div class="w-full max-w-sm bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-5 shadow-2xl space-y-3.5 my-auto relative box-border">
       <div class="flex justify-between items-center border-b border-slate-800 pb-2">
         <h3 class="text-xs font-bold text-white flex items-center gap-1.5">
-          <i data-lucide="sliders-horizontal" class="w-4 h-4 text-sky-400"></i> Pin Categories to Breakdown
+          <i data-lucide="sliders-horizontal" class="w-4 h-4 text-rose-400"></i> Pin Categories to Breakdown
         </h3>
-        <button type="button" onclick="closeModalDirect('radar-filter-modal')" class="text-slate-400 hover:text-white p-1 rounded-lg"><i data-lucide="x" class="w-4 h-4"></i></button>
+        <button type="button" onclick="closeModalDirect('radar-filter-modal')" class="text-slate-400 hover:text-white p-1 rounded-lg"><i data-lucide="x" class="w-5 h-5"></i></button>
       </div>
 
       <div class="space-y-2 text-xs">
@@ -5204,8 +5226,8 @@ html, body {
         </div>
 
         <div class="flex gap-2 pt-2 border-t border-slate-800">
-          <button type="button" onclick="selectAllRadarCategories(true)" class="flex-1 py-1.5 bg-slate-800 text-slate-300 rounded-xl text-[11px] font-semibold">Select All</button>
-          <button type="button" onclick="selectAllRadarCategories(false)" class="flex-1 py-1.5 bg-slate-800 text-slate-300 rounded-xl text-[11px] font-semibold">Clear All</button>
+          <button type="button" onclick="selectAllRadarCategories(true)" class="flex-1 py-1.5 bg-slate-800 text-slate-300 rounded-xl text-[11px] font-semibold hover:bg-slate-700 transition">Select All</button>
+          <button type="button" onclick="selectAllRadarCategories(false)" class="flex-1 py-1.5 bg-slate-800 text-slate-300 rounded-xl text-[11px] font-semibold hover:bg-slate-700 transition">Clear All</button>
         </div>
       </div>
     </div>
@@ -5216,7 +5238,7 @@ html, body {
     <div class="w-full max-w-sm bg-slate-900 border border-slate-800 rounded-2xl sm:rounded-3xl p-4 sm:p-6 shadow-2xl space-y-3.5 my-auto relative box-border">
       <div class="flex justify-between items-center border-b border-slate-800 pb-2.5">
         <h3 class="text-sm font-bold text-white flex items-center gap-2 truncate">
-          <i data-lucide="folder-plus" class="w-4 h-4 text-amber-400 shrink-0"></i>
+          <i data-lucide="folder-plus" class="w-4 h-4 text-rose-400 shrink-0"></i>
           <span class="truncate">Create Goal Folder</span>
         </h3>
         <button type="button" onclick="closeModalDirect('create-goal-folder-modal')" class="text-slate-400 hover:text-white p-1 rounded-lg"><i data-lucide="x" class="w-5 h-5"></i></button>
@@ -5225,12 +5247,12 @@ html, body {
       <div class="space-y-3 text-xs">
         <div>
           <label class="block text-slate-400 mb-1 font-semibold">Folder / Collection Name</label>
-          <input id="goal-folder-name-input" type="text" placeholder="e.g. Q3 Milestones, PrOS Roadmap" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 sm:p-3 text-slate-100 outline-none focus:border-amber-500 transition font-bold text-xs" />
+          <input id="goal-folder-name-input" type="text" placeholder="e.g. Q3 Milestones, PrOS Roadmap" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 sm:p-3 text-slate-100 outline-none focus:border-rose-400 transition font-bold text-xs" />
         </div>
 
         <div>
           <label class="flex items-center gap-2 text-slate-300 cursor-pointer pt-1">
-            <input id="goal-folder-is-node" type="checkbox" class="w-4 h-4 rounded accent-emerald-500 cursor-pointer" />
+            <input id="goal-folder-is-node" type="checkbox" class="w-4 h-4 rounded accent-rose-500 cursor-pointer" />
             <span class="font-semibold text-xs">Tag as Mindmap Node Folder</span>
           </label>
           <p class="text-[10px] text-slate-500 mt-1 pl-6">Node folders receive special badges and only appear in the sidebar when linked targets exist.</p>
@@ -5238,7 +5260,7 @@ html, body {
 
         <div class="flex gap-2 pt-2 border-t border-slate-800">
           <button type="button" onclick="closeModalDirect('create-goal-folder-modal')" class="flex-1 py-2.5 bg-slate-800 text-slate-300 font-semibold rounded-xl hover:bg-slate-700 transition">Cancel</button>
-          <button type="button" onclick="submitCreateGoalFolder()" class="flex-1 py-2.5 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold rounded-xl transition shadow-md active:scale-98">Create Folder</button>
+          <button type="button" onclick="submitCreateGoalFolder()" class="flex-1 py-2.5 bg-rose-600 hover:bg-rose-500 text-white font-bold rounded-xl transition shadow-md shadow-rose-600/20 active:scale-98">Create Folder</button>
         </div>
       </div>
     </div>
@@ -5249,7 +5271,7 @@ html, body {
     <div class="w-full max-w-md bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-6 shadow-2xl space-y-3.5 my-auto relative box-border">
       <div class="flex justify-between items-center border-b border-slate-800 pb-2.5">
         <h3 class="text-sm font-bold text-white flex items-center gap-2 truncate">
-          <i data-lucide="archive" class="w-4 h-4 text-purple-400 shrink-0"></i>
+          <i data-lucide="archive" class="w-4 h-4 text-rose-400 shrink-0"></i>
           <span class="truncate">Goal Archive &amp; Post-Mortem</span>
         </h3>
         <button type="button" onclick="closeModalDirect('goal-retrospective-modal')" class="text-slate-400 hover:text-white p-1 rounded-lg"><i data-lucide="x" class="w-5 h-5"></i></button>
@@ -5261,12 +5283,12 @@ html, body {
 
         <div>
           <label class="block text-slate-400 mb-1 font-semibold">Key Learnings &amp; Retrospective Notes</label>
-          <textarea id="retro-notes-input" rows="3" placeholder="What went well? What obstacles were encountered? What are the takeaways?" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-slate-100 outline-none focus:border-purple-500 text-xs resize-none"></textarea>
+          <textarea id="retro-notes-input" rows="3" placeholder="What went well? What obstacles were encountered? What are the takeaways?" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-slate-100 outline-none focus:border-rose-400 text-xs resize-none"></textarea>
         </div>
 
         <div class="flex gap-2 pt-2 border-t border-slate-800">
-          <button type="button" onclick="closeModalDirect('goal-retrospective-modal')" class="flex-1 py-2 bg-slate-800 text-slate-300 font-semibold rounded-xl">Cancel</button>
-          <button type="button" onclick="saveGoalRetrospective()" class="flex-1 py-2 bg-purple-600 hover:bg-purple-500 text-white font-bold rounded-xl shadow-md">Save &amp; Archive</button>
+          <button type="button" onclick="closeModalDirect('goal-retrospective-modal')" class="flex-1 py-2 bg-slate-800 text-slate-300 font-semibold rounded-xl hover:bg-slate-700 transition">Cancel</button>
+          <button type="button" onclick="saveGoalRetrospective()" class="flex-1 py-2 bg-rose-600 hover:bg-rose-500 text-white font-bold rounded-xl shadow-md shadow-rose-600/20 active:scale-98 transition">Save &amp; Archive</button>
         </div>
       </div>
     </div>
@@ -5275,7 +5297,7 @@ html, body {
 </section>
 
 <!-- ========================================================================= -->
-<!-- SECTION 5 JAVASCRIPT LOGIC MODULE                                        -->
+<!-- SECTION 5 JAVASCRIPT LOGIC MODULE                                         -->
 <!-- ========================================================================= -->
 <script>
   (function() {
@@ -5343,12 +5365,12 @@ html, body {
       const milestoneWrapper = document.getElementById('goal-milestones-wrapper');
 
       if (mode === 'metric') {
-        if (metricBtn) metricBtn.className = 'px-2.5 py-0.5 rounded text-[10px] font-bold bg-emerald-600 text-white transition';
+        if (metricBtn) metricBtn.className = 'px-2.5 py-0.5 rounded text-[10px] font-bold bg-rose-600 text-white transition';
         if (milestoneBtn) milestoneBtn.className = 'px-2.5 py-0.5 rounded text-[10px] font-bold text-slate-400 transition';
         if (metricWrapper) metricWrapper.classList.remove('hidden');
         if (milestoneWrapper) milestoneWrapper.classList.add('hidden');
       } else {
-        if (milestoneBtn) milestoneBtn.className = 'px-2.5 py-0.5 rounded text-[10px] font-bold bg-emerald-600 text-white transition';
+        if (milestoneBtn) milestoneBtn.className = 'px-2.5 py-0.5 rounded text-[10px] font-bold bg-rose-600 text-white transition';
         if (metricBtn) metricBtn.className = 'px-2.5 py-0.5 rounded text-[10px] font-bold text-slate-400 transition';
         if (metricWrapper) metricWrapper.classList.add('hidden');
         if (milestoneWrapper) milestoneWrapper.classList.remove('hidden');
@@ -5365,7 +5387,7 @@ html, body {
         if (btnLock) btnLock.className = 'px-2 py-0.5 rounded-lg text-[10px] font-bold bg-amber-500 text-slate-950 transition flex items-center gap-1';
         if (btnFlex) btnFlex.className = 'px-2 py-0.5 rounded-lg text-[10px] font-bold text-slate-400 hover:text-white transition flex items-center gap-1';
       } else {
-        if (btnFlex) btnFlex.className = 'px-2 py-0.5 rounded-lg text-[10px] font-bold bg-emerald-600 text-white transition flex items-center gap-1';
+        if (btnFlex) btnFlex.className = 'px-2 py-0.5 rounded-lg text-[10px] font-bold bg-rose-600 text-white transition flex items-center gap-1';
         if (btnLock) btnLock.className = 'px-2 py-0.5 rounded-lg text-[10px] font-bold text-slate-400 hover:text-white transition flex items-center gap-1';
       }
       refreshIconsScoped(document.getElementById('goal-milestones-wrapper'));
@@ -5418,9 +5440,9 @@ html, body {
       allCategories.forEach(cat => {
         const isChecked = pinned.some(p => p.toLowerCase() === cat.toLowerCase());
         const item = document.createElement('label');
-        item.className = 'flex items-center gap-2 p-2 rounded-xl bg-slate-950 border border-slate-800 cursor-pointer hover:border-slate-700 text-xs';
+        item.className = 'flex items-center gap-2 p-2 rounded-xl bg-slate-950 border border-slate-800 cursor-pointer hover:border-rose-500/40 text-xs';
         item.innerHTML = `
-          <input type="checkbox" value="${escapeHtml(cat)}" ${isChecked ? 'checked' : ''} onchange="handleRadarPinToggle(this)" class="w-4 h-4 rounded accent-emerald-500 cursor-pointer" />
+          <input type="checkbox" value="${escapeHtml(cat)}" ${isChecked ? 'checked' : ''} onchange="handleRadarPinToggle(this)" class="w-4 h-4 rounded accent-rose-500 cursor-pointer" />
           <span class="font-semibold text-slate-200 truncate">${escapeHtml(cat)}</span>
         `;
         container.appendChild(item);
@@ -5759,7 +5781,7 @@ html, body {
 
       const activeBtn = document.getElementById(`goal-filter-${filterKey.toLowerCase()}`);
       if (activeBtn) {
-        activeBtn.className = 'goal-pill-btn bg-emerald-600 text-white font-bold px-2.5 py-1 rounded-lg transition touch-manipulation';
+        activeBtn.className = 'goal-pill-btn bg-rose-600 text-white font-bold px-2.5 py-1 rounded-lg transition touch-manipulation shadow-sm';
       }
 
       window.renderGoalsView();
@@ -5801,9 +5823,9 @@ html, body {
         const allBtn = document.createElement('button');
         allBtn.type = 'button';
         allBtn.className = `w-full text-left p-2 rounded-xl text-xs font-semibold flex items-center justify-between transition ${
-          !window.appState.activeGoalFolderFilter || window.appState.activeGoalFolderFilter === 'ALL' ? 'bg-emerald-600/30 text-emerald-100 border border-emerald-400/60 shadow-md' : 'text-slate-400 hover:bg-slate-900 border border-transparent'
+          !window.appState.activeGoalFolderFilter || window.appState.activeGoalFolderFilter === 'ALL' ? 'bg-rose-600/30 text-rose-100 border border-rose-400/60 shadow-md' : 'text-slate-400 hover:bg-slate-900 border border-transparent'
         }`;
-        allBtn.innerHTML = `<span class="flex items-center gap-2"><i data-lucide="layers" class="w-3.5 h-3.5 text-emerald-400"></i> All Collections</span>`;
+        allBtn.innerHTML = `<span class="flex items-center gap-2"><i data-lucide="layers" class="w-3.5 h-3.5 text-rose-400"></i> All Collections</span>`;
         allBtn.onclick = () => {
           triggerHaptic();
           window.appState.activeGoalFolderFilter = 'ALL';
@@ -5832,17 +5854,17 @@ html, body {
           btn.type = 'button';
           btn.className = `w-full text-left p-2 rounded-xl text-xs font-semibold flex items-center justify-between transition group ${
             isSelected 
-              ? 'bg-slate-900 text-white border border-slate-700 shadow-md' 
-              : (isNode ? 'bg-emerald-950/20 border border-emerald-500/20 text-emerald-300 hover:bg-emerald-900/30' : 'text-slate-400 hover:bg-slate-900/60 border border-transparent')
+              ? 'bg-slate-900 text-white border border-rose-500/40 shadow-md' 
+              : (isNode ? 'bg-rose-950/20 border border-rose-500/20 text-rose-300 hover:bg-rose-900/30' : 'text-slate-400 hover:bg-slate-900/60 border border-transparent')
           }`;
 
           btn.innerHTML = `
             <div class="flex items-center gap-2 truncate flex-1 min-w-0 pr-1">
-              <i data-lucide="${isNode ? 'brain-circuit' : 'folder'}" class="w-3.5 h-3.5 shrink-0 ${isNode ? 'text-emerald-400' : 'text-slate-500'}"></i>
-              <span class="truncate ${isNode ? 'font-bold text-emerald-200' : ''}">${escapeHtml(f.name)}</span>
+              <i data-lucide="${isNode ? 'brain-circuit' : 'folder'}" class="w-3.5 h-3.5 shrink-0 ${isNode ? 'text-rose-400' : 'text-slate-500'}"></i>
+              <span class="truncate ${isNode ? 'font-bold text-rose-200' : ''}">${escapeHtml(f.name)}</span>
             </div>
             <div class="flex items-center gap-1 shrink-0">
-              ${isNode ? '<span class="text-[9px] px-1.5 py-0.2 rounded bg-emerald-500/20 text-emerald-300 font-mono font-bold border border-emerald-500/30">NODE</span>' : ''}
+              ${isNode ? '<span class="text-[9px] px-1.5 py-0.2 rounded bg-rose-500/20 text-rose-300 font-mono font-bold border border-rose-500/30">NODE</span>' : ''}
               <span class="text-[10px] font-mono text-slate-400">${linkedGoals.length}</span>
               ${f.id !== 'gf_default' ? `<button type="button" onclick="event.stopPropagation(); deleteGoalFolder('${f.id}')" class="opacity-0 group-hover:opacity-100 text-slate-500 hover:text-rose-400 text-xs px-1" title="Delete Collection">✕</button>` : ''}
             </div>
@@ -5889,7 +5911,7 @@ html, body {
       if (pinned.length === 0) {
         container.innerHTML = `
           <div class="col-span-full p-4 text-center text-xs text-slate-500 bg-slate-950/60 rounded-xl border border-slate-800">
-            No categories pinned. Click <button type="button" onclick="openRadarFilterModal()" class="text-sky-400 underline font-semibold">Select Cards</button> to pin only the categories you want to track here.
+            No categories pinned. Click <button type="button" onclick="openRadarFilterModal()" class="text-rose-400 underline font-semibold">Select Cards</button> to pin only the categories you want to track here.
           </div>
         `;
         return;
@@ -5907,13 +5929,13 @@ html, body {
         card.innerHTML = `
           <div class="flex justify-between items-center min-w-0 gap-1">
             <span class="text-[11px] font-bold text-slate-200 truncate flex items-center gap-1 min-w-0">
-              <i data-lucide="tag" class="w-3 h-3 text-emerald-400 shrink-0"></i>
+              <i data-lucide="tag" class="w-3 h-3 text-rose-400 shrink-0"></i>
               <span class="truncate">${escapeHtml(catName)}</span>
             </span>
-            <span class="text-[10px] font-mono font-bold text-emerald-400 shrink-0">${avg}%</span>
+            <span class="text-[10px] font-mono font-bold text-rose-400 shrink-0">${avg}%</span>
           </div>
           <div class="w-full bg-slate-900 h-1.5 rounded-full overflow-hidden">
-            <div class="app-accent-bg h-full transition-all duration-300" style="width: ${avg}%"></div>
+            <div class="bg-rose-500 h-full transition-all duration-300" style="width: ${avg}%"></div>
           </div>
           <div class="flex justify-between text-[9px] font-mono text-slate-500">
             <span>${count} Goal${count === 1 ? '' : 's'}</span>
@@ -6023,7 +6045,7 @@ html, body {
         if (g.targetDate) {
           const diffDays = Math.ceil((new Date(g.targetDate) - new Date(todayDateStr)) / (1000 * 60 * 60 * 24));
           if (isAchieved) {
-            deadlineBadge = `<span class="text-[9px] px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-mono font-bold border border-emerald-500/30">Achieved 🎉</span>`;
+            deadlineBadge = `<span class="text-[9px] px-2 py-0.5 rounded bg-rose-500/20 text-rose-300 font-mono font-bold border border-rose-500/30">Achieved 🎉</span>`;
           } else if (diffDays < 0) {
             deadlineBadge = `<span class="text-[9px] px-2 py-0.5 rounded bg-rose-500/20 text-rose-300 font-mono font-bold border border-rose-500/30">Overdue ${Math.abs(diffDays)}d</span>`;
           } else if (diffDays <= 7) {
@@ -6051,7 +6073,7 @@ html, body {
             return `
               <div class="flex items-center justify-between gap-2 text-xs py-0.5 ${isLocked ? 'opacity-40' : ''}">
                 <label class="flex items-center gap-2 flex-1 min-w-0 ${isLocked ? 'cursor-not-allowed' : 'cursor-pointer'}">
-                  <input type="checkbox" ${kr.completed ? 'checked' : ''} ${isLocked ? 'disabled' : ''} onchange="toggleGoalKeyResult('${g.id}', ${idx})" class="w-3.5 h-3.5 rounded accent-emerald-500 cursor-pointer shrink-0" />
+                  <input type="checkbox" ${kr.completed ? 'checked' : ''} ${isLocked ? 'disabled' : ''} onchange="toggleGoalKeyResult('${g.id}', ${idx})" class="w-3.5 h-3.5 rounded accent-rose-500 cursor-pointer shrink-0" />
                   <span class="${kr.completed ? 'line-through text-slate-500' : 'text-slate-200'} truncate">${escapeHtml(kr.text)}</span>
                 </label>
                 ${isLocked ? '<span class="text-[9px] font-mono text-amber-400/80 shrink-0 flex items-center gap-0.5"><i data-lucide="lock" class="w-2.5 h-2.5"></i> Step</span>' : ''}
@@ -6063,10 +6085,10 @@ html, body {
             <div class="space-y-1 pt-2 border-t border-slate-800/80">
               <div class="flex justify-between items-center text-[10px] text-slate-400 font-bold uppercase">
                 <span class="flex items-center gap-1">
-                  <i data-lucide="${isSequentialGoal ? 'list-ordered' : 'check-square'}" class="w-3 h-3 text-emerald-400"></i>
+                  <i data-lucide="${isSequentialGoal ? 'list-ordered' : 'check-square'}" class="w-3 h-3 text-rose-400"></i>
                   ${isSequentialGoal ? 'Step Ladder (Locked)' : 'Checklist (Any Order)'}
                 </span>
-                <span class="font-mono text-emerald-400">${keyResults.filter(k => k.completed).length}/${keyResults.length}</span>
+                <span class="font-mono text-rose-400 font-bold">${keyResults.filter(k => k.completed).length}/${keyResults.length}</span>
               </div>
               <div class="space-y-0.5 max-h-32 overflow-y-auto pr-1">
                 ${krItems}
@@ -6090,7 +6112,7 @@ html, body {
         let retroHtml = '';
         if (g.retrospectiveNotes) {
           retroHtml = `
-            <div class="p-2 rounded-xl bg-purple-950/20 border border-purple-500/30 text-[10px] text-purple-200">
+            <div class="p-2 rounded-xl bg-rose-950/20 border border-rose-500/30 text-[10px] text-rose-200">
               <strong>Retrospective Takeaway:</strong> ${escapeHtml(g.retrospectiveNotes)}
             </div>
           `;
@@ -6098,7 +6120,7 @@ html, body {
 
         const card = document.createElement('div');
         card.className = `glass-card p-3.5 sm:p-4 rounded-2xl border transition space-y-3 flex flex-col justify-between ${
-          isAchieved ? 'border-emerald-500/30 bg-emerald-950/10' : 'border-slate-800 hover:border-slate-700'
+          isAchieved ? 'border-rose-500/30 bg-rose-950/10' : 'border-slate-800 hover:border-rose-500/40'
         }`;
 
         card.innerHTML = `
@@ -6109,14 +6131,14 @@ html, body {
                 <div class="flex flex-wrap items-center gap-1.5">
                   <span class="text-[9px] px-2 py-0.2 rounded bg-slate-900 text-slate-300 font-bold uppercase tracking-wider border border-slate-800">${escapeHtml(g.category || 'General')}</span>
                   ${isSequentialGoal ? `<span class="text-[9px] px-1.5 py-0.2 rounded bg-amber-500/10 text-amber-300 font-mono font-bold border border-amber-500/20 flex items-center gap-0.5"><i data-lucide="lock" class="w-2.5 h-2.5"></i> SEQUENTIAL</span>` : ''}
-                  ${g.autoSyncLedger ? `<span class="text-[9px] px-1.5 py-0.2 rounded bg-emerald-500/20 text-emerald-300 font-mono font-bold border border-emerald-500/30">⚡ LEDGER LINK</span>` : ''}
-                  ${isNodeFolder ? `<span class="text-[9px] px-1.5 py-0.2 rounded bg-emerald-500/20 text-emerald-300 font-mono font-bold border border-emerald-500/30 flex items-center gap-1"><i data-lucide="brain-circuit" class="w-3 h-3"></i> NODE</span>` : ''}
+                  ${g.autoSyncLedger ? `<span class="text-[9px] px-1.5 py-0.2 rounded bg-rose-500/20 text-rose-300 font-mono font-bold border border-rose-500/30">⚡ LEDGER LINK</span>` : ''}
+                  ${isNodeFolder ? `<span class="text-[9px] px-1.5 py-0.2 rounded bg-rose-500/20 text-rose-300 font-mono font-bold border border-rose-500/30 flex items-center gap-1"><i data-lucide="brain-circuit" class="w-3 h-3"></i> NODE</span>` : ''}
                 </div>
                 <h4 class="font-extrabold text-white text-sm sm:text-base truncate leading-snug ${isAchieved ? 'line-through text-slate-400' : ''}">${escapeHtml(g.title)}</h4>
               </div>
 
               <div class="flex items-center gap-1 shrink-0">
-                <button type="button" onclick="openGoalRetrospectiveModal('${g.id}')" class="p-1.5 text-slate-500 hover:text-purple-400 hover:bg-slate-900 rounded-lg transition" title="Archive & Post-Mortem">
+                <button type="button" onclick="openGoalRetrospectiveModal('${g.id}')" class="p-1.5 text-slate-500 hover:text-rose-400 hover:bg-slate-900 rounded-lg transition" title="Archive &amp; Post-Mortem">
                   <i data-lucide="archive" class="w-3.5 h-3.5"></i>
                 </button>
                 <button type="button" onclick="editGoalTarget('${g.id}')" class="p-1.5 text-slate-500 hover:text-amber-400 hover:bg-slate-900 rounded-lg transition" title="Edit Goal">
@@ -6135,11 +6157,11 @@ html, body {
             <div class="space-y-1 pt-1">
               <div class="flex justify-between items-center text-xs font-semibold">
                 <span class="text-slate-400 flex items-center gap-1"><i data-lucide="calendar" class="w-3.5 h-3.5 text-amber-400"></i> ${g.targetDate || 'TBD'}</span>
-                <span class="font-extrabold font-mono text-emerald-400">${g.progress || 0}%</span>
+                <span class="font-extrabold font-mono text-rose-400">${g.progress || 0}%</span>
               </div>
               
               <div class="w-full bg-slate-950 h-2 rounded-full overflow-hidden border border-slate-800">
-                <div class="app-accent-bg h-full transition-all duration-300" style="width: ${g.progress || 0}%"></div>
+                <div class="bg-rose-500 h-full transition-all duration-300" style="width: ${g.progress || 0}%"></div>
               </div>
 
               <div class="flex justify-between items-center pt-0.5">
@@ -6153,7 +6175,7 @@ html, body {
 
           <div class="pt-2 border-t border-slate-800/60 flex items-center justify-between text-xs">
             <span class="text-[10px] text-slate-500">Progress Slider</span>
-            <input type="range" min="0" max="100" value="${g.progress || 0}" oninput="updateGoalProgress('${g.id}', this.value)" class="w-28 accent-emerald-500 cursor-pointer" />
+            <input type="range" min="0" max="100" value="${g.progress || 0}" oninput="updateGoalProgress('${g.id}', this.value)" class="w-28 accent-rose-500 cursor-pointer" />
           </div>
         `;
 
@@ -6244,7 +6266,7 @@ html, body {
       if (visionImageEl) visionImageEl.value = '';
       if (notesEl) notesEl.value = '';
       if (ledgerSyncEl) ledgerSyncEl.checked = false;
-      if (titleModalEl) titleModalEl.innerHTML = `<i data-lucide="target" class="w-4 h-4 text-emerald-400"></i> Set Target Goal &amp; OKRs`;
+      if (titleModalEl) titleModalEl.innerHTML = `<i data-lucide="target" class="w-4 h-4 text-rose-400"></i> Set Target Goal &amp; OKRs`;
       
       const krContainer = document.getElementById('goal-modal-key-results-list');
       if (krContainer) krContainer.innerHTML = '';
@@ -6284,7 +6306,7 @@ html, body {
       if (visionImageEl) visionImageEl.value = g.visionImage || '';
       if (notesEl) notesEl.value = g.notes || '';
       if (ledgerSyncEl) ledgerSyncEl.checked = !!g.autoSyncLedger;
-      if (titleModalEl) titleModalEl.innerHTML = `<i data-lucide="edit-3" class="w-4 h-4 text-amber-400"></i> Edit Goal Target`;
+      if (titleModalEl) titleModalEl.innerHTML = `<i data-lucide="edit-3" class="w-4 h-4 text-rose-400"></i> Edit Goal Target`;
 
       window.toggleFinancialLedgerLinkFields();
       window.setGoalMilestoneOrderStyle(!!g.isSequential);
@@ -6319,7 +6341,7 @@ html, body {
       const div = document.createElement('div');
       div.className = 'flex items-center gap-2';
       div.innerHTML = `
-        <input type="text" value="${escapeHtml(defaultText)}" placeholder="e.g. Milestone Step" class="goal-kr-item-input flex-1 bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-100 outline-none focus:border-emerald-500 transition" />
+        <input type="text" value="${escapeHtml(defaultText)}" placeholder="e.g. Milestone Step" class="goal-kr-item-input flex-1 bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-slate-100 outline-none focus:border-rose-400 transition" />
         <button type="button" onclick="this.parentElement.remove()" class="text-slate-500 hover:text-rose-400 p-1 text-xs">✕</button>
       `;
       container.appendChild(div);
@@ -6489,7 +6511,6 @@ html, body {
 <!-- ========================================================================= -->
 <!-- END SECTION 5: GOALS & OKRS VIEW                                          -->
 <!-- ========================================================================= -->
-
 
  
 <!-- ========================================================================= -->
