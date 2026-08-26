@@ -157,6 +157,9 @@ html, body {
   <div class="flex h-screen overflow-hidden">
 
 
+
+
+
     <!-- ========================================================================= -->
 <!-- SECTION: APP SIDEBAR NAVIGATION & INTEGRATED MOBILE DOCK SYNC ENGINE      -->
 <!-- ========================================================================= -->
@@ -223,7 +226,7 @@ html, body {
         <span id="badge-exp-count" class="text-[9px] px-1.5 py-0.5 rounded bg-slate-900 text-slate-400 font-mono border border-slate-800">0</span>
       </button>
 
-      <!-- 4. Tasks & Kanban (Purple) -->
+      <!-- 4. Tasks & Kanban -->
       <button type="button" onclick="switchAppView('tasks')" id="side-nav-tasks" class="side-nav-btn w-full py-2 px-3 rounded-xl text-xs font-semibold text-slate-400 hover:text-slate-200 hover:bg-slate-900/60 transition flex items-center justify-between group">
         <div class="flex items-center gap-2.5 min-w-0">
           <i data-lucide="check-square" class="w-4 h-4 text-purple-400 shrink-0 group-hover:scale-110 transition-transform"></i>
@@ -232,7 +235,7 @@ html, body {
         <span id="badge-task-count" class="text-[9px] px-1.5 py-0.5 rounded bg-purple-500/15 text-purple-300 font-mono font-bold border border-purple-500/30">0</span>
       </button>
 
-      <!-- 5. Goals & OKRs (Rose) -->
+      <!-- 5. Goals & OKRs -->
       <button type="button" onclick="switchAppView('goals')" id="side-nav-goals" class="side-nav-btn w-full py-2 px-3 rounded-xl text-xs font-semibold text-slate-400 hover:text-slate-200 hover:bg-slate-900/60 transition flex items-center justify-between group">
         <div class="flex items-center gap-2.5 min-w-0">
           <i data-lucide="target" class="w-4 h-4 text-rose-400 shrink-0 group-hover:scale-110 transition-transform"></i>
@@ -241,7 +244,7 @@ html, body {
         <span id="badge-goals-count" class="text-[9px] px-1.5 py-0.5 rounded bg-rose-500/15 text-rose-300 font-mono font-bold border border-rose-500/30">0</span>
       </button>
 
-      <!-- 6. Time Tracker (Amber) -->
+      <!-- 6. Time Tracker -->
       <button type="button" onclick="switchAppView('time')" id="side-nav-time" class="side-nav-btn w-full py-2 px-3 rounded-xl text-xs font-semibold text-slate-400 hover:text-slate-200 hover:bg-slate-900/60 transition flex items-center justify-between group">
         <div class="flex items-center gap-2.5 min-w-0">
           <i data-lucide="timer" class="w-4 h-4 text-amber-400 shrink-0 group-hover:scale-110 transition-transform"></i>
@@ -250,7 +253,7 @@ html, body {
         <span id="badge-time-count" class="text-[9px] px-1.5 py-0.5 rounded bg-amber-500/15 text-amber-300 font-mono font-bold border border-amber-500/30">0.0h</span>
       </button>
 
-      <!-- 7. Habits & Routines (Flame Red) -->
+      <!-- 7. Habits & Routines -->
       <button type="button" onclick="switchAppView('habits')" id="side-nav-habits" class="side-nav-btn w-full py-2 px-3 rounded-xl text-xs font-semibold text-slate-400 hover:text-slate-200 hover:bg-slate-900/60 transition flex items-center justify-between group">
         <div class="flex items-center gap-2.5 min-w-0">
           <i data-lucide="flame" class="w-4 h-4 text-red-400 shrink-0 group-hover:scale-110 transition-transform"></i>
@@ -259,7 +262,7 @@ html, body {
         <span id="badge-habits-streak" class="text-[9px] px-1.5 py-0.5 rounded bg-red-500/15 text-red-300 font-mono font-bold border border-red-500/30">🔥 0%</span>
       </button>
 
-      <!-- 8. Knowledge Base (Yellow) -->
+      <!-- 8. Knowledge Base -->
       <button type="button" onclick="switchAppView('notes')" id="side-nav-notes" class="side-nav-btn w-full py-2 px-3 rounded-xl text-xs font-semibold text-slate-400 hover:text-slate-200 hover:bg-slate-900/60 transition flex items-center justify-between group">
         <div class="flex items-center gap-2.5 min-w-0">
           <i data-lucide="file-text" class="w-4 h-4 text-yellow-400 shrink-0 group-hover:scale-110 transition-transform"></i>
@@ -268,7 +271,16 @@ html, body {
         <span id="badge-notes-count" class="text-[9px] px-1.5 py-0.5 rounded bg-yellow-500/15 text-yellow-300 font-mono font-bold border border-yellow-500/30">0</span>
       </button>
 
-      <!-- 9. Mindmap & Link Canvas (Emerald Jade) -->
+      <!-- 9. Diary & Logbook -->
+      <button type="button" onclick="switchAppView('logbook')" id="side-nav-logbook" class="side-nav-btn w-full py-2 px-3 rounded-xl text-xs font-semibold text-slate-400 hover:text-slate-200 hover:bg-slate-900/60 transition flex items-center justify-between group">
+        <div class="flex items-center gap-2.5 min-w-0">
+          <i data-lucide="book-open" class="w-4 h-4 text-emerald-400 shrink-0 group-hover:scale-110 transition-transform"></i>
+          <span class="truncate">Diary &amp; Logbook</span>
+        </div>
+        <span id="badge-logbook-count" class="text-[9px] px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-300 font-mono font-bold border border-emerald-500/30">0</span>
+      </button>
+
+      <!-- 10. Mindmap & Link Canvas -->
       <button type="button" onclick="switchAppView('mindmap')" id="side-nav-mindmap" class="side-nav-btn w-full py-2 px-3 rounded-xl text-xs font-semibold text-slate-400 hover:text-slate-200 hover:bg-slate-900/60 transition flex items-center justify-between group">
         <div class="flex items-center gap-2.5 min-w-0">
           <i data-lucide="brain-circuit" class="w-4 h-4 text-emerald-400 shrink-0 group-hover:scale-110 transition-transform"></i>
@@ -277,7 +289,7 @@ html, body {
         <span id="badge-nodes-count" class="text-[9px] px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-300 font-mono font-bold border border-emerald-500/30">0</span>
       </button>
 
-      <!-- 10. Link Vault (Sky Blue) -->
+      <!-- 11. Link Vault -->
       <button type="button" onclick="switchAppView('links')" id="side-nav-links" class="side-nav-btn w-full py-2 px-3 rounded-xl text-xs font-semibold text-slate-400 hover:text-slate-200 hover:bg-slate-900/60 transition flex items-center justify-between group">
         <div class="flex items-center gap-2.5 min-w-0">
           <i data-lucide="bookmark" class="w-4 h-4 text-sky-400 shrink-0 group-hover:scale-110 transition-transform"></i>
@@ -286,7 +298,7 @@ html, body {
         <span id="badge-links-count" class="text-[9px] px-1.5 py-0.5 rounded bg-sky-500/15 text-sky-300 font-mono font-bold border border-sky-500/30">0</span>
       </button>
 
-      <!-- 11. Vehicle Logs (Blue) -->
+      <!-- 12. Vehicle Logs -->
       <button type="button" onclick="switchAppView('vehicles')" id="side-nav-vehicles" class="side-nav-btn w-full py-2 px-3 rounded-xl text-xs font-semibold text-slate-400 hover:text-slate-200 hover:bg-slate-900/60 transition flex items-center justify-between group">
         <div class="flex items-center gap-2.5 min-w-0">
           <i data-lucide="car" class="w-4 h-4 text-blue-400 shrink-0 group-hover:scale-110 transition-transform"></i>
@@ -295,7 +307,7 @@ html, body {
         <span id="badge-vehicle-count" class="text-[9px] px-1.5 py-0.5 rounded bg-blue-500/15 text-blue-300 font-mono font-bold border border-blue-500/30">Logs</span>
       </button>
 
-      <!-- 12. Focus & Ambient (Indigo) -->
+      <!-- 13. Focus & Audio -->
       <button type="button" onclick="switchAppView('focus')" id="side-nav-focus" class="side-nav-btn w-full py-2 px-3 rounded-xl text-xs font-semibold text-slate-400 hover:text-slate-200 hover:bg-slate-900/60 transition flex items-center justify-between group">
         <div class="flex items-center gap-2.5 min-w-0">
           <i data-lucide="clock" class="w-4 h-4 text-indigo-400 shrink-0 group-hover:scale-110 transition-transform"></i>
@@ -304,7 +316,7 @@ html, body {
         <span class="text-[9px] px-1.5 py-0.5 rounded bg-indigo-500/15 text-indigo-300 font-mono font-bold border border-indigo-500/30">Zen</span>
       </button>
 
-      <!-- 13. Analytics & Data (Teal) -->
+      <!-- 14. Analytics & Data -->
       <button type="button" onclick="switchAppView('analytics')" id="side-nav-analytics" class="side-nav-btn w-full py-2 px-3 rounded-xl text-xs font-semibold text-slate-400 hover:text-slate-200 hover:bg-slate-900/60 transition flex items-center justify-between group">
         <div class="flex items-center gap-2.5 min-w-0">
           <i data-lucide="database" class="w-4 h-4 text-teal-400 shrink-0 group-hover:scale-110 transition-transform"></i>
@@ -313,7 +325,7 @@ html, body {
         <span class="text-[9px] px-1.5 py-0.5 rounded bg-teal-500/15 text-teal-300 font-mono font-bold border border-teal-500/30">Cloud</span>
       </button>
 
-      <!-- 14. Theme & Settings (Teal) -->
+      <!-- 15. Theme & Studio -->
       <button type="button" onclick="switchAppView('settings')" id="side-nav-settings" class="side-nav-btn w-full py-2 px-3 rounded-xl text-xs font-semibold text-slate-400 hover:text-slate-200 hover:bg-slate-900/60 transition flex items-center justify-between group">
         <div class="flex items-center gap-2.5 min-w-0">
           <i data-lucide="sliders" class="w-4 h-4 text-teal-400 shrink-0 group-hover:scale-110 transition-transform"></i>
@@ -413,6 +425,7 @@ html, body {
       time: { label: 'Log Work Session', color: 'bg-amber-500 hover:bg-amber-400 text-slate-950', border: 'border-amber-500/40', text: 'text-amber-400' },
       habits: { label: 'Add Habit Ritual', color: 'bg-red-500 hover:bg-red-400 text-white', border: 'border-red-500/40', text: 'text-red-400' },
       notes: { label: 'Write Note', color: 'bg-yellow-500 hover:bg-yellow-400 text-slate-950', border: 'border-yellow-500/40', text: 'text-yellow-400' },
+      logbook: { label: 'Write Memory Log', color: 'bg-emerald-600 hover:bg-emerald-500 text-slate-950', border: 'border-emerald-500/40', text: 'text-emerald-400' },
       mindmap: { label: 'Add Canvas Node', color: 'bg-emerald-600 hover:bg-emerald-500 text-slate-950', border: 'border-emerald-500/40', text: 'text-emerald-400' },
       links: { label: 'Add Bookmark', color: 'bg-sky-500 hover:bg-sky-400 text-slate-950', border: 'border-sky-500/40', text: 'text-sky-400' },
       vehicles: { label: 'Log Fuel Fill-Up', color: 'bg-blue-500 hover:bg-blue-400 text-white', border: 'border-blue-500/40', text: 'text-blue-400' },
@@ -461,6 +474,9 @@ html, body {
         case 'notes':
           if (typeof window.openCreateNoteModal === 'function') return window.openCreateNoteModal();
           break;
+        case 'logbook':
+          if (typeof window.openLogbookModal === 'function') return window.openLogbookModal();
+          break;
         case 'habits':
           if (typeof window.openAddHabitModal === 'function') return window.openAddHabitModal();
           break;
@@ -503,6 +519,8 @@ html, body {
       const timeLogs = window.appState.timeLogs || [];
       const habits = window.appState.habits || [];
       const nodes = window.appState.mindmapNodes || [];
+      const diaryEntries = window.appState.diaryEntries || [];
+      const vehicles = window.appState.fuelLogs || window.appState.vehicles || [];
 
       // Pending Tasks Count (excludes excluded lists)
       const excludedListIds = new Set((window.appState.taskLists || []).filter(l => l.excludeFromTotal).map(l => l.id));
@@ -529,6 +547,9 @@ html, body {
       const elNote = document.getElementById('badge-notes-count');
       if (elNote) elNote.textContent = notes.length;
 
+      const elLogbook = document.getElementById('badge-logbook-count');
+      if (elLogbook) elLogbook.textContent = diaryEntries.length;
+
       const elLink = document.getElementById('badge-links-count');
       if (elLink) elLink.textContent = bookmarks.length;
 
@@ -543,6 +564,9 @@ html, body {
 
       const elNodes = document.getElementById('badge-nodes-count');
       if (elNodes) elNodes.textContent = nodes.length;
+
+      const elVehicles = document.getElementById('badge-vehicle-count');
+      if (elVehicles) elVehicles.textContent = `${vehicles.length} logs`;
     };
 
     // Auto-hook into view switches
@@ -636,11 +660,12 @@ html, body {
 
 
 <!-- ========================================================================= -->
-<!-- SECTION 1: DASHBOARD APP VIEW (EXECUTIVE COMMAND & MULTI-LOG LOGBOOK)    -->
+<!-- SECTION 1: DASHBOARD APP VIEW (EXECUTIVE HUB & MULTI-LOG LOGBOOK)        -->
+<!-- Complete, High-Performance, Fully Synced (Local + Cloud Persistent)      -->
 <!-- ========================================================================= -->
 <section id="view-dashboard" class="app-view space-y-4 md:space-y-6 max-w-7xl mx-auto w-full pb-36 px-1 sm:px-0">
 
-  <!-- Header Banner & Dashboard Period Filter -->
+  <!-- Header Banner & Period Switcher -->
   <div class="glass-card rounded-2xl p-4 md:p-5 border border-slate-800 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 bg-slate-900/60 backdrop-blur-xl">
     <div>
       <div class="flex items-center gap-2 flex-wrap">
@@ -793,7 +818,7 @@ html, body {
   <!-- Dynamic Radar & Habits Feeds with Multi-Filters -->
   <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
     
-    <!-- Left: Schedule & Celebrations Radar (Pure Events, No Tasks) -->
+    <!-- Left: Schedule & Celebrations Radar -->
     <div class="lg:col-span-7 glass-card rounded-2xl p-4 space-y-3 border border-slate-800 flex flex-col justify-between bg-slate-900/40">
       <div class="flex flex-wrap justify-between items-center border-b border-slate-800 pb-2.5 gap-2">
         <div class="flex items-center gap-2">
@@ -846,10 +871,9 @@ html, body {
     </div>
   </div>
 
-  <!-- ADVANCED INSTANT EXPERIENCE & DIARY CAPTURE STUDIO -->
+  <!-- PERSISTENT INSTANT EXPERIENCE & DIARY CAPTURE STUDIO -->
   <div class="glass-card rounded-2xl p-4 sm:p-5 space-y-3.5 border border-emerald-500/20 bg-emerald-500/[0.02]">
     
-    <!-- Studio Header & Route to Full Logbook -->
     <div class="flex flex-wrap justify-between items-center border-b border-slate-800/80 pb-3 gap-2">
       <div class="flex items-center gap-2.5">
         <div class="p-2 rounded-xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
@@ -860,7 +884,7 @@ html, body {
             <span>Instant Experience &amp; Diary Capture</span>
             <span class="text-[9px] px-1.5 py-0.2 rounded-full bg-emerald-500/20 text-emerald-300 font-mono font-bold">Memory Engine</span>
           </h3>
-          <p class="text-[10px] text-slate-400 font-mono">Date-wise timeline capture &bull; Location, Voice, Media &amp; Unlimited logs</p>
+          <p class="text-[10px] text-slate-400 font-mono">Date-wise timeline capture &bull; Local &amp; Online synced</p>
         </div>
       </div>
       
@@ -875,7 +899,7 @@ html, body {
       </div>
     </div>
 
-    <!-- Quick Reflection Inceptors (One-Tap Guided Starters) -->
+    <!-- Quick Guided Prompt Starters -->
     <div class="flex items-center gap-1.5 overflow-x-auto pb-0.5 text-[11px] scrollbar-none">
       <span class="text-slate-500 font-bold uppercase text-[9px] shrink-0 mr-0.5">Inspire:</span>
       <button type="button" onclick="injectPromptTemplate('🏆 Biggest Win:')" class="px-2.5 py-1 rounded-xl bg-slate-950 hover:bg-slate-900 border border-slate-800 hover:border-emerald-500/40 text-slate-300 hover:text-emerald-300 transition shrink-0 active:scale-95">🏆 Biggest Win</button>
@@ -883,13 +907,12 @@ html, body {
       <button type="button" onclick="injectPromptTemplate('⚡ Challenge & Fix:')" class="px-2.5 py-1 rounded-xl bg-slate-950 hover:bg-slate-900 border border-slate-800 hover:border-emerald-500/40 text-slate-300 hover:text-emerald-300 transition shrink-0 active:scale-95">⚡ Challenge &amp; Fix</button>
       <button type="button" onclick="injectPromptTemplate('✨ Grateful For:')" class="px-2.5 py-1 rounded-xl bg-slate-950 hover:bg-slate-900 border border-slate-800 hover:border-emerald-500/40 text-slate-300 hover:text-emerald-300 transition shrink-0 active:scale-95">✨ Gratitude</button>
       <button type="button" onclick="injectPromptTemplate('🌙 Night Reflection:')" class="px-2.5 py-1 rounded-xl bg-slate-950 hover:bg-slate-900 border border-slate-800 hover:border-emerald-500/40 text-slate-300 hover:text-emerald-300 transition shrink-0 active:scale-95">🌙 Night Reflection</button>
-      <button type="button" onclick="injectPromptTemplate('💭 Shower Thought:')" class="px-2.5 py-1 rounded-xl bg-slate-950 hover:bg-slate-900 border border-slate-800 hover:border-emerald-500/40 text-slate-300 hover:text-emerald-300 transition shrink-0 active:scale-95">💭 Epiphany</button>
     </div>
 
-    <!-- Capture Studio Core Box -->
+    <!-- Capture Box Core -->
     <div class="space-y-3 bg-slate-950/90 p-3 sm:p-4 rounded-2xl border border-slate-800/90 shadow-inner">
       
-      <!-- Top Row: Mood State, Category Type, Focus/Energy & Pin Toggle -->
+      <!-- Top Row Controls -->
       <div class="grid grid-cols-1 md:grid-cols-12 gap-2.5 items-center text-xs">
         
         <!-- Mood Selector (4 Cols) -->
@@ -914,21 +937,20 @@ html, body {
             <option value="Gratitude">✨ Gratitude</option>
             <option value="Life Experience">📸 Experience</option>
             <option value="Challenge">⚡ Obstacle / Lesson</option>
-            <option value="Decision Log">⚖️ Major Decision</option>
           </select>
         </div>
 
         <!-- Focus & Energy Level (3 Cols) -->
-        <div class="md:col-span-3 flex items-center gap-1.5 justify-start md:justify-center">
-          <span class="text-slate-400 font-semibold text-xs shrink-0">Energy:</span>
-          <div class="flex gap-1" id="dash-energy-rating-group">
-            <button type="button" onclick="selectEnergyLevel(1)" id="energy-star-1" class="text-sm text-slate-600 hover:text-amber-400 transition" title="1/5 Low Energy">⚡</button>
-            <button type="button" onclick="selectEnergyLevel(2)" id="energy-star-2" class="text-sm text-slate-600 hover:text-amber-400 transition" title="2/5 Moderate">⚡</button>
-            <button type="button" onclick="selectEnergyLevel(3)" id="energy-star-3" class="text-sm text-amber-400 transition" title="3/5 Normal">⚡</button>
-            <button type="button" onclick="selectEnergyLevel(4)" id="energy-star-4" class="text-sm text-amber-400 transition scale-110" title="4/5 High">⚡</button>
-            <button type="button" onclick="selectEnergyLevel(5)" id="energy-star-5" class="text-sm text-slate-600 hover:text-amber-400 transition" title="5/5 Peak State">⚡</button>
-          </div>
-        </div>
+<div class="md:col-span-3 flex items-center gap-1.5 justify-start md:justify-center">
+  <span class="text-slate-400 font-semibold text-xs shrink-0">Energy:</span>
+  <div class="flex gap-1 items-center" id="dash-energy-rating-group">
+    <button type="button" onclick="selectEnergyLevel(1)" id="energy-star-1" class="text-base text-amber-400 transition transform hover:scale-125 active:scale-95" title="1/5 Low Energy">⚡</button>
+    <button type="button" onclick="selectEnergyLevel(2)" id="energy-star-2" class="text-base text-amber-400 transition transform hover:scale-125 active:scale-95" title="2/5 Moderate">⚡</button>
+    <button type="button" onclick="selectEnergyLevel(3)" id="energy-star-3" class="text-base text-amber-400 transition transform hover:scale-125 active:scale-95" title="3/5 Normal">⚡</button>
+    <button type="button" onclick="selectEnergyLevel(4)" id="energy-star-4" class="text-base text-amber-400 transition transform hover:scale-125 active:scale-95" title="4/5 High">⚡</button>
+    <button type="button" onclick="selectEnergyLevel(5)" id="energy-star-5" class="text-base text-slate-600 transition transform hover:scale-125 active:scale-95" title="5/5 Peak State">⚡</button>
+  </div>
+</div>
 
         <!-- Highlight Pin Switch (2 Cols) -->
         <div class="md:col-span-2 flex items-center justify-start md:justify-end">
@@ -940,7 +962,7 @@ html, body {
 
       </div>
 
-      <!-- Main Diary Capture Area with Live Counter, Voice Dictation & Text Expansion -->
+      <!-- Main Diary Capture Area with Live Counter & Voice-to-Text -->
       <div class="relative">
         <textarea id="dash-gratitude-input" oninput="updateDiaryLiveTelemetry()" rows="3" placeholder="What's happening right now? Document reflections, realizations, priority achievements, or thoughts in detail..." onkeypress="if(event.key==='Enter' && !event.shiftKey){event.preventDefault();saveDailyDiaryEntry();}" class="w-full bg-slate-900 border border-slate-800 rounded-xl p-3 pr-10 text-xs text-slate-100 outline-none focus:border-emerald-500 resize-none transition leading-relaxed placeholder:text-slate-500"></textarea>
         
@@ -957,23 +979,20 @@ html, body {
         </div>
       </div>
 
-      <!-- Bottom Drawer Controls: Media URL Attachment, Tags, Location, & Submission -->
+      <!-- Bottom Drawer Controls: Media URL Attachment, Location, Tags, & Submission -->
       <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5 pt-1">
         
         <!-- Image / Media Attachment, Location & Hashtags -->
         <div class="flex flex-wrap items-center gap-2 flex-1">
-          <!-- Optional Image URL Input -->
           <div class="relative flex-1 sm:max-w-xs min-w-[140px]">
             <i data-lucide="image" class="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none"></i>
             <input id="dash-log-image-url" type="url" placeholder="Photo / Media URL (Optional)" class="w-full bg-slate-900 border border-slate-800 rounded-xl pl-8 pr-2 py-1.5 text-xs text-slate-200 outline-none focus:border-emerald-500 font-mono transition text-[11px]" />
           </div>
 
-          <!-- Quick Tag Customizer -->
           <div class="flex items-center gap-1.5 flex-1 min-w-[130px]">
             <input id="dash-log-tag-input" type="text" placeholder="#tag1, #tag2" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-2.5 py-1.5 text-[11px] text-slate-200 outline-none focus:border-emerald-500 font-mono transition" />
           </div>
 
-          <!-- Location Tag / Geolocation Tag -->
           <div class="relative min-w-[120px] flex-1 sm:flex-none sm:w-36">
             <i data-lucide="map-pin" class="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none"></i>
             <input id="dash-log-location-input" type="text" placeholder="Location (e.g. Pune, HQ)" class="w-full bg-slate-900 border border-slate-800 rounded-xl pl-8 pr-2 py-1.5 text-[11px] text-slate-200 outline-none focus:border-emerald-500 font-mono transition" />
@@ -1081,7 +1100,7 @@ html, body {
 </section>
 
 <!-- ========================================================================= -->
-<!-- SECTION 1 JAVASCRIPT LOGIC MODULE                                         -->
+<!-- SECTION 1 JAVASCRIPT LOGIC & UNIFIED PERSISTENCE ENGINE                  -->
 <!-- ========================================================================= -->
 <script>
   (function() {
@@ -1103,49 +1122,98 @@ html, body {
     function refreshIconsScoped(rootEl) {
       if (window.lucide && typeof window.lucide.createIcons === 'function') {
         window.lucide.createIcons({
-          root: rootEl instanceof HTMLElement ? rootEl : document.body
+          root: rootEl instanceof HTMLElement ? rootEl : (document.getElementById('view-dashboard') || document.body)
         });
       }
     }
 
-    /* Update Live Digital Clock HUD */
+    /* Live Digital Clock HUD */
+    const clockEl = document.getElementById('dash-live-clock');
     function updateLiveDashboardClock() {
-      const clockEl = document.getElementById('dash-live-clock');
-      if (!clockEl) return;
-      const now = new Date();
-      clockEl.textContent = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+      if (clockEl) {
+        clockEl.textContent = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+      }
     }
     setInterval(updateLiveDashboardClock, 1000);
+
+    /* Universal Local & Cloud Synchronization */
+    function ensureLogbookInitialized() {
+      if (!window.appState) window.appState = {};
+
+      if (!Array.isArray(window.appState.diaryEntries)) {
+        try {
+          const stored = localStorage.getItem('pros_diary_entries');
+          if (stored) {
+            window.appState.diaryEntries = JSON.parse(stored);
+          } else {
+            const rootState = localStorage.getItem('pros_state') || localStorage.getItem('pros_app_state');
+            if (rootState) {
+              const parsed = JSON.parse(rootState);
+              window.appState.diaryEntries = Array.isArray(parsed.diaryEntries) ? parsed.diaryEntries : [];
+            } else {
+              window.appState.diaryEntries = [];
+            }
+          }
+        } catch(e) {
+          window.appState.diaryEntries = [];
+        }
+      }
+    }
+
+    function persistLogbookAndSync() {
+      ensureLogbookInitialized();
+      const entries = window.appState.diaryEntries || [];
+
+      // 1. Instant local persistence
+      try {
+        localStorage.setItem('pros_diary_entries', JSON.stringify(entries));
+        const rootState = localStorage.getItem('pros_state');
+        if (rootState) {
+          try {
+            const parsed = JSON.parse(rootState);
+            parsed.diaryEntries = entries;
+            localStorage.setItem('pros_state', JSON.stringify(parsed));
+          } catch(e) {}
+        }
+      } catch(err) {
+        console.error('LocalStorage write failed:', err);
+      }
+
+      // 2. Trigger app background sync cache
+      if (typeof window.saveLocalCache === 'function') {
+        try { window.saveLocalCache(); } catch(e) {}
+      }
+
+      // 3. Online cloud database persistence
+      if (typeof window.saveCloudData === 'function') {
+        try { window.saveCloudData(); } catch(e) {}
+      } else if (window.db && window.auth && window.auth.currentUser) {
+        try {
+          window.db.collection('users').doc(window.auth.currentUser.uid).set({
+            diaryEntries: entries,
+            lastUpdated: new Date().toISOString()
+          }, { merge: true });
+        } catch(err) {
+          console.warn('Firestore direct write failed:', err);
+        }
+      }
+    }
 
     /* Universal Launchpad Action */
     window.dashRouteAndOpen = function(targetTab, actionType) {
       if (window.switchTab) window.switchTab(targetTab);
 
       setTimeout(() => {
-        if (targetTab === 'calendar') {
-          if (typeof window.openAddCalendarEventModal === 'function') window.openAddCalendarEventModal();
-          else if (typeof window.openModal === 'function') window.openModal('add-calendar-event-modal');
-        } else if (targetTab === 'finance') {
-          if (typeof window.openAddTransactionModal === 'function') window.openAddTransactionModal();
-          else if (typeof window.openModal === 'function') window.openModal('add-transaction-modal');
-        } else if (targetTab === 'tasks') {
-          if (typeof window.openAddTaskModal === 'function') window.openAddTaskModal();
-        } else if (targetTab === 'notes') {
-          if (typeof window.openCreateNoteModal === 'function') window.openCreateNoteModal();
-          else if (typeof window.createNewNote === 'function') window.createNewNote();
-        } else if (targetTab === 'vehicles') {
-          if (typeof window.openAddFuelLogModal === 'function') window.openAddFuelLogModal();
-          else if (typeof window.openModal === 'function') window.openModal('add-fuel-quick-modal');
-        } else if (targetTab === 'goals') {
-          if (typeof window.openCreateGoalModal === 'function') window.openCreateGoalModal();
-        } else if (targetTab === 'mindmap') {
-          if (typeof window.openNodeModal === 'function') window.openNodeModal(null);
-        } else if (targetTab === 'links') {
-          if (typeof window.openAddLinkModal === 'function') window.openAddLinkModal();
-        } else if (targetTab === 'focus') {
-          if (typeof window.toggleTimerEngine === 'function') window.toggleTimerEngine();
-        }
-      }, 60);
+        if (targetTab === 'calendar' && typeof window.openAddCalendarEventModal === 'function') window.openAddCalendarEventModal();
+        else if (targetTab === 'finance' && typeof window.openAddTransactionModal === 'function') window.openAddTransactionModal();
+        else if (targetTab === 'tasks' && typeof window.openAddTaskModal === 'function') window.openAddTaskModal();
+        else if (targetTab === 'notes' && typeof window.openCreateNoteModal === 'function') window.openCreateNoteModal();
+        else if (targetTab === 'vehicles' && typeof window.openAddFuelLogModal === 'function') window.openAddFuelLogModal();
+        else if (targetTab === 'goals' && typeof window.openCreateGoalModal === 'function') window.openCreateGoalModal();
+        else if (targetTab === 'mindmap' && typeof window.openNodeModal === 'function') window.openNodeModal(null);
+        else if (targetTab === 'links' && typeof window.openAddLinkModal === 'function') window.openAddLinkModal();
+        else if (targetTab === 'focus' && typeof window.toggleTimerEngine === 'function') window.toggleTimerEngine();
+      }, 40);
     };
 
     /* Set Dashboard Period Filter */
@@ -1161,20 +1229,16 @@ html, body {
       ['month', 'week', 'year', 'all'].forEach(filterKey => {
         const btn = document.getElementById(`dash-filter-${filterKey}`);
         if (btn) {
-          if (filterKey === p) {
-            btn.className = 'dash-period-btn bg-emerald-600 text-slate-950 font-bold px-3 py-1.5 rounded-lg shadow transition';
-          } else {
-            btn.className = 'dash-period-btn px-3 py-1.5 rounded-lg text-slate-400 hover:text-white transition';
-          }
+          btn.className = (filterKey === p)
+            ? 'dash-period-btn bg-emerald-600 text-slate-950 font-bold px-3 py-1.5 rounded-lg shadow transition'
+            : 'dash-period-btn px-3 py-1.5 rounded-lg text-slate-400 hover:text-white transition';
         }
       });
 
       window.renderDashboard();
     };
 
-    /* ------------------------------------------------------------------------- */
-    /* ADVANCED LOGBOOK & INSTANT DIARY CAPTURE ENGINE                          */
-    /* ------------------------------------------------------------------------- */
+    /* Mood, Energy & Prompt Inceptors */
     window.selectActiveMood = function(emoji) {
       selectedActiveMood = emoji;
       const moodButtons = {
@@ -1188,37 +1252,34 @@ html, body {
       Object.keys(moodButtons).forEach(eKey => {
         const btn = document.getElementById(moodButtons[eKey]);
         if (!btn) return;
-        if (eKey === emoji) {
-          btn.className = 'mood-select-btn px-2 py-1 rounded-lg text-base bg-emerald-600/30 text-emerald-300 border border-emerald-500/40 font-bold transition scale-105 shadow-sm';
-        } else {
-          btn.className = 'mood-select-btn px-2 py-1 rounded-lg text-base bg-slate-900 hover:bg-slate-800 text-slate-400 transition border border-slate-800';
-        }
+        btn.className = (eKey === emoji)
+          ? 'mood-select-btn px-2 py-1 rounded-lg text-base bg-emerald-600/30 text-emerald-300 border border-emerald-500/40 font-bold transition scale-105 shadow-sm'
+          : 'mood-select-btn px-2 py-1 rounded-lg text-base bg-slate-900 hover:bg-slate-800 text-slate-400 transition border border-slate-800';
       });
     };
 
     window.selectEnergyLevel = function(level) {
-      selectedEnergyLevel = level;
-      for (let i = 1; i <= 5; i++) {
-        const btn = document.getElementById(`energy-star-${i}`);
-        if (btn) {
-          if (i <= level) {
-            btn.className = 'text-sm text-amber-400 transition scale-110';
-          } else {
-            btn.className = 'text-sm text-slate-600 hover:text-amber-400 transition';
-          }
-        }
+  selectedEnergyLevel = parseInt(level, 10) || 1;
+
+  for (let i = 1; i <= 5; i++) {
+    const btn = document.getElementById(`energy-star-${i}`);
+    if (btn) {
+      if (i <= selectedEnergyLevel) {
+        // Active filled bolts (Gold / Amber with subtle glow)
+        btn.className = 'text-base text-amber-400 opacity-100 transition transform hover:scale-125 active:scale-95 drop-shadow-[0_0_6px_rgba(251,191,36,0.5)]';
+      } else {
+        // Inactive dimmed bolts
+        btn.className = 'text-base text-slate-700 opacity-40 hover:opacity-80 transition transform hover:scale-125 active:scale-95';
       }
-    };
+    }
+  }
+};
 
     window.injectPromptTemplate = function(templatePrefix) {
       const textarea = document.getElementById('dash-gratitude-input');
       if (!textarea) return;
       const cur = textarea.value.trim();
-      if (!cur) {
-        textarea.value = `${templatePrefix} `;
-      } else {
-        textarea.value = `${cur}\n${templatePrefix} `;
-      }
+      textarea.value = cur ? `${cur}\n${templatePrefix} ` : `${templatePrefix} `;
       textarea.focus();
       updateDiaryLiveTelemetry();
     };
@@ -1227,11 +1288,8 @@ html, body {
       const tagInput = document.getElementById('dash-log-tag-input');
       if (!tagInput) return;
       let val = tagInput.value.trim();
-      if (val) {
-        if (!val.includes(tag)) tagInput.value = `${val} ${tag}`;
-      } else {
-        tagInput.value = tag;
-      }
+      if (!val) tagInput.value = tag;
+      else if (!val.includes(tag)) tagInput.value = `${val} ${tag}`;
     };
 
     window.updateDiaryLiveTelemetry = function() {
@@ -1242,13 +1300,11 @@ html, body {
 
       const str = textarea.value.trim();
       const words = str ? str.split(/\s+/).length : 0;
-      const chars = textarea.value.length;
-
       if (wordCountEl) wordCountEl.textContent = `${words} word${words === 1 ? '' : 's'}`;
-      if (charCountEl) charCountEl.textContent = `${chars} char${chars === 1 ? '' : 's'}`;
+      if (charCountEl) charCountEl.textContent = `${textarea.value.length} chars`;
     };
 
-    /* Browser Native Speech Recognition Engine */
+    /* Voice Recognition Engine */
     window.toggleDiaryVoiceDictation = function() {
       const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
       if (!SpeechRecognition) {
@@ -1286,7 +1342,7 @@ html, body {
         }
       };
 
-      speechRecognitionInstance.onerror = function(event) {
+      speechRecognitionInstance.onerror = function() {
         isRecordingSpeech = false;
         if (micBtn) micBtn.className = 'absolute top-2.5 right-2.5 p-1.5 bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-emerald-400 rounded-lg transition active:scale-90';
       };
@@ -1299,7 +1355,10 @@ html, body {
       speechRecognitionInstance.start();
     };
 
+    /* Save Diary Entry Locally and to Cloud */
     window.saveDailyDiaryEntry = function() {
+      ensureLogbookInitialized();
+
       const textInput = document.getElementById('dash-gratitude-input');
       const tagInput = document.getElementById('dash-log-tag-input');
       const imageInput = document.getElementById('dash-log-image-url');
@@ -1308,39 +1367,26 @@ html, body {
       const pinnedCheck = document.getElementById('dash-log-is-pinned');
 
       const rawText = textInput ? textInput.value.trim() : '';
-      const customTags = tagInput ? tagInput.value.trim() : '';
-      const mediaUrl = imageInput ? imageInput.value.trim() : '';
-      const location = locationInput ? locationInput.value.trim() : '';
-      const type = typeSelect ? typeSelect.value : 'Daily Thought';
-      const isPinned = !!(pinnedCheck && pinnedCheck.checked);
-
       if (!rawText) {
         if (window.showToast) window.showToast('Please type your reflection or experience.', 'error');
         return;
       }
 
-      if (!window.appState) window.appState = {};
-      if (!Array.isArray(window.appState.diaryEntries)) {
-        window.appState.diaryEntries = [];
-      }
-
-      const now = new Date();
-      const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-      const dateStr = getTodayDateStr();
-
+      const customTags = tagInput ? tagInput.value.trim() : '';
       const inTextTags = rawText.match(/#[a-zA-Z0-9_-]+/g) || [];
       const combinedTags = Array.from(new Set([...customTags.split(/\s+/).filter(Boolean), ...inTextTags])).join(' ');
 
+      const now = new Date();
       const entryObject = {
-        id: 'd_' + Date.now(),
-        date: dateStr,
-        time: timeStr,
-        type: type,
+        id: 'd_' + Date.now() + '_' + Math.random().toString(36).substring(2, 6),
+        date: getTodayDateStr(),
+        time: now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        type: typeSelect ? typeSelect.value : 'Daily Thought',
         mood: selectedActiveMood || '🙂',
         energy: selectedEnergyLevel || 4,
-        isPinned: isPinned,
-        mediaUrl: mediaUrl,
-        location: location || '',
+        isPinned: !!(pinnedCheck && pinnedCheck.checked),
+        mediaUrl: imageInput ? imageInput.value.trim() : '',
+        location: locationInput ? locationInput.value.trim() : '',
         tags: combinedTags || '#daily',
         text: rawText,
         createdAt: now.toISOString()
@@ -1355,19 +1401,20 @@ html, body {
       if (pinnedCheck) pinnedCheck.checked = false;
 
       updateDiaryLiveTelemetry();
+      persistLogbookAndSync();
 
-      if (window.saveCloudData) window.saveCloudData();
-      if (window.saveLocalCache) window.saveLocalCache();
-      if (window.showToast) window.showToast('Logged to memory logbook!', 'success');
+      if (window.showToast) window.showToast('Experience preserved & synced!', 'success');
 
       window.renderDashboard();
+      if (typeof window.renderLogbookTimeline === 'function') window.renderLogbookTimeline();
+      if (typeof window.updateBadges === 'function') window.updateBadges();
     };
 
     window.navigateToLogbookSection = function() {
       if (document.getElementById('view-logbook') || document.getElementById('view-diary')) {
         if (window.switchTab) window.switchTab(document.getElementById('view-logbook') ? 'logbook' : 'diary');
       } else {
-        if (window.showToast) window.showToast("All logs saved date-wise! Full Logbook section will display your entire history when created.", "info");
+        if (window.showToast) window.showToast("All logs saved date-wise! Full Logbook section will display your entire history when active.", "info");
       }
     };
 
@@ -1386,6 +1433,7 @@ html, body {
         task.completed = !task.completed;
         task.status = task.completed ? 'done' : 'progress';
         if (window.saveCloudData) window.saveCloudData();
+        if (window.saveLocalCache) window.saveLocalCache();
         if (window.refreshAllViews) window.refreshAllViews();
         window.renderDashboard();
       }
@@ -1407,20 +1455,19 @@ html, body {
       }
 
       if (window.saveCloudData) window.saveCloudData();
+      if (window.saveLocalCache) window.saveLocalCache();
       if (window.refreshAllViews) window.refreshAllViews();
       window.renderDashboard();
     };
 
-    /* MAIN RENDER ENGINE FOR DASHBOARD */
+    /* MAIN RENDER ENGINE */
     window.renderDashboard = function() {
-      if (!window.appState) window.appState = {};
+      ensureLogbookInitialized();
       const now = new Date();
       const todayStr = getTodayDateStr();
 
       const hour = now.getHours();
-      let greeting = "Good Morning, Commander";
-      if (hour >= 12 && hour < 17) greeting = "Good Afternoon, Commander";
-      else if (hour >= 17) greeting = "Good Evening, Commander";
+      const greeting = hour < 12 ? "Good Morning, Commander" : hour < 17 ? "Good Afternoon, Commander" : "Good Evening, Commander";
 
       const greetingEl = document.getElementById('dash-greeting-text');
       if (greetingEl) greetingEl.textContent = greeting;
@@ -1431,11 +1478,11 @@ html, body {
       }
 
       const scratchpadEl = document.getElementById('dash-scratchpad-input');
-      if (scratchpadEl && window.appState.scratchpad !== undefined) {
+      if (scratchpadEl && window.appState.scratchpad !== undefined && !scratchpadEl.matches(':focus')) {
         scratchpadEl.value = window.appState.scratchpad;
       }
 
-      const todayEntries = (window.appState?.diaryEntries || []).filter(e => e.date === todayStr);
+      const todayEntries = (window.appState.diaryEntries || []).filter(e => e.date === todayStr);
       const counterEl = document.getElementById('dash-today-logged-counter');
       if (counterEl) counterEl.textContent = `${todayEntries.length} logged today`;
 
@@ -1450,7 +1497,7 @@ html, body {
 
         let matchesPeriod = false;
         if (period === 'month') matchesPeriod = (d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear());
-        else if (period === 'week') matchesPeriod = (Math.abs((now - d) / (1000 * 60 * 60 * 24)) <= 7);
+        else if (period === 'week') matchesPeriod = (Math.abs((now - d) / 86400000) <= 7);
         else if (period === 'year') matchesPeriod = (d.getFullYear() === now.getFullYear());
         else matchesPeriod = true;
 
@@ -1481,14 +1528,13 @@ html, body {
       const elMonthExpSub = document.getElementById('dash-kpi-month-expense-sub');
       if (elMonthExpSub) elMonthExpSub.textContent = `Period Exp: ₹${totalExp.toLocaleString('en-IN')}`;
 
-      // 2. Tasks KPI Calculation (Honoring excludeFromTotal)
+      // 2. Tasks KPI Calculation
       const allTasks = window.appState.tasks || [];
       const taskLists = window.appState.taskLists || [];
       const excludedListIds = new Set(taskLists.filter(l => l.excludeFromTotal).map(l => l.id));
-
       const countableTasks = allTasks.filter(t => !excludedListIds.has(t.listId));
-      let pendingCount = 0, doneCount = 0, highPrioCount = 0;
 
+      let pendingCount = 0, doneCount = 0, highPrioCount = 0;
       for (let i = 0; i < countableTasks.length; i++) {
         const t = countableTasks[i];
         if (t.completed || t.status === 'done') doneCount++;
@@ -1534,7 +1580,7 @@ html, body {
       const elStreakSum = document.getElementById('dash-kpi-streak-sum');
       if (elStreakSum) elStreakSum.textContent = `🔥 ${streakSum}d`;
 
-      // 4. Time Worked Today KPI
+      // 4. Time Worked
       const allTimeLogs = window.appState.timeLogs || [];
       let hoursWorkedToday = 0, todaySessionsCount = 0;
       allTimeLogs.forEach(tm => {
@@ -1550,11 +1596,10 @@ html, body {
       const elHoursSub = document.getElementById('dash-kpi-hours-sub');
       if (elHoursSub) elHoursSub.textContent = `${todaySessionsCount} session${todaySessionsCount === 1 ? '' : 's'} today`;
 
-      // 5. Daily Productivity Score
+      // 5. Productivity Score
       const todayTasks = countableTasks.filter(t => t.dueDate === todayStr);
       const todayDoneTasks = todayTasks.filter(t => t.completed || t.status === 'done').length;
       const todayTaskRatio = todayTasks.length > 0 ? (todayDoneTasks / todayTasks.length) : (pendingCount === 0 ? 1 : 0.5);
-
       const habitRatio = allHabits.length > 0 ? (todayHabitsDone / allHabits.length) : 0.5;
       const productivityScore = Math.min(100, Math.round(((habitRatio * 0.5) + (todayTaskRatio * 0.5)) * 100));
 
@@ -1564,9 +1609,9 @@ html, body {
       const elScoreBar = document.getElementById('dash-kpi-score-bar');
       if (elScoreBar) elScoreBar.style.width = `${productivityScore}%`;
 
-      window.renderTodayAgendaRadar();
-      window.renderTodayRoutinesStrip();
-      window.renderPriorityTasksList();
+      renderTodayAgendaRadar();
+      renderTodayRoutinesStrip();
+      renderPriorityTasksList();
       renderBurnRateAndChart(totalInc, totalExp);
     };
 
@@ -1575,7 +1620,6 @@ html, body {
       const container = document.getElementById('dash-today-agenda-container');
       const countBadge = document.getElementById('dash-radar-count-badge');
       if (!container) return;
-      container.innerHTML = '';
 
       const filterVal = document.getElementById('dash-radar-filter')?.value || 'WEEK';
       const todayStr = getTodayDateStr();
@@ -1589,23 +1633,17 @@ html, body {
         if (!ev.date) return;
         const evDate = new Date(ev.date);
         evDate.setHours(0,0,0,0);
-
-        const diffDays = Math.ceil((evDate - now) / (1000 * 60 * 60 * 24));
+        const diffDays = Math.ceil((evDate - now) / 86400000);
         const isYearly = ev.recurrence === 'YEARLY' || ev.type === 'BIRTHDAY' || ev.type === 'ANNIVERSARY';
 
         let matches = false;
-        if (filterVal === 'TODAY') {
-          matches = (ev.date === todayStr) || (isYearly && ev.date.endsWith(todayStr.slice(5)));
-        } else if (filterVal === 'WEEK') {
-          matches = (diffDays >= 0 && diffDays <= 7) || (isYearly && ev.date.endsWith(todayStr.slice(5)));
-        } else if (filterVal === 'BIRTHDAYS') {
-          matches = isYearly || ev.type === 'BIRTHDAY' || ev.type === 'ANNIVERSARY';
-        } else {
-          matches = true;
-        }
+        if (filterVal === 'TODAY') matches = (ev.date === todayStr) || (isYearly && ev.date.endsWith(todayStr.slice(5)));
+        else if (filterVal === 'WEEK') matches = (diffDays >= 0 && diffDays <= 7) || (isYearly && ev.date.endsWith(todayStr.slice(5)));
+        else if (filterVal === 'BIRTHDAYS') matches = isYearly || ev.type === 'BIRTHDAY' || ev.type === 'ANNIVERSARY';
+        else matches = true;
 
         if (matches) {
-          let badgeText = `${diffDays === 0 ? 'Today' : diffDays === 1 ? 'Tomorrow' : 'In ' + diffDays + 'd'}`;
+          let badgeText = diffDays === 0 ? 'Today' : diffDays === 1 ? 'Tomorrow' : `In ${diffDays}d`;
           if (diffDays < 0) badgeText = 'Past';
 
           celebrations.push({
@@ -1613,7 +1651,6 @@ html, body {
             date: ev.date,
             title: ev.title,
             time: ev.time || 'All Day',
-            type: ev.type || 'EVENT',
             badgeText: badgeText,
             diffDays: diffDays,
             icon: ev.type === 'BIRTHDAY' ? '🎂' : ev.type === 'ANNIVERSARY' ? '💍' : '🎉'
@@ -1621,115 +1658,82 @@ html, body {
         }
       });
 
-      celebrations.sort((a, b) => (a.diffDays - b.diffDays));
-
+      celebrations.sort((a, b) => a.diffDays - b.diffDays);
       if (countBadge) countBadge.textContent = `${celebrations.length} event${celebrations.length === 1 ? '' : 's'}`;
 
       if (celebrations.length === 0) {
-        container.innerHTML = `
-          <div class="p-4 text-slate-500 text-xs text-center italic bg-slate-950 rounded-xl border border-slate-800">
-            No celebrations or events matching current filter. Click "+ Add Event" to plan!
-          </div>
-        `;
+        container.innerHTML = `<div class="p-4 text-slate-500 text-xs text-center italic bg-slate-950 rounded-xl border border-slate-800">No celebrations or events matching filter.</div>`;
         return;
       }
 
-      const fragment = document.createDocumentFragment();
+      let html = '';
       celebrations.forEach(item => {
         const isToday = item.diffDays === 0;
-        const el = document.createElement('div');
-        el.className = `p-2.5 rounded-xl border flex items-center justify-between gap-2 cursor-pointer hover:border-cyan-500/50 transition bg-slate-950 ${
-          isToday ? 'border-cyan-500/40 bg-cyan-950/20' : 'border-slate-800'
-        }`;
-        
-        el.onclick = () => {
-          if (window.switchTab) window.switchTab('calendar');
-        };
-
-        el.innerHTML = `
-          <div class="flex items-center gap-2.5 truncate min-w-0">
-            <span class="text-base shrink-0">${item.icon}</span>
-            <div class="truncate min-w-0">
-              <p class="font-bold text-white text-xs truncate">${escapeHtml(item.title)}</p>
-              <span class="text-[10px] text-slate-400 font-mono">${item.date} • ${escapeHtml(item.time)}</span>
+        html += `
+          <div onclick="if(window.switchTab) window.switchTab('calendar')" class="p-2.5 rounded-xl border flex items-center justify-between gap-2 cursor-pointer hover:border-cyan-500/50 transition bg-slate-950 ${isToday ? 'border-cyan-500/40 bg-cyan-950/20' : 'border-slate-800'}">
+            <div class="flex items-center gap-2.5 truncate min-w-0">
+              <span class="text-base shrink-0">${item.icon}</span>
+              <div class="truncate min-w-0">
+                <p class="font-bold text-white text-xs truncate">${escapeHtml(item.title)}</p>
+                <span class="text-[10px] text-slate-400 font-mono">${item.date} • ${escapeHtml(item.time)}</span>
+              </div>
             </div>
-          </div>
-          <span class="text-[9px] px-2 py-0.5 rounded font-mono font-bold shrink-0 ${
-            isToday ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/30' : 'bg-slate-900 text-slate-400 border border-slate-800'
-          }">
-            ${item.badgeText}
-          </span>
-        `;
-        fragment.appendChild(el);
+            <span class="text-[9px] px-2 py-0.5 rounded font-mono font-bold shrink-0 ${isToday ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/30' : 'bg-slate-900 text-slate-400 border border-slate-800'}">
+              ${item.badgeText}
+            </span>
+          </div>`;
       });
-      container.appendChild(fragment);
-      refreshIconsScoped(container);
+      container.innerHTML = html;
     };
 
-    /* Filterable Circadian Habits Check-in Strip */
+    /* Habits Check-in Feed */
     window.renderTodayRoutinesStrip = function() {
       const container = document.getElementById('dash-routines-container');
       if (!container) return;
-      container.innerHTML = '';
 
       const slotFilter = document.getElementById('dash-habit-slot-filter')?.value || 'ALL';
       let habits = window.appState?.habits || [];
       const todayStr = getTodayDateStr();
 
-      if (slotFilter !== 'ALL') {
-        habits = habits.filter(h => (h.timeOfDay || 'Anytime') === slotFilter);
-      }
+      if (slotFilter !== 'ALL') habits = habits.filter(h => (h.timeOfDay || 'Anytime') === slotFilter);
 
       if (habits.length === 0) {
-        container.innerHTML = `
-          <div class="p-4 text-slate-500 text-xs text-center italic bg-slate-950 rounded-xl border border-slate-800">
-            No routines in this flow. Click "Matrix" to configure habits.
-          </div>
-        `;
+        container.innerHTML = `<div class="p-4 text-slate-500 text-xs text-center italic bg-slate-950 rounded-xl border border-slate-800">No routines configured in this flow.</div>`;
         return;
       }
 
-      const fragment = document.createDocumentFragment();
+      let html = '';
       habits.forEach(h => {
         const isDone = h.history && (h.history[todayStr] === true || (typeof h.history[todayStr] === 'object' && h.history[todayStr].completed !== false));
-
-        const el = document.createElement('div');
-        el.className = 'p-2.5 bg-slate-950 rounded-xl border border-slate-800 flex items-center justify-between text-xs hover:border-red-500/40 transition gap-2';
-        el.innerHTML = `
-          <div class="flex items-center gap-2.5 truncate min-w-0 pr-1">
-            <span class="text-base shrink-0">${escapeHtml(h.icon || '🔥')}</span>
-            <div class="truncate min-w-0">
-              <span class="font-bold text-slate-200 block truncate ${isDone ? 'line-through text-slate-500' : ''}">${escapeHtml(h.name)}</span>
-              <span class="text-[9px] text-slate-500 font-mono">${escapeHtml(h.category || 'General')}</span>
+        html += `
+          <div class="p-2.5 bg-slate-950 rounded-xl border border-slate-800 flex items-center justify-between text-xs hover:border-red-500/40 transition gap-2">
+            <div class="flex items-center gap-2.5 truncate min-w-0 pr-1">
+              <span class="text-base shrink-0">${escapeHtml(h.icon || '🔥')}</span>
+              <div class="truncate min-w-0">
+                <span class="font-bold text-slate-200 block truncate ${isDone ? 'line-through text-slate-500' : ''}">${escapeHtml(h.name)}</span>
+                <span class="text-[9px] text-slate-500 font-mono">${escapeHtml(h.category || 'General')}</span>
+              </div>
             </div>
-          </div>
-          <button type="button" onclick="toggleDashHabitToday('${h.id}')" class="px-3 py-1 rounded-lg text-[10px] font-bold transition shrink-0 active:scale-95 ${
-            isDone ? 'bg-red-500 text-white shadow-sm' : 'bg-slate-900 border border-slate-800 text-slate-400 hover:text-white'
-          }">
-            ${isDone ? '✓ Done' : 'Check-In'}
-          </button>
-        `;
-        fragment.appendChild(el);
+            <button type="button" onclick="toggleDashHabitToday('${h.id}')" class="px-3 py-1 rounded-lg text-[10px] font-bold transition shrink-0 active:scale-95 ${isDone ? 'bg-red-500 text-white shadow-sm' : 'bg-slate-900 border border-slate-800 text-slate-400 hover:text-white'}">
+              ${isDone ? '✓ Done' : 'Check-In'}
+            </button>
+          </div>`;
       });
-      container.appendChild(fragment);
-      refreshIconsScoped(container);
+      container.innerHTML = html;
     };
 
-    /* Multi-Filter Priority Task Execution List */
+    /* Priority Tasks List */
     window.renderPriorityTasksList = function() {
       const container = document.getElementById('dashboard-urgent-tasks-list');
       if (!container) return;
-      container.innerHTML = '';
 
       const filterVal = document.getElementById('dash-task-prio-filter')?.value || 'ALL';
       const todayStr = getTodayDateStr();
-      
       const allTasks = window.appState?.tasks || [];
       const taskLists = window.appState?.taskLists || [];
       const excludedListIds = new Set(taskLists.filter(l => l.excludeFromTotal).map(l => l.id));
 
       let tasks = allTasks.filter(t => !excludedListIds.has(t.listId) && !t.completed && t.status !== 'done');
-
       if (filterVal === 'HIGH') tasks = tasks.filter(t => t.priority === 'High');
       else if (filterVal === 'TODAY') tasks = tasks.filter(t => t.dueDate === todayStr);
       else if (filterVal === 'OVERDUE') tasks = tasks.filter(t => t.dueDate && t.dueDate < todayStr);
@@ -1741,43 +1745,31 @@ html, body {
       });
 
       if (tasks.length === 0) {
-        container.innerHTML = `
-          <div class="p-6 text-center text-xs text-slate-500 bg-slate-950 rounded-xl border border-slate-800">
-            🎉 No urgent action tasks found matching filter.
-          </div>
-        `;
+        container.innerHTML = `<div class="p-6 text-center text-xs text-slate-500 bg-slate-950 rounded-xl border border-slate-800">🎉 No urgent action tasks found matching filter.</div>`;
         return;
       }
 
-      const fragment = document.createDocumentFragment();
+      let html = '';
       tasks.forEach(t => {
         const isToday = t.dueDate === todayStr;
         const isOverdue = t.dueDate && t.dueDate < todayStr;
         const list = taskLists.find(l => l.id === t.listId);
-
-        const el = document.createElement('div');
-        el.className = 'p-2.5 bg-slate-950 border border-slate-800 rounded-xl flex items-center justify-between text-xs hover:border-purple-500/40 transition group gap-2';
-
-        el.innerHTML = `
-          <div class="flex items-center gap-2.5 flex-1 min-w-0 pr-1">
-            <input type="checkbox" onchange="toggleDashTaskComplete('${t.id}')" class="w-4 h-4 rounded accent-purple-500 cursor-pointer shrink-0" />
-            <div class="truncate cursor-pointer flex-1 min-w-0" onclick="if(window.switchTab) { window.appState.activeListId = '${t.listId}'; window.switchTab('tasks'); }">
-              <p class="font-bold text-slate-200 truncate group-hover:text-purple-300 transition">${escapeHtml(t.title)}</p>
-              ${list ? `<span class="text-[9px] text-slate-500 font-mono">${escapeHtml(list.name)}</span>` : ''}
+        html += `
+          <div class="p-2.5 bg-slate-950 border border-slate-800 rounded-xl flex items-center justify-between text-xs hover:border-purple-500/40 transition group gap-2">
+            <div class="flex items-center gap-2.5 flex-1 min-w-0 pr-1">
+              <input type="checkbox" onchange="toggleDashTaskComplete('${t.id}')" class="w-4 h-4 rounded accent-purple-500 cursor-pointer shrink-0" />
+              <div class="truncate cursor-pointer flex-1 min-w-0" onclick="if(window.switchTab) { window.appState.activeListId = '${t.listId}'; window.switchTab('tasks'); }">
+                <p class="font-bold text-slate-200 truncate group-hover:text-purple-300 transition">${escapeHtml(t.title)}</p>
+                ${list ? `<span class="text-[9px] text-slate-500 font-mono">${escapeHtml(list.name)}</span>` : ''}
+              </div>
+              ${t.priority === 'High' ? '<span class="text-[9px] px-1.5 py-0.2 rounded bg-rose-500/20 text-rose-300 font-bold border border-rose-500/30 shrink-0">🔥 High</span>' : ''}
             </div>
-            ${t.priority === 'High' ? '<span class="text-[9px] px-1.5 py-0.2 rounded bg-rose-500/20 text-rose-300 font-bold border border-rose-500/30 shrink-0">🔥 High</span>' : ''}
-          </div>
-          <span class="text-[10px] font-mono shrink-0 px-2 py-0.5 rounded ${
-            isOverdue ? 'bg-rose-500/20 text-rose-300 font-bold border border-rose-500/30' :
-            isToday ? 'bg-purple-500/20 text-purple-300 font-bold border border-purple-500/30' : 'text-slate-400 bg-slate-900 border border-slate-800'
-          }">
-            ${t.dueDate || 'No Date'}
-          </span>
-        `;
-        fragment.appendChild(el);
+            <span class="text-[10px] font-mono shrink-0 px-2 py-0.5 rounded ${isOverdue ? 'bg-rose-500/20 text-rose-300 font-bold border border-rose-500/30' : isToday ? 'bg-purple-500/20 text-purple-300 font-bold border border-purple-500/30' : 'text-slate-400 bg-slate-900 border border-slate-800'}">
+              ${t.dueDate || 'No Date'}
+            </span>
+          </div>`;
       });
-      container.appendChild(fragment);
-      refreshIconsScoped(container);
+      container.innerHTML = html;
     };
 
     function renderBurnRateAndChart(totalInc, totalExp) {
@@ -1855,16 +1847,16 @@ html, body {
       }
     }
 
-    // Auto-boot on load
+    // Initialize Dashboard
     setTimeout(() => {
       window.renderDashboard();
-    }, 100);
+      refreshIconsScoped(document.getElementById('view-dashboard'));
+    }, 50);
   })();
 </script>
 <!-- ========================================================================= -->
 <!-- END SECTION 1: DASHBOARD APP VIEW                                         -->
 <!-- ========================================================================= -->
-
 
 <!-- ========================================================================= -->
 <!-- SECTION 2: CALENDAR, EVENTS & TIMELINE VIEW                               -->
@@ -19516,6 +19508,883 @@ html, body {
 <!-- ========================================================================= -->
 <!-- END SECTION: APP PREFERENCES & THEME STUDIO                               -->
 <!-- ========================================================================= -->
+
+
+<!-- ========================================================================= -->
+<!-- SECTION: DIARY & EXPERIENCE LOGBOOK (LAZY-LOADED MEMORY TIMELINE)         -->
+<!-- ========================================================================= -->
+<section id="view-logbook" class="app-view hidden space-y-4 md:space-y-6 max-w-7xl mx-auto w-full pb-36 px-1 sm:px-0">
+
+  <!-- Top Header Toolbar -->
+  <div class="glass-card rounded-2xl p-4 md:p-5 border border-slate-800 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 bg-slate-900/60 backdrop-blur-xl">
+    <div>
+      <div class="flex items-center gap-2 flex-wrap">
+        <div class="p-2 rounded-xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+          <i data-lucide="book-open" class="w-5 h-5"></i>
+        </div>
+        <div>
+          <h2 class="text-base sm:text-lg md:text-xl font-extrabold text-white tracking-tight flex items-center gap-2">
+            <span>Diary &amp; Experience Logbook</span>
+            <span class="text-[9px] px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 font-mono font-bold border border-emerald-500/30">Life Memory Stream</span>
+          </h2>
+          <p class="text-xs text-slate-400 mt-0.5">Chronological memory archive, mood analytics, reflections, and tagged breakthroughs.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Toolbar Filters, Search & Action -->
+    <div class="flex flex-wrap items-center gap-2 w-full sm:w-auto justify-stretch sm:justify-end text-xs">
+      <!-- Search Input -->
+      <div class="relative flex-1 sm:flex-none sm:w-48 min-w-[140px]">
+        <i data-lucide="search" class="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none"></i>
+        <input id="logbook-search-input" type="text" onkeyup="searchLogbookEntries(this.value)" placeholder="Search memories, #tags..." class="w-full bg-slate-950 border border-slate-800 rounded-xl pl-8 pr-7 py-2 text-xs text-slate-200 outline-none focus:border-emerald-400 transition" />
+        <button type="button" onclick="clearLogbookSearch()" id="logbook-search-clear-btn" class="hidden absolute right-2 top-1/2 -translate-y-1/2 text-slate-500 hover:text-white p-0.5 text-xs">✕</button>
+      </div>
+
+      <!-- Export Button -->
+      <button type="button" onclick="exportLogbookArchive()" class="px-3 py-2 bg-slate-900 border border-slate-800 hover:border-emerald-500/40 text-emerald-300 font-semibold rounded-xl transition flex items-center gap-1.5 shadow-sm active:scale-95 shrink-0" title="Export Logbook as Text Report">
+        <i data-lucide="download" class="w-3.5 h-3.5 text-emerald-400"></i>
+        <span class="hidden sm:inline">Export</span>
+      </button>
+
+      <!-- New Entry Trigger -->
+      <button type="button" onclick="openLogbookModal()" class="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-500 text-slate-950 font-black rounded-xl transition flex items-center gap-1.5 shadow-lg shadow-emerald-600/20 active:scale-95 shrink-0">
+        <i data-lucide="plus-circle" class="w-4 h-4"></i>
+        <span>Write Log</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- KPI Metrics & Mood Radar Overview -->
+  <div class="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-3 md:gap-4">
+    <!-- Card 1: Total Recorded Memories -->
+    <div class="glass-card p-3 sm:p-4 rounded-2xl border border-emerald-500/20 bg-emerald-500/[0.03] space-y-1 hover:border-emerald-500/40 transition">
+      <div class="flex justify-between items-center text-xs font-bold text-slate-400">
+        <span class="uppercase tracking-wider text-[9px]">Total Memories</span>
+        <div class="p-1 bg-emerald-500/10 text-emerald-400 rounded-lg shrink-0">
+          <i data-lucide="layers" class="w-3.5 h-3.5"></i>
+        </div>
+      </div>
+      <div id="logbook-stat-total" class="text-base sm:text-lg md:text-xl font-black text-slate-100">0</div>
+      <p id="logbook-stat-streak" class="text-[10px] text-emerald-400 font-mono">0 Days Tracked</p>
+    </div>
+
+    <!-- Card 2: Pinned Wins & Milestones -->
+    <div class="glass-card p-3 sm:p-4 rounded-2xl border border-amber-500/20 bg-amber-500/[0.03] space-y-1 hover:border-amber-500/40 transition">
+      <div class="flex justify-between items-center text-xs font-bold text-slate-400">
+        <span class="uppercase tracking-wider text-[9px]">Pinned Milestones</span>
+        <div class="p-1 bg-amber-500/10 text-amber-400 rounded-lg shrink-0">
+          <i data-lucide="star" class="w-3.5 h-3.5"></i>
+        </div>
+      </div>
+      <div id="logbook-stat-pinned" class="text-base sm:text-lg md:text-xl font-black text-amber-300">0</div>
+      <p class="text-[10px] text-slate-500 font-mono">Highlights preserved</p>
+    </div>
+
+    <!-- Card 3: Dominant Mood -->
+    <div class="glass-card p-3 sm:p-4 rounded-2xl border border-sky-500/20 bg-sky-500/[0.03] space-y-1 hover:border-sky-500/40 transition">
+      <div class="flex justify-between items-center text-xs font-bold text-slate-400">
+        <span class="uppercase tracking-wider text-[9px]">Dominant State</span>
+        <div class="p-1 bg-sky-500/10 text-sky-400 rounded-lg shrink-0">
+          <i data-lucide="smile" class="w-3.5 h-3.5"></i>
+        </div>
+      </div>
+      <div id="logbook-stat-mood" class="text-base sm:text-lg md:text-xl font-black text-sky-300 flex items-center gap-1.5">
+        <span>🙂</span> <span class="text-xs text-slate-400 font-normal font-sans">Balanced</span>
+      </div>
+      <p id="logbook-stat-energy-avg" class="text-[10px] text-sky-400 font-mono">Avg Energy: 4.0/5</p>
+    </div>
+
+    <!-- Card 4: Words & Content Volume -->
+    <div class="glass-card p-3 sm:p-4 rounded-2xl border border-purple-500/20 bg-purple-500/[0.03] space-y-1 hover:border-purple-500/40 transition">
+      <div class="flex justify-between items-center text-xs font-bold text-slate-400">
+        <span class="uppercase tracking-wider text-[9px]">Logged Words</span>
+        <div class="p-1 bg-purple-500/10 text-purple-400 rounded-lg shrink-0">
+          <i data-lucide="file-text" class="w-3.5 h-3.5"></i>
+        </div>
+      </div>
+      <div id="logbook-stat-words" class="text-base sm:text-lg md:text-xl font-black text-purple-300">0</div>
+      <p class="text-[10px] text-slate-500 font-mono">Total word volume</p>
+    </div>
+  </div>
+
+  <!-- Filter Pills: Timeframes, Types & Dynamic Hashtag Cloud -->
+  <div class="glass-card rounded-2xl p-3 sm:p-4 border border-slate-800 bg-slate-950/60 space-y-2.5">
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+      <!-- Timeframe Filters -->
+      <div class="flex items-center gap-1 overflow-x-auto pb-1 text-xs no-scrollbar">
+        <button type="button" onclick="setLogbookTimeFilter('ALL')" id="lb-time-btn-all" class="px-2.5 py-1 rounded-lg font-bold transition bg-emerald-600 text-slate-950 shrink-0 shadow-sm">All Timeline</button>
+        <button type="button" onclick="setLogbookTimeFilter('TODAY')" id="lb-time-btn-today" class="px-2.5 py-1 rounded-lg font-semibold text-slate-400 hover:text-white bg-slate-900 border border-slate-800 shrink-0">📅 Today</button>
+        <button type="button" onclick="setLogbookTimeFilter('7DAYS')" id="lb-time-btn-7days" class="px-2.5 py-1 rounded-lg font-semibold text-slate-400 hover:text-white bg-slate-900 border border-slate-800 shrink-0">⚡ Past 7 Days</button>
+        <button type="button" onclick="setLogbookTimeFilter('MONTH')" id="lb-time-btn-month" class="px-2.5 py-1 rounded-lg font-semibold text-slate-400 hover:text-white bg-slate-900 border border-slate-800 shrink-0">🗓️ This Month</button>
+        <button type="button" onclick="setLogbookTimeFilter('PINNED')" id="lb-time-btn-pinned" class="px-2.5 py-1 rounded-lg font-semibold text-slate-400 hover:text-amber-300 bg-slate-900 border border-slate-800 shrink-0">★ Highlights Only</button>
+      </div>
+
+      <!-- Type Select -->
+      <div class="flex items-center gap-2 w-full sm:w-auto">
+        <span class="text-slate-500 text-[11px] font-semibold shrink-0">Category:</span>
+        <select id="logbook-type-filter" onchange="renderLogbookTimeline(true)" class="bg-slate-900 border border-slate-800 text-slate-200 rounded-xl px-2.5 py-1 text-xs outline-none focus:border-emerald-400 font-semibold transition">
+          <option value="ALL">All Categories</option>
+          <option value="Daily Thought">💭 Daily Thought</option>
+          <option value="Milestone / Win">🏆 Milestone / Win</option>
+          <option value="Key Learning">💡 Key Learning</option>
+          <option value="Gratitude">✨ Gratitude</option>
+          <option value="Life Experience">📸 Life Experience</option>
+          <option value="Challenge">⚡ Challenge &amp; Fix</option>
+          <option value="Decision Log">⚖️ Major Decision</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Dynamic Hashtag Tag Cloud -->
+    <div id="logbook-tag-cloud" class="flex items-center gap-1.5 overflow-x-auto pt-1 border-t border-slate-900 text-xs no-scrollbar">
+      <!-- Injected dynamically via JS -->
+    </div>
+  </div>
+
+  <!-- Workspace Grid: Left Date-Navigator & Right Chronological Stream -->
+  <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 items-start">
+    
+    <!-- Left Navigation: Year / Month Calendar Index -->
+    <div class="lg:col-span-4 glass-card rounded-2xl p-3.5 sm:p-4 space-y-3.5 border border-slate-800 bg-slate-950/60">
+      <div class="flex justify-between items-center border-b border-slate-800 pb-2">
+        <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
+          <i data-lucide="calendar" class="w-3.5 h-3.5 text-emerald-400"></i> Date Archive
+        </h3>
+        <span id="logbook-active-date-badge" class="text-[10px] font-mono text-emerald-400">All Dates</span>
+      </div>
+
+      <!-- Specific Date Picker Jump -->
+      <div class="space-y-1">
+        <label class="text-[10px] text-slate-500 uppercase font-bold block">Jump to Specific Date</label>
+        <input type="date" id="logbook-date-jump-input" onchange="jumpToLogbookDate(this.value)" class="w-full bg-slate-900 border border-slate-800 rounded-xl p-2 text-xs text-slate-200 outline-none focus:border-emerald-400 font-mono transition" />
+      </div>
+
+      <!-- Monthly Aggregations List -->
+      <div class="space-y-1 pt-1">
+        <span class="text-[10px] text-slate-500 uppercase font-bold block">Monthly Breakdown</span>
+        <div id="logbook-months-nav" class="space-y-1 max-h-64 lg:max-h-96 overflow-y-auto pr-0.5 scrollbar-none">
+          <!-- Injected via JS -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Container: Timeline Stream with Infinite Scroll Trigger -->
+    <div class="lg:col-span-8 space-y-3">
+      <div id="logbook-timeline-container" class="space-y-3">
+        <!-- Chronological entry cards rendered via JS in chunks -->
+      </div>
+
+      <!-- Lazy Loading Sentinel & Load More Trigger -->
+      <div id="logbook-lazy-sentinel" class="py-4 text-center">
+        <button type="button" id="logbook-load-more-btn" onclick="loadNextLogbookBatch()" class="hidden px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-400 hover:text-emerald-400 border border-slate-800 text-xs font-semibold font-mono transition">
+          Load More Entries...
+        </button>
+        <span id="logbook-all-loaded-indicator" class="hidden text-[10px] font-mono text-slate-600 block">
+          &bull; End of Timeline &bull;
+        </span>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- MODAL: WRITE / EDIT DIARY EXPERIENCE -->
+  <div id="logbook-entry-modal" class="hidden fixed inset-0 z-50 modal-backdrop flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
+    <div class="w-full max-w-xl bg-slate-900 border border-slate-800 rounded-2xl sm:rounded-3xl p-4 sm:p-6 shadow-2xl space-y-4 max-h-[90vh] overflow-y-auto my-auto relative box-border">
+      
+      <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+        <div class="flex items-center gap-2.5">
+          <div class="p-2 rounded-xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+            <i data-lucide="pen-tool" class="w-4 h-4"></i>
+          </div>
+          <div>
+            <h3 id="logbook-modal-title" class="text-sm font-extrabold text-white">Write Memory Entry</h3>
+            <p class="text-[10px] text-slate-400 font-mono">Preserve experience &bull; Log mood &amp; realizations</p>
+          </div>
+        </div>
+        <button type="button" onclick="closeModalDirect('logbook-entry-modal')" class="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-slate-800 transition"><i data-lucide="x" class="w-5 h-5"></i></button>
+      </div>
+
+      <form id="logbook-modal-form" onsubmit="submitLogbookModalForm(event)" class="space-y-3.5 text-xs">
+        <input type="hidden" id="logbook-edit-id" value="" />
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+          <div>
+            <label class="block text-slate-400 mb-1 font-semibold">Entry Date</label>
+            <input id="logbook-modal-date" type="date" required class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-slate-100 outline-none focus:border-emerald-400 font-mono transition text-xs" />
+          </div>
+
+          <div>
+            <label class="block text-slate-400 mb-1 font-semibold">Experience Type</label>
+            <select id="logbook-modal-type" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-slate-100 outline-none focus:border-emerald-400 font-semibold transition text-xs">
+              <option value="Daily Thought">💭 Daily Thought</option>
+              <option value="Milestone / Win">🏆 Milestone / Win</option>
+              <option value="Key Learning">💡 Key Learning</option>
+              <option value="Gratitude">✨ Gratitude</option>
+              <option value="Life Experience">📸 Life Experience</option>
+              <option value="Challenge">⚡ Challenge &amp; Fix</option>
+              <option value="Decision Log">⚖️ Major Decision</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- State, Energy & Pin -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 p-3 bg-slate-950 rounded-xl border border-slate-800 items-center">
+          <div>
+            <label class="block text-slate-400 mb-1 font-semibold text-[11px]">Mood State</label>
+            <div class="flex gap-1" id="logbook-modal-mood-group">
+              <button type="button" onclick="selectModalMood('😁')" id="lb-mood-great" class="p-1 rounded-lg bg-slate-900 border border-slate-800 text-sm hover:bg-slate-800">😁</button>
+              <button type="button" onclick="selectModalMood('🙂')" id="lb-mood-good" class="p-1 rounded-lg bg-emerald-600/30 text-emerald-300 border border-emerald-500/40 text-sm">🙂</button>
+              <button type="button" onclick="selectModalMood('😐')" id="lb-mood-neutral" class="p-1 rounded-lg bg-slate-900 border border-slate-800 text-sm hover:bg-slate-800">😐</button>
+              <button type="button" onclick="selectModalMood('😔')" id="lb-mood-low" class="p-1 rounded-lg bg-slate-900 border border-slate-800 text-sm hover:bg-slate-800">😔</button>
+              <button type="button" onclick="selectModalMood('😤')" id="lb-mood-intense" class="p-1 rounded-lg bg-slate-900 border border-slate-800 text-sm hover:bg-slate-800">😤</button>
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-slate-400 mb-1 font-semibold text-[11px]">Energy (1-5)</label>
+            <div class="flex gap-1" id="logbook-modal-energy-group">
+              <button type="button" onclick="selectModalEnergy(1)" id="lb-energy-1" class="text-sm text-slate-600">⚡</button>
+              <button type="button" onclick="selectModalEnergy(2)" id="lb-energy-2" class="text-sm text-slate-600">⚡</button>
+              <button type="button" onclick="selectModalEnergy(3)" id="lb-energy-3" class="text-sm text-amber-400">⚡</button>
+              <button type="button" onclick="selectModalEnergy(4)" id="lb-energy-4" class="text-sm text-amber-400 scale-110">⚡</button>
+              <button type="button" onclick="selectModalEnergy(5)" id="lb-energy-5" class="text-sm text-slate-600">⚡</button>
+            </div>
+          </div>
+
+          <div class="flex items-center sm:justify-end pt-2 sm:pt-0">
+            <label class="flex items-center gap-1.5 cursor-pointer text-slate-300 select-none">
+              <input type="checkbox" id="logbook-modal-is-pinned" class="w-4 h-4 rounded accent-amber-400 cursor-pointer" />
+              <span class="text-xs font-bold font-mono">★ Pin Highlight</span>
+            </label>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-slate-400 mb-1 font-semibold">Memory &amp; Reflection Narrative</label>
+          <textarea id="logbook-modal-text" rows="5" placeholder="Document the experience, thoughts, realizations, or takeaways in detail..." required class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-slate-100 outline-none focus:border-emerald-400 resize-none transition leading-relaxed text-xs"></textarea>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+          <div>
+            <label class="block text-slate-400 mb-1 font-semibold">Location / Context</label>
+            <input id="logbook-modal-location" type="text" placeholder="e.g. Pune, Office, Airport" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-slate-100 outline-none focus:border-emerald-400 font-mono transition text-xs" />
+          </div>
+
+          <div>
+            <label class="block text-slate-400 mb-1 font-semibold">Tags (#keyword)</label>
+            <input id="logbook-modal-tags" type="text" placeholder="#win, #deepwork, #travel" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-slate-100 outline-none focus:border-emerald-400 font-mono transition text-xs" />
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-slate-400 mb-1 font-semibold">Photo / Media Image URL (Optional)</label>
+          <input id="logbook-modal-media" type="url" placeholder="https://..." class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-slate-100 outline-none focus:border-emerald-400 font-mono transition text-xs" />
+        </div>
+
+        <div class="flex gap-2 pt-2 border-t border-slate-800">
+          <button type="button" onclick="closeModalDirect('logbook-entry-modal')" class="flex-1 py-2.5 bg-slate-800 text-slate-300 font-semibold rounded-xl hover:bg-slate-700 transition">Cancel</button>
+          <button type="submit" class="flex-1 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-slate-950 font-black rounded-xl transition shadow-lg shadow-emerald-600/20 active:scale-98">Save Entry</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+</section>
+
+<!-- ========================================================================= -->
+<!-- SECTION: LOGBOOK JAVASCRIPT LOGIC ENGINE (LAZY-LOAD CAPABLE)              -->
+<!-- ========================================================================= -->
+<script>
+  (function() {
+    const LOGBOOK_PAGE_SIZE = 15;
+    let logbookCurrentPage = 1;
+    let logbookFilteredEntries = [];
+    let logbookIntersectionObserver = null;
+
+    let logbookSearchQuery = '';
+    let logbookActiveTimeFilter = 'ALL';
+    let logbookActiveTag = '';
+    let logbookActiveMonthFilter = '';
+    let modalSelectedMood = '🙂';
+    let modalSelectedEnergy = 4;
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    function refreshIconsScoped(rootEl) {
+      if (window.lucide && typeof window.lucide.createIcons === 'function') {
+        window.lucide.createIcons({
+          root: rootEl instanceof HTMLElement ? rootEl : (document.getElementById('view-logbook') || document.body)
+        });
+      }
+    }
+
+    function triggerHaptic() {
+      if (typeof navigator !== 'undefined' && typeof navigator.vibrate === 'function') {
+        navigator.vibrate(10);
+      }
+    }
+
+    function ensureLogbookInitialized() {
+      if (!window.appState) window.appState = {};
+      if (!Array.isArray(window.appState.diaryEntries)) {
+        try {
+          const stored = localStorage.getItem('pros_diary_entries');
+          if (stored) {
+            window.appState.diaryEntries = JSON.parse(stored);
+          } else {
+            const rootState = localStorage.getItem('pros_state') || localStorage.getItem('pros_app_state');
+            if (rootState) {
+              const parsed = JSON.parse(rootState);
+              window.appState.diaryEntries = Array.isArray(parsed.diaryEntries) ? parsed.diaryEntries : [];
+            } else {
+              window.appState.diaryEntries = [];
+            }
+          }
+        } catch(e) {
+          window.appState.diaryEntries = [];
+        }
+      }
+    }
+
+    function persistLogbookAndSync() {
+      ensureLogbookInitialized();
+      const entries = window.appState.diaryEntries || [];
+      try {
+        localStorage.setItem('pros_diary_entries', JSON.stringify(entries));
+        const rootState = localStorage.getItem('pros_state');
+        if (rootState) {
+          try {
+            const parsed = JSON.parse(rootState);
+            parsed.diaryEntries = entries;
+            localStorage.setItem('pros_state', JSON.stringify(parsed));
+          } catch(e) {}
+        }
+      } catch(e) {}
+
+      if (typeof window.saveLocalCache === 'function') {
+        try { window.saveLocalCache(); } catch(e) {}
+      }
+      if (typeof window.saveCloudData === 'function') {
+        try { window.saveCloudData(); } catch(e) {}
+      } else if (window.db && window.auth && window.auth.currentUser) {
+        try {
+          window.db.collection('users').doc(window.auth.currentUser.uid).set({
+            diaryEntries: entries,
+            lastUpdated: new Date().toISOString()
+          }, { merge: true });
+        } catch(e) {}
+      }
+    }
+
+    /* Filters & Navigation Controls */
+    window.setLogbookTimeFilter = function(filterKey) {
+      triggerHaptic();
+      logbookActiveTimeFilter = filterKey;
+      logbookActiveMonthFilter = '';
+
+      ['all', 'today', '7days', 'month', 'pinned'].forEach(k => {
+        const btn = document.getElementById(`lb-time-btn-${k}`);
+        if (btn) {
+          if (k.toUpperCase() === filterKey) {
+            btn.className = 'px-2.5 py-1 rounded-lg font-bold transition bg-emerald-600 text-slate-950 shrink-0 shadow-sm';
+          } else {
+            btn.className = 'px-2.5 py-1 rounded-lg font-semibold text-slate-400 hover:text-white bg-slate-900 border border-slate-800 shrink-0';
+          }
+        }
+      });
+
+      const badge = document.getElementById('logbook-active-date-badge');
+      if (badge) badge.textContent = filterKey === 'ALL' ? 'All Dates' : filterKey;
+
+      window.renderLogbookTimeline(true);
+    };
+
+    window.searchLogbookEntries = function(query) {
+      logbookSearchQuery = (query || '').toLowerCase().trim();
+      const clearBtn = document.getElementById('logbook-search-clear-btn');
+      if (clearBtn) {
+        if (logbookSearchQuery) clearBtn.classList.remove('hidden');
+        else clearBtn.classList.add('hidden');
+      }
+      window.renderLogbookTimeline(true);
+    };
+
+    window.clearLogbookSearch = function() {
+      const input = document.getElementById('logbook-search-input');
+      if (input) input.value = '';
+      window.searchLogbookEntries('');
+    };
+
+    window.jumpToLogbookDate = function(dateStr) {
+      if (!dateStr) return;
+      triggerHaptic();
+      logbookActiveTimeFilter = 'DATE_SPECIFIC';
+      logbookActiveMonthFilter = dateStr;
+
+      const badge = document.getElementById('logbook-active-date-badge');
+      if (badge) badge.textContent = dateStr;
+
+      window.renderLogbookTimeline(true);
+    };
+
+    window.filterLogbookByMonth = function(yearMonthKey) {
+      triggerHaptic();
+      logbookActiveTimeFilter = 'MONTH_SPECIFIC';
+      logbookActiveMonthFilter = yearMonthKey;
+
+      const badge = document.getElementById('logbook-active-date-badge');
+      if (badge) badge.textContent = yearMonthKey;
+
+      window.renderLogbookTimeline(true);
+    };
+
+    window.filterByHashtag = function(tag) {
+      triggerHaptic();
+      logbookActiveTag = (logbookActiveTag === tag) ? '' : tag;
+      window.renderLogbookTimeline(true);
+    };
+
+    /* Modal Form Operations */
+    window.openLogbookModal = function(entryId = null) {
+      ensureLogbookInitialized();
+      const modalTitle = document.getElementById('logbook-modal-title');
+      const editIdInput = document.getElementById('logbook-edit-id');
+      const dateInput = document.getElementById('logbook-modal-date');
+      const typeSelect = document.getElementById('logbook-modal-type');
+      const textInput = document.getElementById('logbook-modal-text');
+      const locationInput = document.getElementById('logbook-modal-location');
+      const tagsInput = document.getElementById('logbook-modal-tags');
+      const mediaInput = document.getElementById('logbook-modal-media');
+      const pinnedCheck = document.getElementById('logbook-modal-is-pinned');
+
+      if (entryId) {
+        const entry = (window.appState.diaryEntries || []).find(e => e.id === entryId);
+        if (!entry) return;
+        if (editIdInput) editIdInput.value = entry.id;
+        if (dateInput) dateInput.value = entry.date || new Date().toISOString().split('T')[0];
+        if (typeSelect) typeSelect.value = entry.type || 'Daily Thought';
+        if (textInput) textInput.value = entry.text || '';
+        if (locationInput) locationInput.value = entry.location || '';
+        if (tagsInput) tagsInput.value = entry.tags || '';
+        if (mediaInput) mediaInput.value = entry.mediaUrl || '';
+        if (pinnedCheck) pinnedCheck.checked = !!entry.isPinned;
+        selectModalMood(entry.mood || '🙂');
+        selectModalEnergy(entry.energy || 4);
+        if (modalTitle) modalTitle.textContent = 'Edit Memory Entry';
+      } else {
+        if (editIdInput) editIdInput.value = '';
+        if (dateInput) dateInput.value = new Date().toISOString().split('T')[0];
+        if (typeSelect) typeSelect.value = 'Daily Thought';
+        if (textInput) textInput.value = '';
+        if (locationInput) locationInput.value = '';
+        if (tagsInput) tagsInput.value = '';
+        if (mediaInput) mediaInput.value = '';
+        if (pinnedCheck) pinnedCheck.checked = false;
+        selectModalMood('🙂');
+        selectModalEnergy(4);
+        if (modalTitle) modalTitle.textContent = 'Write Memory Entry';
+      }
+
+      if (typeof window.showModalDirect === 'function') window.showModalDirect('logbook-entry-modal');
+      else {
+        const m = document.getElementById('logbook-entry-modal');
+        if (m) m.classList.remove('hidden');
+      }
+      refreshIconsScoped(document.getElementById('logbook-entry-modal'));
+    };
+
+    window.selectModalMood = function(emoji) {
+      modalSelectedMood = emoji;
+      const map = { '😁': 'lb-mood-great', '🙂': 'lb-mood-good', '😐': 'lb-mood-neutral', '😔': 'lb-mood-low', '😤': 'lb-mood-intense' };
+      Object.keys(map).forEach(k => {
+        const btn = document.getElementById(map[k]);
+        if (!btn) return;
+        btn.className = (k === emoji)
+          ? 'p-1 rounded-lg bg-emerald-600/30 text-emerald-300 border border-emerald-500/40 text-sm font-bold scale-110'
+          : 'p-1 rounded-lg bg-slate-900 border border-slate-800 text-sm hover:bg-slate-800';
+      });
+    };
+
+    window.selectModalEnergy = function(level) {
+      modalSelectedEnergy = level;
+      for (let i = 1; i <= 5; i++) {
+        const btn = document.getElementById(`lb-energy-${i}`);
+        if (btn) {
+          btn.className = (i <= level) ? 'text-sm text-amber-400 scale-110 transition' : 'text-sm text-slate-600';
+        }
+      }
+    };
+
+    window.submitLogbookModalForm = function(e) {
+      if (e) e.preventDefault();
+      ensureLogbookInitialized();
+
+      const editId = document.getElementById('logbook-edit-id')?.value;
+      const date = document.getElementById('logbook-modal-date')?.value || new Date().toISOString().split('T')[0];
+      const type = document.getElementById('logbook-modal-type')?.value || 'Daily Thought';
+      const text = document.getElementById('logbook-modal-text')?.value.trim();
+      const location = document.getElementById('logbook-modal-location')?.value.trim();
+      const tags = document.getElementById('logbook-modal-tags')?.value.trim();
+      const mediaUrl = document.getElementById('logbook-modal-media')?.value.trim();
+      const isPinned = !!document.getElementById('logbook-modal-is-pinned')?.checked;
+
+      if (!text) return;
+
+      const now = new Date();
+      const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+      if (editId) {
+        const entry = (window.appState.diaryEntries || []).find(item => item.id === editId);
+        if (entry) {
+          Object.assign(entry, { date, type, text, location, tags, mediaUrl, isPinned, mood: modalSelectedMood, energy: modalSelectedEnergy, updatedAt: now.toISOString() });
+        }
+      } else {
+        window.appState.diaryEntries.unshift({
+          id: 'd_' + Date.now(),
+          date,
+          time: timeStr,
+          type,
+          mood: modalSelectedMood,
+          energy: modalSelectedEnergy,
+          isPinned,
+          location,
+          tags: tags || '#daily',
+          text,
+          mediaUrl,
+          createdAt: now.toISOString()
+        });
+      }
+
+      if (typeof window.closeModalDirect === 'function') window.closeModalDirect('logbook-entry-modal');
+      persistLogbookAndSync();
+      window.renderLogbookTimeline(true);
+      if (typeof window.renderDashboard === 'function') window.renderDashboard();
+      if (typeof window.updateBadges === 'function') window.updateBadges();
+      if (window.showToast) window.showToast(editId ? 'Memory updated!' : 'Memory entry archived!', 'success');
+    };
+
+    window.deleteLogbookEntryDirect = function(id) {
+      ensureLogbookInitialized();
+      window.appState.diaryEntries = (window.appState.diaryEntries || []).filter(e => e.id !== id);
+      persistLogbookAndSync();
+      window.renderLogbookTimeline(true);
+      if (typeof window.renderDashboard === 'function') window.renderDashboard();
+      if (typeof window.updateBadges === 'function') window.updateBadges();
+      if (window.showToast) window.showToast('Memory entry deleted.', 'info');
+    };
+
+    window.toggleLogbookPin = function(id) {
+      ensureLogbookInitialized();
+      const entry = (window.appState.diaryEntries || []).find(e => e.id === id);
+      if (entry) {
+        entry.isPinned = !entry.isPinned;
+        persistLogbookAndSync();
+        window.renderLogbookTimeline(false);
+      }
+    };
+
+    /* Export Archive to Formatted Text */
+    window.exportLogbookArchive = function() {
+      ensureLogbookInitialized();
+      const entries = window.appState.diaryEntries || [];
+      if (entries.length === 0) {
+        if (window.showToast) window.showToast('No entries to export.', 'error');
+        return;
+      }
+
+      let txt = `====================================================\n`;
+      txt += `          PrOS MEMORY & DIARY LOGBOOK ARCHIVE\n`;
+      txt += `          Generated: ${new Date().toLocaleString()}\n`;
+      txt += `====================================================\n\n`;
+
+      entries.forEach((e) => {
+        txt += `[${e.date} ${e.time}] ${e.mood || ''} (${e.type || 'Reflection'})\n`;
+        if (e.location) txt += `Location: ${e.location}\n`;
+        if (e.tags) txt += `Tags: ${e.tags}\n`;
+        txt += `"${e.text}"\n`;
+        txt += `----------------------------------------------------\n\n`;
+      });
+
+      const blob = new Blob([txt], { type: 'text/plain;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `PrOS_Diary_Archive_${new Date().toISOString().split('T')[0]}.txt`;
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(url); }, 100);
+      if (window.showToast) window.showToast('Exported Logbook archive!', 'success');
+    };
+
+    /* HTML Card Builder for Timeline Entries */
+    function createLogbookEntryCard(e, todayStr) {
+      const card = document.createElement('div');
+      card.className = `glass-card p-4 rounded-2xl border transition space-y-2.5 bg-slate-950/80 ${e.isPinned ? 'border-amber-500/40 shadow-md shadow-amber-500/5' : 'border-slate-800 hover:border-emerald-500/40'}`;
+
+      let mediaHtml = '';
+      if (e.mediaUrl) {
+        mediaHtml = `
+          <div class="w-full max-h-56 rounded-xl overflow-hidden border border-slate-800 my-2">
+            <img src="${escapeHtml(e.mediaUrl)}" alt="Attached Memory" loading="lazy" class="w-full h-full object-cover" onerror="this.parentElement.remove()" />
+          </div>
+        `;
+      }
+
+      card.innerHTML = `
+        <div class="flex items-start justify-between gap-2 border-b border-slate-900 pb-2">
+          <div class="flex items-center gap-2 flex-wrap min-w-0">
+            <span class="text-xl leading-none shrink-0">${e.mood || '🙂'}</span>
+            <div>
+              <div class="flex items-center gap-1.5 flex-wrap">
+                <span class="font-bold text-white text-xs">${e.date || todayStr}</span>
+                <span class="text-[10px] text-slate-500 font-mono">${e.time || ''}</span>
+                <span class="text-[9px] px-2 py-0.2 rounded-full bg-slate-900 text-slate-300 font-semibold border border-slate-800">${escapeHtml(e.type || 'Reflection')}</span>
+                ${e.isPinned ? '<span class="text-[9px] px-1.5 py-0.2 rounded bg-amber-500/20 text-amber-300 font-bold border border-amber-500/30">★ PINNED</span>' : ''}
+              </div>
+              ${e.location ? `<span class="text-[10px] text-slate-400 flex items-center gap-1 font-mono mt-0.5"><i data-lucide="map-pin" class="w-3 h-3 text-emerald-400"></i> ${escapeHtml(e.location)}</span>` : ''}
+            </div>
+          </div>
+
+          <div class="flex items-center gap-1 shrink-0">
+            <button type="button" onclick="toggleLogbookPin('${e.id}')" class="p-1 rounded-lg hover:bg-slate-900 text-slate-500 hover:text-amber-400 transition" title="Toggle Pin"><i data-lucide="star" class="w-3.5 h-3.5 ${e.isPinned ? 'fill-amber-400 text-amber-400' : ''}"></i></button>
+            <button type="button" onclick="openLogbookModal('${e.id}')" class="p-1 rounded-lg hover:bg-slate-900 text-slate-500 hover:text-emerald-400 transition" title="Edit Entry"><i data-lucide="edit-3" class="w-3.5 h-3.5"></i></button>
+            <button type="button" onclick="deleteLogbookEntryDirect('${e.id}')" class="p-1 rounded-lg hover:bg-slate-900 text-slate-500 hover:text-rose-400 transition" title="Delete Entry"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
+          </div>
+        </div>
+
+        <p class="text-xs text-slate-200 leading-relaxed font-sans whitespace-pre-wrap">${escapeHtml(e.text)}</p>
+        ${mediaHtml}
+
+        <div class="flex justify-between items-center text-[10px] font-mono text-slate-500 pt-1">
+          <div class="flex items-center gap-1 flex-wrap">
+            ${(e.tags || '').split(/\s+/).filter(Boolean).map(t => `<span class="px-1.5 py-0.2 rounded bg-emerald-500/10 text-emerald-300 border border-emerald-500/20">${escapeHtml(t)}</span>`).join('')}
+          </div>
+          <span class="text-amber-400/80">Energy: ${'⚡'.repeat(e.energy || 4)}</span>
+        </div>
+      `;
+      return card;
+    }
+
+    /* Lazy-Loading Batch Renderer */
+    window.loadNextLogbookBatch = function() {
+      const container = document.getElementById('logbook-timeline-container');
+      const loadMoreBtn = document.getElementById('logbook-load-more-btn');
+      const endIndicator = document.getElementById('logbook-all-loaded-indicator');
+      if (!container) return;
+
+      const startIndex = (logbookCurrentPage - 1) * LOGBOOK_PAGE_SIZE;
+      const endIndex = startIndex + LOGBOOK_PAGE_SIZE;
+      const batch = logbookFilteredEntries.slice(startIndex, endIndex);
+
+      if (batch.length === 0 && logbookCurrentPage === 1) {
+        container.innerHTML = `<div class="p-8 text-center text-xs text-slate-500 bg-slate-950 rounded-2xl border border-slate-800">No memories found matching the current timeline filter. Click "Write Log" to add an entry!</div>`;
+        if (loadMoreBtn) loadMoreBtn.classList.add('hidden');
+        if (endIndicator) endIndicator.classList.add('hidden');
+        return;
+      }
+
+      const todayStr = new Date().toISOString().split('T')[0];
+      const fragment = document.createDocumentFragment();
+      batch.forEach(e => {
+        fragment.appendChild(createLogbookEntryCard(e, todayStr));
+      });
+
+      container.appendChild(fragment);
+      refreshIconsScoped(container);
+
+      logbookCurrentPage++;
+
+      const hasMore = endIndex < logbookFilteredEntries.length;
+      if (loadMoreBtn) {
+        if (hasMore) loadMoreBtn.classList.remove('hidden');
+        else loadMoreBtn.classList.add('hidden');
+      }
+      if (endIndicator) {
+        if (!hasMore && logbookFilteredEntries.length > 0) endIndicator.classList.remove('hidden');
+        else endIndicator.classList.add('hidden');
+      }
+    };
+
+    /* Intersection Observer for Infinite Scroll */
+    function setupLogbookInfiniteScroll() {
+      const sentinel = document.getElementById('logbook-lazy-sentinel');
+      if (!sentinel || typeof IntersectionObserver === 'undefined') return;
+
+      if (logbookIntersectionObserver) {
+        logbookIntersectionObserver.disconnect();
+      }
+
+      logbookIntersectionObserver = new IntersectionObserver((entries) => {
+        if (entries[0].isIntersecting) {
+          const startIndex = (logbookCurrentPage - 1) * LOGBOOK_PAGE_SIZE;
+          if (startIndex < logbookFilteredEntries.length) {
+            window.loadNextLogbookBatch();
+          }
+        }
+      }, { rootMargin: '200px' });
+
+      logbookIntersectionObserver.observe(sentinel);
+    }
+
+    /* MAIN TIMELINE RENDERER (FILTER & RE-INDEX) */
+    window.renderLogbookTimeline = function(resetPagination = true) {
+      ensureLogbookInitialized();
+
+      const container = document.getElementById('logbook-timeline-container');
+      const tagCloudContainer = document.getElementById('logbook-tag-cloud');
+      const monthsNavContainer = document.getElementById('logbook-months-nav');
+      const typeFilter = document.getElementById('logbook-type-filter')?.value || 'ALL';
+
+      const statTotalEl = document.getElementById('logbook-stat-total');
+      const statStreakEl = document.getElementById('logbook-stat-streak');
+      const statPinnedEl = document.getElementById('logbook-stat-pinned');
+      const statMoodEl = document.getElementById('logbook-stat-mood');
+      const statEnergyAvgEl = document.getElementById('logbook-stat-energy-avg');
+      const statWordsEl = document.getElementById('logbook-stat-words');
+
+      const allEntries = window.appState.diaryEntries || [];
+      const todayStr = new Date().toISOString().split('T')[0];
+      const now = new Date();
+      now.setHours(0,0,0,0);
+
+      // 1. KPI Calculations
+      const totalCount = allEntries.length;
+      const pinnedCount = allEntries.filter(e => e.isPinned).length;
+      const totalWords = allEntries.reduce((sum, e) => sum + (e.text ? e.text.split(/\s+/).length : 0), 0);
+      const uniqueDays = new Set(allEntries.map(e => e.date)).size;
+      const avgEnergy = totalCount > 0 ? (allEntries.reduce((sum, e) => sum + (e.energy || 4), 0) / totalCount).toFixed(1) : '4.0';
+
+      // Mood frequency
+      const moodCounts = {};
+      allEntries.forEach(e => {
+        const m = e.mood || '🙂';
+        moodCounts[m] = (moodCounts[m] || 0) + 1;
+      });
+      let dominantMood = '🙂';
+      let maxMoodCount = 0;
+      Object.keys(moodCounts).forEach(m => {
+        if (moodCounts[m] > maxMoodCount) {
+          maxMoodCount = moodCounts[m];
+          dominantMood = m;
+        }
+      });
+
+      if (statTotalEl) statTotalEl.textContent = totalCount;
+      if (statStreakEl) statStreakEl.textContent = `${uniqueDays} Unique Days`;
+      if (statPinnedEl) statPinnedEl.textContent = pinnedCount;
+      if (statEnergyAvgEl) statEnergyAvgEl.textContent = `Avg Energy: ${avgEnergy}/5`;
+      if (statWordsEl) statWordsEl.textContent = totalWords.toLocaleString();
+      if (statMoodEl) {
+        statMoodEl.innerHTML = `<span>${dominantMood}</span> <span class="text-xs text-slate-400 font-normal font-sans">Dominant</span>`;
+      }
+
+      // 2. Build Tag Cloud
+      if (tagCloudContainer) {
+        const tagsMap = {};
+        allEntries.forEach(e => {
+          const tags = `${e.tags || ''} ${e.text || ''}`.match(/#[a-zA-Z0-9_-]+/g) || [];
+          tags.forEach(t => { tagsMap[t.toLowerCase()] = (tagsMap[t.toLowerCase()] || 0) + 1; });
+        });
+
+        tagCloudContainer.innerHTML = '';
+        const allTagChip = document.createElement('button');
+        allTagChip.type = 'button';
+        allTagChip.className = `px-2 py-0.5 rounded-lg text-[10px] font-mono font-bold transition shrink-0 ${!logbookActiveTag ? 'bg-emerald-600 text-slate-950' : 'bg-slate-900 text-slate-400 hover:text-white border border-slate-800'}`;
+        allTagChip.textContent = 'All Tags';
+        allTagChip.onclick = () => filterByHashtag('');
+        tagCloudContainer.appendChild(allTagChip);
+
+        Object.keys(tagsMap).forEach(t => {
+          const chip = document.createElement('button');
+          chip.type = 'button';
+          const isSelected = logbookActiveTag === t;
+          chip.className = `px-2 py-0.5 rounded-lg text-[10px] font-mono font-bold transition shrink-0 ${isSelected ? 'bg-emerald-600 text-slate-950' : 'bg-slate-900 text-emerald-300 hover:bg-slate-800 border border-slate-800'}`;
+          chip.textContent = `${t} (${tagsMap[t]})`;
+          chip.onclick = () => filterByHashtag(t);
+          tagCloudContainer.appendChild(chip);
+        });
+      }
+
+      // 3. Build Months Nav Breakdown
+      if (monthsNavContainer) {
+        const monthGroups = {};
+        allEntries.forEach(e => {
+          const d = e.date || todayStr;
+          const ym = d.slice(0, 7);
+          monthGroups[ym] = (monthGroups[ym] || 0) + 1;
+        });
+
+        monthsNavContainer.innerHTML = '';
+        Object.keys(monthGroups).sort().reverse().forEach(ym => {
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          const isSelected = logbookActiveMonthFilter === ym;
+          btn.className = `w-full text-left p-2 rounded-xl text-xs font-semibold flex items-center justify-between transition ${isSelected ? 'bg-slate-900 text-emerald-300 border border-emerald-500/40' : 'text-slate-400 hover:bg-slate-900/60'}`;
+          btn.innerHTML = `
+            <span>${ym}</span>
+            <span class="text-[10px] font-mono font-bold text-slate-500">${monthGroups[ym]} logs</span>
+          `;
+          btn.onclick = () => filterLogbookByMonth(ym);
+          monthsNavContainer.appendChild(btn);
+        });
+      }
+
+      // 4. Filter Entries for Main Stream
+      let entries = [...allEntries];
+
+      if (logbookActiveTimeFilter === 'TODAY') {
+        entries = entries.filter(e => e.date === todayStr);
+      } else if (logbookActiveTimeFilter === '7DAYS') {
+        entries = entries.filter(e => Math.abs((now - new Date(e.date || e.createdAt)) / 86400000) <= 7);
+      } else if (logbookActiveTimeFilter === 'MONTH') {
+        entries = entries.filter(e => (new Date(e.date || e.createdAt)).getMonth() === now.getMonth() && (new Date(e.date || e.createdAt)).getFullYear() === now.getFullYear());
+      } else if (logbookActiveTimeFilter === 'PINNED') {
+        entries = entries.filter(e => !!e.isPinned);
+      } else if (logbookActiveTimeFilter === 'DATE_SPECIFIC' && logbookActiveMonthFilter) {
+        entries = entries.filter(e => e.date === logbookActiveMonthFilter);
+      } else if (logbookActiveTimeFilter === 'MONTH_SPECIFIC' && logbookActiveMonthFilter) {
+        entries = entries.filter(e => (e.date || '').startsWith(logbookActiveMonthFilter));
+      }
+
+      if (typeFilter !== 'ALL') {
+        entries = entries.filter(e => e.type === typeFilter);
+      }
+
+      if (logbookActiveTag) {
+        entries = entries.filter(e => `${e.tags || ''} ${e.text || ''}`.toLowerCase().includes(logbookActiveTag));
+      }
+
+      if (logbookSearchQuery) {
+        entries = entries.filter(e => 
+          (e.text && e.text.toLowerCase().includes(logbookSearchQuery)) ||
+          (e.tags && e.tags.toLowerCase().includes(logbookSearchQuery)) ||
+          (e.location && e.location.toLowerCase().includes(logbookSearchQuery))
+        );
+      }
+
+      logbookFilteredEntries = entries;
+
+      if (resetPagination) {
+        logbookCurrentPage = 1;
+        if (container) container.innerHTML = '';
+      }
+
+      window.loadNextLogbookBatch();
+      setupLogbookInfiniteScroll();
+    };
+
+    // Auto-boot on load
+    ensureLogbookInitialized();
+    window.renderLogbookTimeline(true);
+  })();
+</script>
+<!-- ========================================================================= -->
+<!-- END SECTION: DIARY & EXPERIENCE LOGBOOK                                   -->
+<!-- ========================================================================= -->
 </main>
     </div>
   </div>
@@ -20884,19 +21753,104 @@ if (searchInput) {
 
 
 
-
-
-
-
- 
-
-
-
-
-
   
 </div>
+<script>
+ 
+ // =========================================================================
+// UNIVERSAL LOCAL & CLOUD LOGBOOK PERSISTENCE ENGINE
+// =========================================================================
+function ensureLogbookInitialized() {
+  if (!window.appState) window.appState = {};
 
+  if (!Array.isArray(window.appState.diaryEntries)) {
+    try {
+      const stored = localStorage.getItem('pros_diary_entries');
+      if (stored) {
+        window.appState.diaryEntries = JSON.parse(stored);
+      } else {
+        // Check fallback root storage if exists
+        const rootState = localStorage.getItem('pros_state') || localStorage.getItem('pros_app_state');
+        if (rootState) {
+          const parsed = JSON.parse(rootState);
+          window.appState.diaryEntries = Array.isArray(parsed.diaryEntries) ? parsed.diaryEntries : [];
+        } else {
+          window.appState.diaryEntries = [];
+        }
+      }
+    } catch(err) {
+      console.warn('Logbook local cache read error:', err);
+      window.appState.diaryEntries = [];
+    }
+  }
+}
+
+function persistLogbookAndSync() {
+  ensureLogbookInitialized();
+  const entries = window.appState.diaryEntries || [];
+
+  // 1. HARD LOCAL STORAGE SAVE (Instant & Offline Safe)
+  try {
+    localStorage.setItem('pros_diary_entries', JSON.stringify(entries));
+    
+    // Also sync into main app state bundle if present
+    const rootState = localStorage.getItem('pros_state');
+    if (rootState) {
+      try {
+        const parsed = JSON.parse(rootState);
+        parsed.diaryEntries = entries;
+        localStorage.setItem('pros_state', JSON.stringify(parsed));
+      } catch(e) {}
+    }
+  } catch(err) {
+    console.error('LocalStorage write failed:', err);
+  }
+
+  // 2. TRIGGER EXISTING CACHE RUNNERS
+  if (typeof window.saveLocalCache === 'function') {
+    try { window.saveLocalCache(); } catch(e) {}
+  }
+
+  // 3. HARD ONLINE CLOUD PERSISTENCE (Firebase Firestore / Cloud Store)
+  if (typeof window.saveCloudData === 'function') {
+    try { window.saveCloudData(); } catch(e) {}
+  } else if (window.db && window.auth && window.auth.currentUser) {
+    // Direct Firestore user document merge
+    try {
+      window.db.collection('users').doc(window.auth.currentUser.uid).set({
+        diaryEntries: entries,
+        lastUpdated: new Date().toISOString()
+      }, { merge: true })
+      .then(() => {
+        console.log('Online cloud sync successful for diary entries.');
+      })
+      .catch(err => {
+        console.warn('Cloud write error:', err);
+      });
+    } catch(err) {
+      console.warn('Direct Firestore sync attempt failed:', err);
+    }
+  }
+}
+
+
+
+// Add this inside your auth/cloud load callback (e.g., authStateChanged or loadUserData)
+function hydrateUserData(cloudUserData) {
+  if (!window.appState) window.appState = {};
+
+  if (cloudUserData && Array.isArray(cloudUserData.diaryEntries)) {
+    window.appState.diaryEntries = cloudUserData.diaryEntries;
+    localStorage.setItem('pros_diary_entries', JSON.stringify(cloudUserData.diaryEntries));
+  } else {
+    ensureLogbookInitialized();
+  }
+
+  if (typeof window.renderDashboard === 'function') window.renderDashboard();
+  if (typeof window.renderLogbookTimeline === 'function') window.renderLogbookTimeline();
+  if (typeof window.updateBadges === 'function') window.updateBadges();
+}
+ </script>
 
 </body>
 </html>
