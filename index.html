@@ -635,7 +635,1235 @@ html, body {
 
 
 
+<!-- ========================================================================= -->
+<!-- SECTION 1: DASHBOARD APP VIEW (EXECUTIVE COMMAND & MULTI-LOG LOGBOOK)    -->
+<!-- ========================================================================= -->
+<section id="view-dashboard" class="app-view space-y-4 md:space-y-6 max-w-7xl mx-auto w-full pb-36 px-1 sm:px-0">
 
+  <!-- Header Banner & Dashboard Period Filter -->
+  <div class="glass-card rounded-2xl p-4 md:p-5 border border-slate-800 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 bg-slate-900/60 backdrop-blur-xl">
+    <div>
+      <div class="flex items-center gap-2 flex-wrap">
+        <h2 id="dash-greeting-text" class="text-lg md:text-xl font-extrabold text-white tracking-tight">
+          Good Day, Commander
+        </h2>
+        <span class="text-[10px] md:text-xs px-2.5 py-0.5 rounded-full bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 font-semibold font-mono">
+          Executive Hub
+        </span>
+        <span id="dash-live-clock" class="text-[10px] md:text-xs px-2.5 py-0.5 rounded-full bg-slate-950 text-slate-300 border border-slate-800 font-mono font-bold">
+          00:00:00
+        </span>
+      </div>
+      <p id="dash-date-subtitle" class="text-xs text-slate-400 mt-0.5 font-mono">
+        Loading schedule &amp; metrics...
+      </p>
+    </div>
+
+    <!-- Period Filter Bar & Fast Refresh -->
+    <div class="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-end">
+      <div class="flex items-center bg-slate-950 p-1 rounded-xl border border-slate-800 text-xs font-medium overflow-x-auto">
+        <button type="button" onclick="setDashboardPeriod('month')" id="dash-filter-month" class="dash-period-btn bg-emerald-600 text-slate-950 font-bold px-3 py-1.5 rounded-lg shadow transition">This Month</button>
+        <button type="button" onclick="setDashboardPeriod('week')" id="dash-filter-week" class="dash-period-btn px-3 py-1.5 rounded-lg text-slate-400 hover:text-white transition">This Week</button>
+        <button type="button" onclick="setDashboardPeriod('year')" id="dash-filter-year" class="dash-period-btn px-3 py-1.5 rounded-lg text-slate-400 hover:text-white transition">This Year</button>
+        <button type="button" onclick="setDashboardPeriod('all')" id="dash-filter-all" class="dash-period-btn px-3 py-1.5 rounded-lg text-slate-400 hover:text-white transition">All Time</button>
+      </div>
+      <button type="button" onclick="renderDashboard()" class="p-2 bg-slate-950 hover:bg-slate-900 border border-slate-800 rounded-xl text-slate-400 hover:text-white transition shrink-0 active:scale-90" title="Refresh Live Widgets">
+        <i data-lucide="rotate-cw" class="w-4 h-4"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- Launchpad: Direct Module Actions -->
+  <div class="grid grid-cols-2 sm:grid-cols-5 gap-2 text-xs font-semibold">
+    <button type="button" onclick="dashRouteAndOpen('finance', 'add-transaction-modal')" class="p-3 sm:p-2.5 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-300 border border-emerald-500/20 font-bold transition flex items-center justify-center gap-2 active:scale-95 shadow-sm">
+      <i data-lucide="plus-circle" class="w-4 h-4 text-emerald-400 shrink-0"></i>
+      <span class="truncate">+ Log Expense</span>
+    </button>
+
+    <button type="button" onclick="dashRouteAndOpen('tasks', 'task-editor-modal')" class="p-3 sm:p-2.5 rounded-xl bg-purple-500/10 hover:bg-purple-500/20 text-purple-300 border border-purple-500/20 font-bold transition flex items-center justify-center gap-2 active:scale-95 shadow-sm">
+      <i data-lucide="check-square" class="w-4 h-4 text-purple-400 shrink-0"></i>
+      <span class="truncate">+ Add Task</span>
+    </button>
+
+    <button type="button" onclick="dashRouteAndOpen('notes', 'create-note')" class="p-3 sm:p-2.5 rounded-xl bg-yellow-500/10 hover:bg-yellow-500/20 text-yellow-300 border border-yellow-500/20 font-bold transition flex items-center justify-center gap-2 active:scale-95 shadow-sm">
+      <i data-lucide="file-text" class="w-4 h-4 text-yellow-400 shrink-0"></i>
+      <span class="truncate">+ Quick Note</span>
+    </button>
+
+    <button type="button" onclick="dashRouteAndOpen('calendar', 'add-calendar-event-modal')" class="p-3 sm:p-2.5 rounded-xl bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-300 border border-cyan-500/20 font-bold transition flex items-center justify-center gap-2 active:scale-95 shadow-sm">
+      <i data-lucide="calendar" class="w-4 h-4 text-cyan-400 shrink-0"></i>
+      <span class="truncate">+ Add Event</span>
+    </button>
+
+    <button type="button" onclick="dashRouteAndOpen('vehicles', 'add-fuel-quick-modal')" class="p-3 sm:p-2.5 rounded-xl bg-blue-500/10 hover:bg-blue-500/20 text-blue-300 border border-blue-500/20 font-bold transition flex items-center justify-center gap-2 col-span-2 sm:col-span-1 active:scale-95 shadow-sm">
+      <i data-lucide="car" class="w-4 h-4 text-blue-400 shrink-0"></i>
+      <span class="truncate">+ Fuel Log</span>
+    </button>
+  </div>
+
+  <!-- Real-Time Metric Cards -->
+  <div class="grid grid-cols-2 lg:grid-cols-6 gap-2.5 sm:gap-3 md:gap-4">
+    <!-- Card 1: Net Balance -->
+    <div onclick="window.switchTab('finance')" class="glass-card rounded-2xl p-3.5 md:p-4 space-y-1.5 cursor-pointer hover:border-emerald-500/40 transition border border-slate-800 group bg-slate-900/40">
+      <div class="flex justify-between items-center text-xs font-bold text-slate-400">
+        <span class="uppercase tracking-wider text-[9px]">Net Balance</span>
+        <div class="p-1.5 bg-emerald-500/10 text-emerald-400 rounded-lg border border-emerald-500/20 group-hover:scale-110 transition">
+          <i data-lucide="scale" class="w-3.5 h-3.5"></i>
+        </div>
+      </div>
+      <div id="dash-kpi-net" class="text-base md:text-lg font-black text-emerald-400 truncate">₹0.00</div>
+      <div class="text-[9px] text-slate-400 font-mono pt-1 border-t border-slate-800/60 truncate" id="dash-kpi-net-sub">
+        Savings: 0%
+      </div>
+    </div>
+
+    <!-- Card 2: Today's Spend -->
+    <div onclick="window.switchTab('finance')" class="glass-card rounded-2xl p-3.5 md:p-4 space-y-1.5 cursor-pointer hover:border-rose-500/40 transition border border-slate-800 group bg-slate-900/40">
+      <div class="flex justify-between items-center text-xs font-bold text-slate-400">
+        <span class="uppercase tracking-wider text-[9px]">Today's Spend</span>
+        <div class="p-1.5 bg-rose-500/10 text-rose-400 rounded-lg border border-rose-500/20 group-hover:scale-110 transition">
+          <i data-lucide="credit-card" class="w-3.5 h-3.5"></i>
+        </div>
+      </div>
+      <div id="dash-kpi-today-spend" class="text-base md:text-lg font-black text-rose-400 truncate">₹0.00</div>
+      <div class="text-[9px] text-slate-400 font-mono pt-1 border-t border-slate-800/60 truncate" id="dash-kpi-month-expense-sub">
+        Period: ₹0
+      </div>
+    </div>
+
+    <!-- Card 3: Tasks Pending -->
+    <div onclick="window.switchTab('tasks')" class="glass-card rounded-2xl p-3.5 md:p-4 space-y-1.5 cursor-pointer hover:border-purple-500/40 transition border border-slate-800 group bg-slate-900/40">
+      <div class="flex justify-between items-center text-xs font-bold text-slate-400">
+        <span class="uppercase tracking-wider text-[9px]">Tasks Pending</span>
+        <div class="p-1.5 bg-purple-500/10 text-purple-400 rounded-lg border border-purple-500/20 group-hover:scale-110 transition">
+          <i data-lucide="check-square" class="w-3.5 h-3.5"></i>
+        </div>
+      </div>
+      <div id="dash-kpi-urgent-tasks" class="text-base md:text-lg font-black text-purple-300 truncate">0 Pending</div>
+      <div class="text-[9px] text-slate-400 font-mono pt-1 border-t border-slate-800/60 flex justify-between">
+        <span id="dash-kpi-task-rate">0% Done</span>
+        <span id="dash-kpi-high-prio-count" class="text-rose-400 font-bold">0 High</span>
+      </div>
+    </div>
+
+    <!-- Card 4: Habits & Streaks -->
+    <div onclick="window.switchTab('habits')" class="glass-card rounded-2xl p-3.5 md:p-4 space-y-1.5 cursor-pointer hover:border-red-500/40 transition border border-slate-800 group bg-slate-900/40">
+      <div class="flex justify-between items-center text-xs font-bold text-slate-400">
+        <span class="uppercase tracking-wider text-[9px]">Habits Today</span>
+        <div class="p-1.5 bg-red-500/10 text-red-400 rounded-lg border border-red-500/20 group-hover:scale-110 transition">
+          <i data-lucide="flame" class="w-3.5 h-3.5"></i>
+        </div>
+      </div>
+      <div id="dash-kpi-habit-rate" class="text-base md:text-lg font-black text-red-400 truncate">0% Today</div>
+      <div class="text-[9px] text-slate-400 font-mono pt-1 border-t border-slate-800/60 flex justify-between">
+        <span id="dash-kpi-habit-sub">0/0 done</span>
+        <span id="dash-kpi-streak-sum" class="text-amber-400 font-bold">🔥 0d</span>
+      </div>
+    </div>
+
+    <!-- Card 5: Time Worked -->
+    <div onclick="window.switchTab('time')" class="glass-card rounded-2xl p-3.5 md:p-4 space-y-1.5 cursor-pointer hover:border-amber-500/40 transition border border-slate-800 group bg-slate-900/40">
+      <div class="flex justify-between items-center text-xs font-bold text-slate-400">
+        <span class="uppercase tracking-wider text-[9px]">Time Worked</span>
+        <div class="p-1.5 bg-amber-500/10 text-amber-400 rounded-lg border border-amber-500/20 group-hover:scale-110 transition">
+          <i data-lucide="timer" class="w-3.5 h-3.5"></i>
+        </div>
+      </div>
+      <div id="dash-kpi-hours-today" class="text-base md:text-lg font-black text-amber-400 truncate">0.0 hrs</div>
+      <div class="text-[9px] text-slate-400 font-mono pt-1 border-t border-slate-800/60 truncate" id="dash-kpi-hours-sub">
+        0 sessions today
+      </div>
+    </div>
+
+    <!-- Card 6: Productivity Score -->
+    <div class="glass-card rounded-2xl p-3.5 md:p-4 space-y-1.5 border border-slate-800 bg-slate-900/40">
+      <div class="flex justify-between items-center text-xs font-bold text-slate-400">
+        <span class="uppercase tracking-wider text-[9px]">Productivity</span>
+        <div class="p-1.5 bg-cyan-500/10 text-cyan-400 rounded-lg border border-cyan-500/20">
+          <i data-lucide="zap" class="w-3.5 h-3.5"></i>
+        </div>
+      </div>
+      <div id="dash-kpi-score-val" class="text-base md:text-lg font-black text-cyan-300">0%</div>
+      <div class="w-full bg-slate-950 h-1.5 rounded-full overflow-hidden border border-slate-800">
+        <div id="dash-kpi-score-bar" class="bg-cyan-400 h-full transition-all duration-500" style="width: 0%"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Dynamic Radar & Habits Feeds with Multi-Filters -->
+  <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
+    
+    <!-- Left: Schedule & Celebrations Radar (Pure Events, No Tasks) -->
+    <div class="lg:col-span-7 glass-card rounded-2xl p-4 space-y-3 border border-slate-800 flex flex-col justify-between bg-slate-900/40">
+      <div class="flex flex-wrap justify-between items-center border-b border-slate-800 pb-2.5 gap-2">
+        <div class="flex items-center gap-2">
+          <h3 class="text-xs font-extrabold text-cyan-300 uppercase tracking-wider flex items-center gap-2">
+            <i data-lucide="calendar" class="w-4 h-4 text-cyan-400"></i> Events &amp; Celebrations Radar
+          </h3>
+          <span id="dash-radar-count-badge" class="text-[10px] px-2 py-0.2 rounded-full bg-slate-800 text-slate-400 font-mono">0 events</span>
+        </div>
+        
+        <div class="flex items-center gap-2">
+          <select id="dash-radar-filter" onchange="renderTodayAgendaRadar()" class="bg-slate-950 border border-slate-800 text-slate-300 rounded-lg px-2 py-1 text-[11px] outline-none focus:border-cyan-400 font-medium">
+            <option value="TODAY">📅 Today's Agenda</option>
+            <option value="WEEK" selected>⚡ Next 7 Days</option>
+            <option value="BIRTHDAYS">🎂 Birthdays &amp; Anniversaries</option>
+            <option value="ALL">All Events</option>
+          </select>
+          <button type="button" onclick="window.switchTab('calendar')" class="text-[11px] text-cyan-400 hover:underline font-bold">Open Calendar &rarr;</button>
+        </div>
+      </div>
+
+      <div id="dash-today-agenda-container" class="space-y-2 max-h-60 overflow-y-auto pr-1 text-xs scrollbar-none">
+        <!-- Injected dynamically via JS -->
+      </div>
+    </div>
+
+    <!-- Right: Circadian Habits Check-In with Slot Filters -->
+    <div class="lg:col-span-5 glass-card rounded-2xl p-4 space-y-3 border border-slate-800 flex flex-col justify-between bg-slate-900/40">
+      <div class="flex flex-wrap justify-between items-center border-b border-slate-800 pb-2.5 gap-2">
+        <div class="flex items-center gap-2">
+          <h3 class="text-xs font-extrabold text-red-300 uppercase tracking-wider flex items-center gap-2">
+            <i data-lucide="flame" class="w-4 h-4 text-red-400"></i> Habits Quick Check-In
+          </h3>
+        </div>
+        
+        <div class="flex items-center gap-2">
+          <select id="dash-habit-slot-filter" onchange="renderTodayRoutinesStrip()" class="bg-slate-950 border border-slate-800 text-slate-300 rounded-lg px-2 py-1 text-[11px] outline-none focus:border-red-400 font-medium">
+            <option value="ALL" selected>All Flow</option>
+            <option value="Morning">🌅 Morning</option>
+            <option value="Afternoon">☀️ Midday</option>
+            <option value="Evening">🌙 Night</option>
+            <option value="Anytime">⚡ Anytime</option>
+          </select>
+          <button type="button" onclick="window.switchTab('habits')" class="text-[11px] text-red-400 hover:underline font-bold">Matrix &rarr;</button>
+        </div>
+      </div>
+
+      <div id="dash-routines-container" class="space-y-2 max-h-60 overflow-y-auto pr-1 scrollbar-none">
+        <!-- Injected dynamically via JS -->
+      </div>
+    </div>
+  </div>
+
+  <!-- ADVANCED INSTANT EXPERIENCE & DIARY CAPTURE STUDIO -->
+  <div class="glass-card rounded-2xl p-4 sm:p-5 space-y-3.5 border border-emerald-500/20 bg-emerald-500/[0.02]">
+    
+    <!-- Studio Header & Route to Full Logbook -->
+    <div class="flex flex-wrap justify-between items-center border-b border-slate-800/80 pb-3 gap-2">
+      <div class="flex items-center gap-2.5">
+        <div class="p-2 rounded-xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+          <i data-lucide="pen-tool" class="w-4 h-4"></i>
+        </div>
+        <div>
+          <h3 class="text-xs font-extrabold text-emerald-300 uppercase tracking-wider flex items-center gap-1.5">
+            <span>Instant Experience &amp; Diary Capture</span>
+            <span class="text-[9px] px-1.5 py-0.2 rounded-full bg-emerald-500/20 text-emerald-300 font-mono font-bold">Memory Engine</span>
+          </h3>
+          <p class="text-[10px] text-slate-400 font-mono">Date-wise timeline capture &bull; Location, Voice, Media &amp; Unlimited logs</p>
+        </div>
+      </div>
+      
+      <div class="flex items-center gap-2">
+        <span id="dash-today-logged-counter" class="text-[10px] font-mono px-2.5 py-1 rounded-xl bg-slate-950 text-emerald-400 border border-slate-800">
+          0 logged today
+        </span>
+        <button type="button" onclick="navigateToLogbookSection()" class="px-3 py-1.5 bg-emerald-950/40 hover:bg-emerald-600/30 text-emerald-300 text-xs font-bold rounded-xl border border-emerald-500/30 transition flex items-center gap-1.5 active:scale-95 shadow-sm" title="Open Full Timeline &amp; Flashback Section">
+          <i data-lucide="book-open" class="w-3.5 h-3.5"></i>
+          <span>Open Logbook &rarr;</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Quick Reflection Inceptors (One-Tap Guided Starters) -->
+    <div class="flex items-center gap-1.5 overflow-x-auto pb-0.5 text-[11px] scrollbar-none">
+      <span class="text-slate-500 font-bold uppercase text-[9px] shrink-0 mr-0.5">Inspire:</span>
+      <button type="button" onclick="injectPromptTemplate('🏆 Biggest Win:')" class="px-2.5 py-1 rounded-xl bg-slate-950 hover:bg-slate-900 border border-slate-800 hover:border-emerald-500/40 text-slate-300 hover:text-emerald-300 transition shrink-0 active:scale-95">🏆 Biggest Win</button>
+      <button type="button" onclick="injectPromptTemplate('💡 Key Learning:')" class="px-2.5 py-1 rounded-xl bg-slate-950 hover:bg-slate-900 border border-slate-800 hover:border-emerald-500/40 text-slate-300 hover:text-emerald-300 transition shrink-0 active:scale-95">💡 Key Learning</button>
+      <button type="button" onclick="injectPromptTemplate('⚡ Challenge & Fix:')" class="px-2.5 py-1 rounded-xl bg-slate-950 hover:bg-slate-900 border border-slate-800 hover:border-emerald-500/40 text-slate-300 hover:text-emerald-300 transition shrink-0 active:scale-95">⚡ Challenge &amp; Fix</button>
+      <button type="button" onclick="injectPromptTemplate('✨ Grateful For:')" class="px-2.5 py-1 rounded-xl bg-slate-950 hover:bg-slate-900 border border-slate-800 hover:border-emerald-500/40 text-slate-300 hover:text-emerald-300 transition shrink-0 active:scale-95">✨ Gratitude</button>
+      <button type="button" onclick="injectPromptTemplate('🌙 Night Reflection:')" class="px-2.5 py-1 rounded-xl bg-slate-950 hover:bg-slate-900 border border-slate-800 hover:border-emerald-500/40 text-slate-300 hover:text-emerald-300 transition shrink-0 active:scale-95">🌙 Night Reflection</button>
+      <button type="button" onclick="injectPromptTemplate('💭 Shower Thought:')" class="px-2.5 py-1 rounded-xl bg-slate-950 hover:bg-slate-900 border border-slate-800 hover:border-emerald-500/40 text-slate-300 hover:text-emerald-300 transition shrink-0 active:scale-95">💭 Epiphany</button>
+    </div>
+
+    <!-- Capture Studio Core Box -->
+    <div class="space-y-3 bg-slate-950/90 p-3 sm:p-4 rounded-2xl border border-slate-800/90 shadow-inner">
+      
+      <!-- Top Row: Mood State, Category Type, Focus/Energy & Pin Toggle -->
+      <div class="grid grid-cols-1 md:grid-cols-12 gap-2.5 items-center text-xs">
+        
+        <!-- Mood Selector (4 Cols) -->
+        <div class="md:col-span-4 flex items-center gap-2">
+          <span class="text-slate-400 font-semibold text-xs shrink-0">State:</span>
+          <div class="flex gap-1" id="dash-mood-buttons-group">
+            <button type="button" onclick="selectActiveMood('😁')" id="mood-btn-great" class="mood-select-btn px-2 py-1 bg-slate-900 hover:bg-slate-800 text-slate-400 rounded-xl text-base transition border border-slate-800 active:scale-95" title="Great / Energized">😁</button>
+            <button type="button" onclick="selectActiveMood('🙂')" id="mood-btn-good" class="mood-select-btn px-2 py-1 bg-emerald-600/30 text-emerald-300 border border-emerald-500/40 font-bold rounded-xl text-base transition scale-105 shadow-sm active:scale-95" title="Good / Calm">🙂</button>
+            <button type="button" onclick="selectActiveMood('😐')" id="mood-btn-neutral" class="mood-select-btn px-2 py-1 bg-slate-900 hover:bg-slate-800 text-slate-400 rounded-xl text-base transition border border-slate-800 active:scale-95" title="Okay / Neutral">😐</button>
+            <button type="button" onclick="selectActiveMood('😔')" id="mood-btn-low" class="mood-select-btn px-2 py-1 bg-slate-900 hover:bg-slate-800 text-slate-400 rounded-xl text-base transition border border-slate-800 active:scale-95" title="Tired / Low">😔</button>
+            <button type="button" onclick="selectActiveMood('😤')" id="mood-btn-intense" class="mood-select-btn px-2 py-1 bg-slate-900 hover:bg-slate-800 text-slate-400 rounded-xl text-base transition border border-slate-800 active:scale-95" title="Intense Focus">😤</button>
+          </div>
+        </div>
+
+        <!-- Experience Category (3 Cols) -->
+        <div class="md:col-span-3 flex items-center gap-1.5">
+          <span class="text-slate-400 font-semibold text-xs shrink-0">Type:</span>
+          <select id="dash-log-type-select" class="w-full bg-slate-900 border border-slate-800 text-slate-200 rounded-xl px-2.5 py-1.5 text-xs outline-none focus:border-emerald-500 font-semibold transition">
+            <option value="Daily Thought">💭 Thought</option>
+            <option value="Milestone / Win">🏆 Win / Milestone</option>
+            <option value="Key Learning">💡 Insight / Learning</option>
+            <option value="Gratitude">✨ Gratitude</option>
+            <option value="Life Experience">📸 Experience</option>
+            <option value="Challenge">⚡ Obstacle / Lesson</option>
+            <option value="Decision Log">⚖️ Major Decision</option>
+          </select>
+        </div>
+
+        <!-- Focus & Energy Level (3 Cols) -->
+        <div class="md:col-span-3 flex items-center gap-1.5 justify-start md:justify-center">
+          <span class="text-slate-400 font-semibold text-xs shrink-0">Energy:</span>
+          <div class="flex gap-1" id="dash-energy-rating-group">
+            <button type="button" onclick="selectEnergyLevel(1)" id="energy-star-1" class="text-sm text-slate-600 hover:text-amber-400 transition" title="1/5 Low Energy">⚡</button>
+            <button type="button" onclick="selectEnergyLevel(2)" id="energy-star-2" class="text-sm text-slate-600 hover:text-amber-400 transition" title="2/5 Moderate">⚡</button>
+            <button type="button" onclick="selectEnergyLevel(3)" id="energy-star-3" class="text-sm text-amber-400 transition" title="3/5 Normal">⚡</button>
+            <button type="button" onclick="selectEnergyLevel(4)" id="energy-star-4" class="text-sm text-amber-400 transition scale-110" title="4/5 High">⚡</button>
+            <button type="button" onclick="selectEnergyLevel(5)" id="energy-star-5" class="text-sm text-slate-600 hover:text-amber-400 transition" title="5/5 Peak State">⚡</button>
+          </div>
+        </div>
+
+        <!-- Highlight Pin Switch (2 Cols) -->
+        <div class="md:col-span-2 flex items-center justify-start md:justify-end">
+          <label class="flex items-center gap-1.5 cursor-pointer text-slate-400 hover:text-amber-300 transition select-none">
+            <input type="checkbox" id="dash-log-is-pinned" class="w-3.5 h-3.5 rounded accent-amber-400 cursor-pointer" />
+            <span class="text-xs font-bold font-mono">★ Pin Win</span>
+          </label>
+        </div>
+
+      </div>
+
+      <!-- Main Diary Capture Area with Live Counter, Voice Dictation & Text Expansion -->
+      <div class="relative">
+        <textarea id="dash-gratitude-input" oninput="updateDiaryLiveTelemetry()" rows="3" placeholder="What's happening right now? Document reflections, realizations, priority achievements, or thoughts in detail..." onkeypress="if(event.key==='Enter' && !event.shiftKey){event.preventDefault();saveDailyDiaryEntry();}" class="w-full bg-slate-900 border border-slate-800 rounded-xl p-3 pr-10 text-xs text-slate-100 outline-none focus:border-emerald-500 resize-none transition leading-relaxed placeholder:text-slate-500"></textarea>
+        
+        <!-- Voice Dictation Trigger -->
+        <button type="button" id="btn-voice-dictate-diary" onclick="toggleDiaryVoiceDictation()" class="absolute top-2.5 right-2.5 p-1.5 bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-emerald-400 rounded-lg transition active:scale-90" title="Speech to text">
+          <i data-lucide="mic" class="w-3.5 h-3.5"></i>
+        </button>
+
+        <!-- Live Word/Character Telemetry Badge -->
+        <div class="absolute bottom-2.5 right-3 flex items-center gap-2 text-[9px] font-mono text-slate-500 pointer-events-none">
+          <span id="diary-live-word-count">0 words</span>
+          <span>&bull;</span>
+          <span id="diary-live-char-count">0 chars</span>
+        </div>
+      </div>
+
+      <!-- Bottom Drawer Controls: Media URL Attachment, Tags, Location, & Submission -->
+      <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5 pt-1">
+        
+        <!-- Image / Media Attachment, Location & Hashtags -->
+        <div class="flex flex-wrap items-center gap-2 flex-1">
+          <!-- Optional Image URL Input -->
+          <div class="relative flex-1 sm:max-w-xs min-w-[140px]">
+            <i data-lucide="image" class="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none"></i>
+            <input id="dash-log-image-url" type="url" placeholder="Photo / Media URL (Optional)" class="w-full bg-slate-900 border border-slate-800 rounded-xl pl-8 pr-2 py-1.5 text-xs text-slate-200 outline-none focus:border-emerald-500 font-mono transition text-[11px]" />
+          </div>
+
+          <!-- Quick Tag Customizer -->
+          <div class="flex items-center gap-1.5 flex-1 min-w-[130px]">
+            <input id="dash-log-tag-input" type="text" placeholder="#tag1, #tag2" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-2.5 py-1.5 text-[11px] text-slate-200 outline-none focus:border-emerald-500 font-mono transition" />
+          </div>
+
+          <!-- Location Tag / Geolocation Tag -->
+          <div class="relative min-w-[120px] flex-1 sm:flex-none sm:w-36">
+            <i data-lucide="map-pin" class="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none"></i>
+            <input id="dash-log-location-input" type="text" placeholder="Location (e.g. Pune, HQ)" class="w-full bg-slate-900 border border-slate-800 rounded-xl pl-8 pr-2 py-1.5 text-[11px] text-slate-200 outline-none focus:border-emerald-500 font-mono transition" />
+          </div>
+        </div>
+
+        <!-- Quick Tag Preset Chips & Submit Action -->
+        <div class="flex items-center gap-2 justify-between sm:justify-end shrink-0">
+          <div class="hidden md:flex items-center gap-1">
+            <button type="button" onclick="appendQuickTag('#win')" class="px-2 py-1 rounded-lg bg-slate-900 hover:bg-emerald-500/10 text-slate-400 hover:text-emerald-300 text-[10px] font-mono border border-slate-800 transition active:scale-95">+ #win</button>
+            <button type="button" onclick="appendQuickTag('#milestone')" class="px-2 py-1 rounded-lg bg-slate-900 hover:bg-emerald-500/10 text-slate-400 hover:text-emerald-300 text-[10px] font-mono border border-slate-800 transition active:scale-95">+ #milestone</button>
+          </div>
+
+          <button type="button" onclick="saveDailyDiaryEntry()" class="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-slate-950 font-black rounded-xl transition text-xs shadow-lg shadow-emerald-600/20 shrink-0 flex items-center justify-center gap-2 active:scale-95">
+            <i data-lucide="send" class="w-3.5 h-3.5"></i>
+            <span>Log to Memory</span>
+          </button>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Priority Task Execution & Expense Breakdown -->
+  <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 items-start">
+    
+    <!-- Left: Priority Execution List with Filter -->
+    <div class="lg:col-span-7 glass-card rounded-2xl p-4 md:p-5 space-y-3 border border-purple-500/20 bg-purple-500/[0.02]">
+      <div class="flex flex-wrap justify-between items-center border-b border-slate-800/80 pb-3 gap-2">
+        <div>
+          <h3 class="text-xs font-extrabold text-white uppercase tracking-wider flex items-center gap-2">
+            <i data-lucide="check-square" class="w-4 h-4 text-purple-400"></i> Priority &amp; Due Action Tasks
+          </h3>
+          <p class="text-[11px] text-slate-400 mt-0.5">Check off items directly or click title to jump to the matching task list.</p>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <select id="dash-task-prio-filter" onchange="renderPriorityTasksList()" class="bg-slate-950 border border-slate-800 text-slate-200 rounded-xl px-2.5 py-1 text-xs outline-none focus:border-purple-400 font-medium">
+            <option value="ALL">All Pending</option>
+            <option value="HIGH">🔥 High Priority</option>
+            <option value="TODAY">📅 Due Today</option>
+            <option value="OVERDUE">⚠️ Overdue</option>
+          </select>
+          <button type="button" onclick="window.switchTab('tasks')" class="text-xs text-purple-400 hover:underline font-bold">All Tasks &rarr;</button>
+        </div>
+      </div>
+
+      <div id="dashboard-urgent-tasks-list" class="space-y-2 max-h-72 overflow-y-auto pr-1 scrollbar-none">
+        <!-- Injected dynamically -->
+      </div>
+    </div>
+
+    <!-- Right: Expense Category Doughnut Chart & Scratchpad -->
+    <div class="lg:col-span-5 space-y-4">
+      <div onclick="window.switchTab('finance')" class="glass-card rounded-2xl p-4 space-y-3 border border-slate-800 cursor-pointer hover:border-emerald-500/40 transition bg-slate-900/40">
+        <div class="flex justify-between items-center border-b border-slate-800 pb-2">
+          <h3 class="text-xs font-extrabold text-white uppercase tracking-wider flex items-center gap-2">
+            <i data-lucide="pie-chart" class="w-4 h-4 text-emerald-400"></i> Expense Category Allocation
+          </h3>
+          <span id="chart-period-badge" class="text-[10px] bg-slate-950 text-slate-400 border border-slate-800 px-2 py-0.5 rounded font-mono">This Month</span>
+        </div>
+        <div class="h-44 relative flex items-center justify-center">
+          <canvas id="financeCategoryChart"></canvas>
+        </div>
+      </div>
+
+      <div class="glass-card rounded-2xl p-4 space-y-2 border border-slate-800 bg-slate-900/40">
+        <div class="flex justify-between items-center border-b border-slate-800 pb-2">
+          <h3 class="text-xs font-extrabold text-amber-300 uppercase tracking-wider flex items-center gap-2">
+            <i data-lucide="edit-3" class="w-4 h-4 text-amber-400"></i> Scratchpad
+          </h3>
+          <span class="text-[10px] text-slate-500 font-mono">Auto-saved</span>
+        </div>
+        <textarea id="dash-scratchpad-input" oninput="saveDashboardScratchpad()" rows="3" placeholder="Quickly jot ideas, calculations, numbers, or temporary notes..." class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-xs text-slate-200 outline-none focus:border-amber-400 font-mono resize-none leading-relaxed"></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- Monthly Cash Flow & Burn Rate Analysis -->
+  <div onclick="window.switchTab('finance')" class="glass-card rounded-2xl p-4 md:p-5 space-y-3 border border-slate-800 cursor-pointer hover:border-emerald-500/40 transition bg-slate-900/40">
+    <div class="flex justify-between items-center border-b border-slate-800 pb-2">
+      <h3 class="text-xs font-extrabold text-white uppercase tracking-wider flex items-center gap-2">
+        <i data-lucide="trending-up" class="w-4 h-4 text-emerald-400"></i> Cash Flow &amp; Burn Rate Analysis
+      </h3>
+      <span id="dash-cashflow-status" class="text-xs font-bold text-emerald-400 px-2.5 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20">Positive Flow</span>
+    </div>
+
+    <div class="space-y-1.5 text-xs">
+      <div class="flex justify-between font-semibold">
+        <span class="text-slate-300">Income Burn Rate</span>
+        <span id="dash-savings-percentage" class="text-sky-400 font-bold font-mono">0% Spent</span>
+      </div>
+      <div class="w-full bg-slate-950 h-3 rounded-full overflow-hidden border border-slate-800 flex">
+        <div id="dash-bar-expense" class="bg-rose-500 h-full transition-all duration-500" style="width: 0%" title="Expenses"></div>
+        <div id="dash-bar-savings" class="bg-emerald-500 h-full transition-all duration-500" style="width: 100%" title="Net Savings"></div>
+      </div>
+      <div class="flex justify-between text-[11px] text-slate-400 pt-0.5 font-mono">
+        <span>Expenses: <strong id="dash-bar-exp-text" class="text-rose-400">₹0</strong></span>
+        <span>Net Savings: <strong id="dash-bar-sav-text" class="text-emerald-400">₹0</strong></span>
+      </div>
+    </div>
+  </div>
+
+</section>
+
+<!-- ========================================================================= -->
+<!-- SECTION 1 JAVASCRIPT LOGIC MODULE                                         -->
+<!-- ========================================================================= -->
+<script>
+  (function() {
+    let dashboardCategoryChart = null;
+    let selectedActiveMood = '🙂';
+    let selectedEnergyLevel = 4;
+    let speechRecognitionInstance = null;
+    let isRecordingSpeech = false;
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    function getTodayDateStr() {
+      return new Date().toISOString().split('T')[0];
+    }
+
+    function refreshIconsScoped(rootEl) {
+      if (window.lucide && typeof window.lucide.createIcons === 'function') {
+        window.lucide.createIcons({
+          root: rootEl instanceof HTMLElement ? rootEl : document.body
+        });
+      }
+    }
+
+    /* Update Live Digital Clock HUD */
+    function updateLiveDashboardClock() {
+      const clockEl = document.getElementById('dash-live-clock');
+      if (!clockEl) return;
+      const now = new Date();
+      clockEl.textContent = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    }
+    setInterval(updateLiveDashboardClock, 1000);
+
+    /* Universal Launchpad Action */
+    window.dashRouteAndOpen = function(targetTab, actionType) {
+      if (window.switchTab) window.switchTab(targetTab);
+
+      setTimeout(() => {
+        if (targetTab === 'calendar') {
+          if (typeof window.openAddCalendarEventModal === 'function') window.openAddCalendarEventModal();
+          else if (typeof window.openModal === 'function') window.openModal('add-calendar-event-modal');
+        } else if (targetTab === 'finance') {
+          if (typeof window.openAddTransactionModal === 'function') window.openAddTransactionModal();
+          else if (typeof window.openModal === 'function') window.openModal('add-transaction-modal');
+        } else if (targetTab === 'tasks') {
+          if (typeof window.openAddTaskModal === 'function') window.openAddTaskModal();
+        } else if (targetTab === 'notes') {
+          if (typeof window.openCreateNoteModal === 'function') window.openCreateNoteModal();
+          else if (typeof window.createNewNote === 'function') window.createNewNote();
+        } else if (targetTab === 'vehicles') {
+          if (typeof window.openAddFuelLogModal === 'function') window.openAddFuelLogModal();
+          else if (typeof window.openModal === 'function') window.openModal('add-fuel-quick-modal');
+        } else if (targetTab === 'goals') {
+          if (typeof window.openCreateGoalModal === 'function') window.openCreateGoalModal();
+        } else if (targetTab === 'mindmap') {
+          if (typeof window.openNodeModal === 'function') window.openNodeModal(null);
+        } else if (targetTab === 'links') {
+          if (typeof window.openAddLinkModal === 'function') window.openAddLinkModal();
+        } else if (targetTab === 'focus') {
+          if (typeof window.toggleTimerEngine === 'function') window.toggleTimerEngine();
+        }
+      }, 60);
+    };
+
+    /* Set Dashboard Period Filter */
+    window.setDashboardPeriod = function(p) {
+      if (!window.appState) window.appState = {};
+      window.appState.dashboardPeriod = p;
+
+      const filterBadge = document.getElementById('chart-period-badge');
+      if (filterBadge) {
+        filterBadge.textContent = p === 'month' ? 'This Month' : p === 'week' ? 'This Week' : p === 'year' ? 'This Year' : 'All Time';
+      }
+
+      ['month', 'week', 'year', 'all'].forEach(filterKey => {
+        const btn = document.getElementById(`dash-filter-${filterKey}`);
+        if (btn) {
+          if (filterKey === p) {
+            btn.className = 'dash-period-btn bg-emerald-600 text-slate-950 font-bold px-3 py-1.5 rounded-lg shadow transition';
+          } else {
+            btn.className = 'dash-period-btn px-3 py-1.5 rounded-lg text-slate-400 hover:text-white transition';
+          }
+        }
+      });
+
+      window.renderDashboard();
+    };
+
+    /* ------------------------------------------------------------------------- */
+    /* ADVANCED LOGBOOK & INSTANT DIARY CAPTURE ENGINE                          */
+    /* ------------------------------------------------------------------------- */
+    window.selectActiveMood = function(emoji) {
+      selectedActiveMood = emoji;
+      const moodButtons = {
+        '😁': 'mood-btn-great',
+        '🙂': 'mood-btn-good',
+        '😐': 'mood-btn-neutral',
+        '😔': 'mood-btn-low',
+        '😤': 'mood-btn-intense'
+      };
+
+      Object.keys(moodButtons).forEach(eKey => {
+        const btn = document.getElementById(moodButtons[eKey]);
+        if (!btn) return;
+        if (eKey === emoji) {
+          btn.className = 'mood-select-btn px-2 py-1 rounded-lg text-base bg-emerald-600/30 text-emerald-300 border border-emerald-500/40 font-bold transition scale-105 shadow-sm';
+        } else {
+          btn.className = 'mood-select-btn px-2 py-1 rounded-lg text-base bg-slate-900 hover:bg-slate-800 text-slate-400 transition border border-slate-800';
+        }
+      });
+    };
+
+    window.selectEnergyLevel = function(level) {
+      selectedEnergyLevel = level;
+      for (let i = 1; i <= 5; i++) {
+        const btn = document.getElementById(`energy-star-${i}`);
+        if (btn) {
+          if (i <= level) {
+            btn.className = 'text-sm text-amber-400 transition scale-110';
+          } else {
+            btn.className = 'text-sm text-slate-600 hover:text-amber-400 transition';
+          }
+        }
+      }
+    };
+
+    window.injectPromptTemplate = function(templatePrefix) {
+      const textarea = document.getElementById('dash-gratitude-input');
+      if (!textarea) return;
+      const cur = textarea.value.trim();
+      if (!cur) {
+        textarea.value = `${templatePrefix} `;
+      } else {
+        textarea.value = `${cur}\n${templatePrefix} `;
+      }
+      textarea.focus();
+      updateDiaryLiveTelemetry();
+    };
+
+    window.appendQuickTag = function(tag) {
+      const tagInput = document.getElementById('dash-log-tag-input');
+      if (!tagInput) return;
+      let val = tagInput.value.trim();
+      if (val) {
+        if (!val.includes(tag)) tagInput.value = `${val} ${tag}`;
+      } else {
+        tagInput.value = tag;
+      }
+    };
+
+    window.updateDiaryLiveTelemetry = function() {
+      const textarea = document.getElementById('dash-gratitude-input');
+      const wordCountEl = document.getElementById('diary-live-word-count');
+      const charCountEl = document.getElementById('diary-live-char-count');
+      if (!textarea) return;
+
+      const str = textarea.value.trim();
+      const words = str ? str.split(/\s+/).length : 0;
+      const chars = textarea.value.length;
+
+      if (wordCountEl) wordCountEl.textContent = `${words} word${words === 1 ? '' : 's'}`;
+      if (charCountEl) charCountEl.textContent = `${chars} char${chars === 1 ? '' : 's'}`;
+    };
+
+    /* Browser Native Speech Recognition Engine */
+    window.toggleDiaryVoiceDictation = function() {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!SpeechRecognition) {
+        if (window.showToast) window.showToast('Speech Recognition not supported on this browser.', 'error');
+        return;
+      }
+
+      const micBtn = document.getElementById('btn-voice-dictate-diary');
+
+      if (isRecordingSpeech && speechRecognitionInstance) {
+        speechRecognitionInstance.stop();
+        isRecordingSpeech = false;
+        if (micBtn) micBtn.className = 'absolute top-2.5 right-2.5 p-1.5 bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-emerald-400 rounded-lg transition active:scale-90';
+        return;
+      }
+
+      speechRecognitionInstance = new SpeechRecognition();
+      speechRecognitionInstance.continuous = false;
+      speechRecognitionInstance.interimResults = false;
+      speechRecognitionInstance.lang = 'en-US';
+
+      speechRecognitionInstance.onstart = function() {
+        isRecordingSpeech = true;
+        if (micBtn) micBtn.className = 'absolute top-2.5 right-2.5 p-1.5 bg-rose-600 text-white rounded-lg transition animate-pulse';
+        if (window.showToast) window.showToast('Listening... Speak your reflection.', 'info');
+      };
+
+      speechRecognitionInstance.onresult = function(event) {
+        const transcript = event.results[0][0].transcript;
+        const textarea = document.getElementById('dash-gratitude-input');
+        if (textarea && transcript) {
+          const curVal = textarea.value.trim();
+          textarea.value = curVal ? `${curVal} ${transcript}` : transcript;
+          updateDiaryLiveTelemetry();
+        }
+      };
+
+      speechRecognitionInstance.onerror = function(event) {
+        isRecordingSpeech = false;
+        if (micBtn) micBtn.className = 'absolute top-2.5 right-2.5 p-1.5 bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-emerald-400 rounded-lg transition active:scale-90';
+      };
+
+      speechRecognitionInstance.onend = function() {
+        isRecordingSpeech = false;
+        if (micBtn) micBtn.className = 'absolute top-2.5 right-2.5 p-1.5 bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-emerald-400 rounded-lg transition active:scale-90';
+      };
+
+      speechRecognitionInstance.start();
+    };
+
+    window.saveDailyDiaryEntry = function() {
+      const textInput = document.getElementById('dash-gratitude-input');
+      const tagInput = document.getElementById('dash-log-tag-input');
+      const imageInput = document.getElementById('dash-log-image-url');
+      const locationInput = document.getElementById('dash-log-location-input');
+      const typeSelect = document.getElementById('dash-log-type-select');
+      const pinnedCheck = document.getElementById('dash-log-is-pinned');
+
+      const rawText = textInput ? textInput.value.trim() : '';
+      const customTags = tagInput ? tagInput.value.trim() : '';
+      const mediaUrl = imageInput ? imageInput.value.trim() : '';
+      const location = locationInput ? locationInput.value.trim() : '';
+      const type = typeSelect ? typeSelect.value : 'Daily Thought';
+      const isPinned = !!(pinnedCheck && pinnedCheck.checked);
+
+      if (!rawText) {
+        if (window.showToast) window.showToast('Please type your reflection or experience.', 'error');
+        return;
+      }
+
+      if (!window.appState) window.appState = {};
+      if (!Array.isArray(window.appState.diaryEntries)) {
+        window.appState.diaryEntries = [];
+      }
+
+      const now = new Date();
+      const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      const dateStr = getTodayDateStr();
+
+      const inTextTags = rawText.match(/#[a-zA-Z0-9_-]+/g) || [];
+      const combinedTags = Array.from(new Set([...customTags.split(/\s+/).filter(Boolean), ...inTextTags])).join(' ');
+
+      const entryObject = {
+        id: 'd_' + Date.now(),
+        date: dateStr,
+        time: timeStr,
+        type: type,
+        mood: selectedActiveMood || '🙂',
+        energy: selectedEnergyLevel || 4,
+        isPinned: isPinned,
+        mediaUrl: mediaUrl,
+        location: location || '',
+        tags: combinedTags || '#daily',
+        text: rawText,
+        createdAt: now.toISOString()
+      };
+
+      window.appState.diaryEntries.unshift(entryObject);
+
+      if (textInput) textInput.value = '';
+      if (tagInput) tagInput.value = '';
+      if (imageInput) imageInput.value = '';
+      if (locationInput) locationInput.value = '';
+      if (pinnedCheck) pinnedCheck.checked = false;
+
+      updateDiaryLiveTelemetry();
+
+      if (window.saveCloudData) window.saveCloudData();
+      if (window.saveLocalCache) window.saveLocalCache();
+      if (window.showToast) window.showToast('Logged to memory logbook!', 'success');
+
+      window.renderDashboard();
+    };
+
+    window.navigateToLogbookSection = function() {
+      if (document.getElementById('view-logbook') || document.getElementById('view-diary')) {
+        if (window.switchTab) window.switchTab(document.getElementById('view-logbook') ? 'logbook' : 'diary');
+      } else {
+        if (window.showToast) window.showToast("All logs saved date-wise! Full Logbook section will display your entire history when created.", "info");
+      }
+    };
+
+    window.saveDashboardScratchpad = function() {
+      const input = document.getElementById('dash-scratchpad-input');
+      if (input) {
+        if (!window.appState) window.appState = {};
+        window.appState.scratchpad = input.value;
+        if (window.saveLocalCache) window.saveLocalCache();
+      }
+    };
+
+    window.toggleDashTaskComplete = function(id) {
+      const task = (window.appState?.tasks || []).find(t => t.id === id);
+      if (task) {
+        task.completed = !task.completed;
+        task.status = task.completed ? 'done' : 'progress';
+        if (window.saveCloudData) window.saveCloudData();
+        if (window.refreshAllViews) window.refreshAllViews();
+        window.renderDashboard();
+      }
+    };
+
+    window.toggleDashHabitToday = function(id) {
+      const habit = (window.appState?.habits || []).find(h => h.id === id);
+      if (!habit) return;
+
+      if (!habit.history) habit.history = {};
+      const todayStr = getTodayDateStr();
+
+      const isChecked = habit.history[todayStr] === true || (typeof habit.history[todayStr] === 'object' && habit.history[todayStr].completed !== false);
+
+      if (isChecked) {
+        delete habit.history[todayStr];
+      } else {
+        habit.history[todayStr] = { completed: true, timestamp: new Date().toISOString() };
+      }
+
+      if (window.saveCloudData) window.saveCloudData();
+      if (window.refreshAllViews) window.refreshAllViews();
+      window.renderDashboard();
+    };
+
+    /* MAIN RENDER ENGINE FOR DASHBOARD */
+    window.renderDashboard = function() {
+      if (!window.appState) window.appState = {};
+      const now = new Date();
+      const todayStr = getTodayDateStr();
+
+      const hour = now.getHours();
+      let greeting = "Good Morning, Commander";
+      if (hour >= 12 && hour < 17) greeting = "Good Afternoon, Commander";
+      else if (hour >= 17) greeting = "Good Evening, Commander";
+
+      const greetingEl = document.getElementById('dash-greeting-text');
+      if (greetingEl) greetingEl.textContent = greeting;
+
+      const dateSubEl = document.getElementById('dash-date-subtitle');
+      if (dateSubEl) {
+        dateSubEl.textContent = now.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+      }
+
+      const scratchpadEl = document.getElementById('dash-scratchpad-input');
+      if (scratchpadEl && window.appState.scratchpad !== undefined) {
+        scratchpadEl.value = window.appState.scratchpad;
+      }
+
+      const todayEntries = (window.appState?.diaryEntries || []).filter(e => e.date === todayStr);
+      const counterEl = document.getElementById('dash-today-logged-counter');
+      if (counterEl) counterEl.textContent = `${todayEntries.length} logged today`;
+
+      // 1. Financial Aggregation
+      const period = window.appState.dashboardPeriod || 'month';
+      const allTrans = window.appState.transactions || [];
+      let totalInc = 0, totalExp = 0, todaySpend = 0;
+
+      for (let i = 0; i < allTrans.length; i++) {
+        const t = allTrans[i];
+        const d = new Date(t.date);
+
+        let matchesPeriod = false;
+        if (period === 'month') matchesPeriod = (d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear());
+        else if (period === 'week') matchesPeriod = (Math.abs((now - d) / (1000 * 60 * 60 * 24)) <= 7);
+        else if (period === 'year') matchesPeriod = (d.getFullYear() === now.getFullYear());
+        else matchesPeriod = true;
+
+        if (matchesPeriod) {
+          if (t.type === 'income') totalInc += (t.amount || 0);
+          if (t.type === 'expense') totalExp += (t.amount || 0);
+        }
+
+        if (t.date === todayStr && t.type === 'expense') {
+          todaySpend += (t.amount || 0);
+        }
+      }
+
+      const netVal = totalInc - totalExp;
+      const elNet = document.getElementById('dash-kpi-net');
+      if (elNet) {
+        elNet.textContent = `₹${netVal.toLocaleString('en-IN')}`;
+        elNet.className = `text-base md:text-lg font-black truncate ${netVal >= 0 ? 'text-emerald-400' : 'text-rose-400'}`;
+      }
+
+      const savingsPct = totalInc > 0 ? Math.max(0, Math.round(((totalInc - totalExp) / totalInc) * 100)) : 0;
+      const elNetSub = document.getElementById('dash-kpi-net-sub');
+      if (elNetSub) elNetSub.textContent = `Savings Rate: ${savingsPct}%`;
+
+      const elTodaySpend = document.getElementById('dash-kpi-today-spend');
+      if (elTodaySpend) elTodaySpend.textContent = `₹${todaySpend.toLocaleString('en-IN')}`;
+
+      const elMonthExpSub = document.getElementById('dash-kpi-month-expense-sub');
+      if (elMonthExpSub) elMonthExpSub.textContent = `Period Exp: ₹${totalExp.toLocaleString('en-IN')}`;
+
+      // 2. Tasks KPI Calculation (Honoring excludeFromTotal)
+      const allTasks = window.appState.tasks || [];
+      const taskLists = window.appState.taskLists || [];
+      const excludedListIds = new Set(taskLists.filter(l => l.excludeFromTotal).map(l => l.id));
+
+      const countableTasks = allTasks.filter(t => !excludedListIds.has(t.listId));
+      let pendingCount = 0, doneCount = 0, highPrioCount = 0;
+
+      for (let i = 0; i < countableTasks.length; i++) {
+        const t = countableTasks[i];
+        if (t.completed || t.status === 'done') doneCount++;
+        else {
+          pendingCount++;
+          if (t.priority === 'High') highPrioCount++;
+        }
+      }
+
+      const taskDoneRate = countableTasks.length > 0 ? Math.round((doneCount / countableTasks.length) * 100) : 0;
+
+      const elUrgentTasks = document.getElementById('dash-kpi-urgent-tasks');
+      if (elUrgentTasks) elUrgentTasks.textContent = `${pendingCount} Pending`;
+
+      const elTaskRate = document.getElementById('dash-kpi-task-rate');
+      if (elTaskRate) elTaskRate.textContent = `${taskDoneRate}% Done`;
+
+      const elHighPrio = document.getElementById('dash-kpi-high-prio-count');
+      if (elHighPrio) elHighPrio.textContent = `${highPrioCount} High`;
+
+      // 3. Habits KPI Calculation
+      const allHabits = window.appState.habits || [];
+      let todayHabitsDone = 0, streakSum = 0;
+
+      allHabits.forEach(h => {
+        if (h.history) {
+          const isDone = h.history[todayStr] === true || (typeof h.history[todayStr] === 'object' && h.history[todayStr].completed !== false);
+          if (isDone) todayHabitsDone++;
+
+          const dates = Object.keys(h.history).filter(d => h.history[d] === true || (typeof h.history[d] === 'object' && h.history[d].completed !== false));
+          streakSum += dates.length;
+        }
+      });
+
+      const habitDoneRate = allHabits.length > 0 ? Math.round((todayHabitsDone / allHabits.length) * 100) : 0;
+
+      const elHabitRate = document.getElementById('dash-kpi-habit-rate');
+      if (elHabitRate) elHabitRate.textContent = `${habitDoneRate}% Today`;
+
+      const elHabitSub = document.getElementById('dash-kpi-habit-sub');
+      if (elHabitSub) elHabitSub.textContent = `${todayHabitsDone}/${allHabits.length} done`;
+
+      const elStreakSum = document.getElementById('dash-kpi-streak-sum');
+      if (elStreakSum) elStreakSum.textContent = `🔥 ${streakSum}d`;
+
+      // 4. Time Worked Today KPI
+      const allTimeLogs = window.appState.timeLogs || [];
+      let hoursWorkedToday = 0, todaySessionsCount = 0;
+      allTimeLogs.forEach(tm => {
+        if (tm.date === todayStr) {
+          hoursWorkedToday += (tm.hours || 0);
+          todaySessionsCount++;
+        }
+      });
+
+      const elHoursToday = document.getElementById('dash-kpi-hours-today');
+      if (elHoursToday) elHoursToday.textContent = `${hoursWorkedToday.toFixed(1)} hrs`;
+
+      const elHoursSub = document.getElementById('dash-kpi-hours-sub');
+      if (elHoursSub) elHoursSub.textContent = `${todaySessionsCount} session${todaySessionsCount === 1 ? '' : 's'} today`;
+
+      // 5. Daily Productivity Score
+      const todayTasks = countableTasks.filter(t => t.dueDate === todayStr);
+      const todayDoneTasks = todayTasks.filter(t => t.completed || t.status === 'done').length;
+      const todayTaskRatio = todayTasks.length > 0 ? (todayDoneTasks / todayTasks.length) : (pendingCount === 0 ? 1 : 0.5);
+
+      const habitRatio = allHabits.length > 0 ? (todayHabitsDone / allHabits.length) : 0.5;
+      const productivityScore = Math.min(100, Math.round(((habitRatio * 0.5) + (todayTaskRatio * 0.5)) * 100));
+
+      const elScoreVal = document.getElementById('dash-kpi-score-val');
+      if (elScoreVal) elScoreVal.textContent = `${productivityScore}%`;
+
+      const elScoreBar = document.getElementById('dash-kpi-score-bar');
+      if (elScoreBar) elScoreBar.style.width = `${productivityScore}%`;
+
+      window.renderTodayAgendaRadar();
+      window.renderTodayRoutinesStrip();
+      window.renderPriorityTasksList();
+      renderBurnRateAndChart(totalInc, totalExp);
+    };
+
+    /* Pure Calendar & Celebrations Radar */
+    window.renderTodayAgendaRadar = function() {
+      const container = document.getElementById('dash-today-agenda-container');
+      const countBadge = document.getElementById('dash-radar-count-badge');
+      if (!container) return;
+      container.innerHTML = '';
+
+      const filterVal = document.getElementById('dash-radar-filter')?.value || 'WEEK';
+      const todayStr = getTodayDateStr();
+      const now = new Date();
+      now.setHours(0,0,0,0);
+
+      const events = window.appState?.calendarEvents || [];
+      const celebrations = [];
+
+      events.forEach(ev => {
+        if (!ev.date) return;
+        const evDate = new Date(ev.date);
+        evDate.setHours(0,0,0,0);
+
+        const diffDays = Math.ceil((evDate - now) / (1000 * 60 * 60 * 24));
+        const isYearly = ev.recurrence === 'YEARLY' || ev.type === 'BIRTHDAY' || ev.type === 'ANNIVERSARY';
+
+        let matches = false;
+        if (filterVal === 'TODAY') {
+          matches = (ev.date === todayStr) || (isYearly && ev.date.endsWith(todayStr.slice(5)));
+        } else if (filterVal === 'WEEK') {
+          matches = (diffDays >= 0 && diffDays <= 7) || (isYearly && ev.date.endsWith(todayStr.slice(5)));
+        } else if (filterVal === 'BIRTHDAYS') {
+          matches = isYearly || ev.type === 'BIRTHDAY' || ev.type === 'ANNIVERSARY';
+        } else {
+          matches = true;
+        }
+
+        if (matches) {
+          let badgeText = `${diffDays === 0 ? 'Today' : diffDays === 1 ? 'Tomorrow' : 'In ' + diffDays + 'd'}`;
+          if (diffDays < 0) badgeText = 'Past';
+
+          celebrations.push({
+            id: ev.id,
+            date: ev.date,
+            title: ev.title,
+            time: ev.time || 'All Day',
+            type: ev.type || 'EVENT',
+            badgeText: badgeText,
+            diffDays: diffDays,
+            icon: ev.type === 'BIRTHDAY' ? '🎂' : ev.type === 'ANNIVERSARY' ? '💍' : '🎉'
+          });
+        }
+      });
+
+      celebrations.sort((a, b) => (a.diffDays - b.diffDays));
+
+      if (countBadge) countBadge.textContent = `${celebrations.length} event${celebrations.length === 1 ? '' : 's'}`;
+
+      if (celebrations.length === 0) {
+        container.innerHTML = `
+          <div class="p-4 text-slate-500 text-xs text-center italic bg-slate-950 rounded-xl border border-slate-800">
+            No celebrations or events matching current filter. Click "+ Add Event" to plan!
+          </div>
+        `;
+        return;
+      }
+
+      const fragment = document.createDocumentFragment();
+      celebrations.forEach(item => {
+        const isToday = item.diffDays === 0;
+        const el = document.createElement('div');
+        el.className = `p-2.5 rounded-xl border flex items-center justify-between gap-2 cursor-pointer hover:border-cyan-500/50 transition bg-slate-950 ${
+          isToday ? 'border-cyan-500/40 bg-cyan-950/20' : 'border-slate-800'
+        }`;
+        
+        el.onclick = () => {
+          if (window.switchTab) window.switchTab('calendar');
+        };
+
+        el.innerHTML = `
+          <div class="flex items-center gap-2.5 truncate min-w-0">
+            <span class="text-base shrink-0">${item.icon}</span>
+            <div class="truncate min-w-0">
+              <p class="font-bold text-white text-xs truncate">${escapeHtml(item.title)}</p>
+              <span class="text-[10px] text-slate-400 font-mono">${item.date} • ${escapeHtml(item.time)}</span>
+            </div>
+          </div>
+          <span class="text-[9px] px-2 py-0.5 rounded font-mono font-bold shrink-0 ${
+            isToday ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/30' : 'bg-slate-900 text-slate-400 border border-slate-800'
+          }">
+            ${item.badgeText}
+          </span>
+        `;
+        fragment.appendChild(el);
+      });
+      container.appendChild(fragment);
+      refreshIconsScoped(container);
+    };
+
+    /* Filterable Circadian Habits Check-in Strip */
+    window.renderTodayRoutinesStrip = function() {
+      const container = document.getElementById('dash-routines-container');
+      if (!container) return;
+      container.innerHTML = '';
+
+      const slotFilter = document.getElementById('dash-habit-slot-filter')?.value || 'ALL';
+      let habits = window.appState?.habits || [];
+      const todayStr = getTodayDateStr();
+
+      if (slotFilter !== 'ALL') {
+        habits = habits.filter(h => (h.timeOfDay || 'Anytime') === slotFilter);
+      }
+
+      if (habits.length === 0) {
+        container.innerHTML = `
+          <div class="p-4 text-slate-500 text-xs text-center italic bg-slate-950 rounded-xl border border-slate-800">
+            No routines in this flow. Click "Matrix" to configure habits.
+          </div>
+        `;
+        return;
+      }
+
+      const fragment = document.createDocumentFragment();
+      habits.forEach(h => {
+        const isDone = h.history && (h.history[todayStr] === true || (typeof h.history[todayStr] === 'object' && h.history[todayStr].completed !== false));
+
+        const el = document.createElement('div');
+        el.className = 'p-2.5 bg-slate-950 rounded-xl border border-slate-800 flex items-center justify-between text-xs hover:border-red-500/40 transition gap-2';
+        el.innerHTML = `
+          <div class="flex items-center gap-2.5 truncate min-w-0 pr-1">
+            <span class="text-base shrink-0">${escapeHtml(h.icon || '🔥')}</span>
+            <div class="truncate min-w-0">
+              <span class="font-bold text-slate-200 block truncate ${isDone ? 'line-through text-slate-500' : ''}">${escapeHtml(h.name)}</span>
+              <span class="text-[9px] text-slate-500 font-mono">${escapeHtml(h.category || 'General')}</span>
+            </div>
+          </div>
+          <button type="button" onclick="toggleDashHabitToday('${h.id}')" class="px-3 py-1 rounded-lg text-[10px] font-bold transition shrink-0 active:scale-95 ${
+            isDone ? 'bg-red-500 text-white shadow-sm' : 'bg-slate-900 border border-slate-800 text-slate-400 hover:text-white'
+          }">
+            ${isDone ? '✓ Done' : 'Check-In'}
+          </button>
+        `;
+        fragment.appendChild(el);
+      });
+      container.appendChild(fragment);
+      refreshIconsScoped(container);
+    };
+
+    /* Multi-Filter Priority Task Execution List */
+    window.renderPriorityTasksList = function() {
+      const container = document.getElementById('dashboard-urgent-tasks-list');
+      if (!container) return;
+      container.innerHTML = '';
+
+      const filterVal = document.getElementById('dash-task-prio-filter')?.value || 'ALL';
+      const todayStr = getTodayDateStr();
+      
+      const allTasks = window.appState?.tasks || [];
+      const taskLists = window.appState?.taskLists || [];
+      const excludedListIds = new Set(taskLists.filter(l => l.excludeFromTotal).map(l => l.id));
+
+      let tasks = allTasks.filter(t => !excludedListIds.has(t.listId) && !t.completed && t.status !== 'done');
+
+      if (filterVal === 'HIGH') tasks = tasks.filter(t => t.priority === 'High');
+      else if (filterVal === 'TODAY') tasks = tasks.filter(t => t.dueDate === todayStr);
+      else if (filterVal === 'OVERDUE') tasks = tasks.filter(t => t.dueDate && t.dueDate < todayStr);
+
+      tasks.sort((a, b) => {
+        if (a.priority === 'High' && b.priority !== 'High') return -1;
+        if (a.priority !== 'High' && b.priority === 'High') return 1;
+        return new Date(a.dueDate || '2099-12-31') - new Date(b.dueDate || '2099-12-31');
+      });
+
+      if (tasks.length === 0) {
+        container.innerHTML = `
+          <div class="p-6 text-center text-xs text-slate-500 bg-slate-950 rounded-xl border border-slate-800">
+            🎉 No urgent action tasks found matching filter.
+          </div>
+        `;
+        return;
+      }
+
+      const fragment = document.createDocumentFragment();
+      tasks.forEach(t => {
+        const isToday = t.dueDate === todayStr;
+        const isOverdue = t.dueDate && t.dueDate < todayStr;
+        const list = taskLists.find(l => l.id === t.listId);
+
+        const el = document.createElement('div');
+        el.className = 'p-2.5 bg-slate-950 border border-slate-800 rounded-xl flex items-center justify-between text-xs hover:border-purple-500/40 transition group gap-2';
+
+        el.innerHTML = `
+          <div class="flex items-center gap-2.5 flex-1 min-w-0 pr-1">
+            <input type="checkbox" onchange="toggleDashTaskComplete('${t.id}')" class="w-4 h-4 rounded accent-purple-500 cursor-pointer shrink-0" />
+            <div class="truncate cursor-pointer flex-1 min-w-0" onclick="if(window.switchTab) { window.appState.activeListId = '${t.listId}'; window.switchTab('tasks'); }">
+              <p class="font-bold text-slate-200 truncate group-hover:text-purple-300 transition">${escapeHtml(t.title)}</p>
+              ${list ? `<span class="text-[9px] text-slate-500 font-mono">${escapeHtml(list.name)}</span>` : ''}
+            </div>
+            ${t.priority === 'High' ? '<span class="text-[9px] px-1.5 py-0.2 rounded bg-rose-500/20 text-rose-300 font-bold border border-rose-500/30 shrink-0">🔥 High</span>' : ''}
+          </div>
+          <span class="text-[10px] font-mono shrink-0 px-2 py-0.5 rounded ${
+            isOverdue ? 'bg-rose-500/20 text-rose-300 font-bold border border-rose-500/30' :
+            isToday ? 'bg-purple-500/20 text-purple-300 font-bold border border-purple-500/30' : 'text-slate-400 bg-slate-900 border border-slate-800'
+          }">
+            ${t.dueDate || 'No Date'}
+          </span>
+        `;
+        fragment.appendChild(el);
+      });
+      container.appendChild(fragment);
+      refreshIconsScoped(container);
+    };
+
+    function renderBurnRateAndChart(totalInc, totalExp) {
+      const spentPct = totalInc > 0 ? Math.min(100, Math.round((totalExp / totalInc) * 100)) : (totalExp > 0 ? 100 : 0);
+      const savingsVal = Math.max(0, totalInc - totalExp);
+
+      const elSpentPct = document.getElementById('dash-savings-percentage');
+      if (elSpentPct) elSpentPct.textContent = `${spentPct}% Spent`;
+
+      const elBarExp = document.getElementById('dash-bar-expense');
+      if (elBarExp) elBarExp.style.width = `${spentPct}%`;
+
+      const elBarSav = document.getElementById('dash-bar-savings');
+      if (elBarSav) elBarSav.style.width = `${100 - spentPct}%`;
+
+      const elExpText = document.getElementById('dash-bar-exp-text');
+      if (elExpText) elExpText.textContent = `₹${totalExp.toLocaleString('en-IN')}`;
+
+      const elSavText = document.getElementById('dash-bar-sav-text');
+      if (elSavText) elSavText.textContent = `₹${savingsVal.toLocaleString('en-IN')}`;
+
+      const statusBadge = document.getElementById('dash-cashflow-status');
+      if (statusBadge) {
+        if (totalInc >= totalExp) {
+          statusBadge.textContent = 'Positive Flow';
+          statusBadge.className = 'text-xs font-bold text-emerald-400 px-2.5 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20';
+        } else {
+          statusBadge.textContent = 'Negative Deficit';
+          statusBadge.className = 'text-xs font-bold text-rose-400 px-2.5 py-0.5 rounded-full bg-rose-500/10 border border-rose-500/20';
+        }
+      }
+
+      const ctx = document.getElementById('financeCategoryChart');
+      if (!ctx || typeof Chart === 'undefined') return;
+
+      const now = new Date();
+      const period = window.appState.dashboardPeriod || 'month';
+      const expenseTrans = (window.appState.transactions || []).filter(t => {
+        if (t.type !== 'expense') return false;
+        const d = new Date(t.date);
+        if (period === 'month') return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+        if (period === 'year') return d.getFullYear() === now.getFullYear();
+        return true;
+      });
+
+      const categories = (window.appState.categories || []).filter(c => c.type === 'expense').map(c => c.name);
+      const dataValues = categories.map(cat => 
+        expenseTrans.filter(t => t.category === cat).reduce((acc, curr) => acc + curr.amount, 0)
+      );
+
+      if (dashboardCategoryChart) {
+        dashboardCategoryChart.data.labels = categories;
+        dashboardCategoryChart.data.datasets[0].data = dataValues;
+        dashboardCategoryChart.update('none');
+      } else {
+        dashboardCategoryChart = new Chart(ctx, {
+          type: 'doughnut',
+          data: {
+            labels: categories,
+            datasets: [{
+              data: dataValues,
+              backgroundColor: ['#10b981', '#06b6d4', '#a855f7', '#f43f5e', '#f59e0b', '#38bdf8', '#6366f1'],
+              borderWidth: 0
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            animation: false,
+            plugins: {
+              legend: { position: 'right', labels: { color: '#94a3b8', font: { size: 10 } } }
+            }
+          }
+        });
+      }
+    }
+
+    // Auto-boot on load
+    setTimeout(() => {
+      window.renderDashboard();
+    }, 100);
+  })();
+</script>
+<!-- ========================================================================= -->
+<!-- END SECTION 1: DASHBOARD APP VIEW                                         -->
+<!-- ========================================================================= -->
 
 
 <!-- ========================================================================= -->
