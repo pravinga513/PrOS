@@ -12,7 +12,11 @@
 
   <!-- Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
+<link rel="manifest" href="./manifest.json">
+<meta name="theme-color" content="#020617">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="PrOS">
   <script>
     tailwind.config = {
       darkMode: 'class',
@@ -21554,6 +21558,18 @@ function hydrateUserData(cloudUserData) {
   if (typeof window.updateBadges === 'function') window.updateBadges();
 }
  </script>
-
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./sw.js')
+        .then((reg) => {
+          console.log('PrOS Service Worker registered with scope:', reg.scope);
+        })
+        .catch((err) => {
+          console.warn('Service Worker registration failed:', err);
+        });
+    });
+  }
+</script>
 </body>
 </html>
