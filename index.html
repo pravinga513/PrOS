@@ -4320,50 +4320,42 @@ html, body {
     <div id="task-hashtag-chips-container" class="flex items-center gap-1.5 flex-nowrap"></div>
   </div>
 
-  <!-- KPI Overview Metrics -->
-  <div class="grid grid-cols-4 gap-1.5 sm:gap-3 md:gap-4">
-    <div class="glass-card p-2 sm:p-3 md:p-4 rounded-2xl border border-purple-500/20 bg-purple-500/[0.03] space-y-0.5 sm:space-y-1 hover:border-purple-500/40 transition">
-      <div class="flex justify-between items-center whitespace-nowrap">
-        <span class="uppercase tracking-wider text-[8px] sm:text-[9px] font-bold leading-none">Total</span>
-        <div class="p-0.5 sm:p-1 bg-purple-500/10 text-purple-400 rounded-lg shrink-0">
-          <i data-lucide="list-todo" class="w-3 h-3 sm:w-3.5 sm:h-3.5"></i>
-        </div>
+  <!-- KPI Overview Metrics (single strip, divided) -->
+  <div class="glass-card rounded-2xl border border-purple-500/20 bg-purple-500/[0.03] grid grid-cols-4 divide-x divide-slate-800/70 overflow-hidden">
+    <div class="p-2 sm:p-3.5 space-y-0.5 hover:bg-purple-500/[0.04] transition">
+      <div class="flex items-center gap-1 whitespace-nowrap">
+        <i data-lucide="list-todo" class="w-3 h-3 sm:w-3.5 sm:h-3.5 text-purple-400 shrink-0"></i>
+        <span class="uppercase tracking-wider text-[8px] sm:text-[9px] font-bold leading-none text-slate-400">Total</span>
       </div>
       <div id="task-metric-total" class="text-sm sm:text-base md:text-xl font-black text-slate-100">0</div>
-      <p id="task-metric-rate" class="text-[10px] text-purple-400 font-mono hidden xs:block sm:block">0%</p>
+      <p id="task-metric-rate" class="text-[9px] sm:text-[10px] text-purple-400 font-mono leading-tight">0%</p>
     </div>
 
-    <div class="glass-card p-2 sm:p-3 md:p-4 rounded-2xl border border-purple-500/20 bg-purple-500/[0.03] space-y-0.5 sm:space-y-1 hover:border-amber-500/40 transition">
-      <div class="flex justify-between items-center whitespace-nowrap">
-        <span class="uppercase tracking-wider text-[8px] sm:text-[9px] font-bold leading-none">Due</span>
-        <div class="p-0.5 sm:p-1 bg-amber-500/10 text-amber-400 rounded-lg shrink-0">
-          <i data-lucide="calendar" class="w-3 h-3 sm:w-3.5 sm:h-3.5"></i>
-        </div>
+    <div class="p-2 sm:p-3.5 space-y-0.5 hover:bg-amber-500/[0.03] transition">
+      <div class="flex items-center gap-1 whitespace-nowrap">
+        <i data-lucide="calendar" class="w-3 h-3 sm:w-3.5 sm:h-3.5 text-amber-400 shrink-0"></i>
+        <span class="uppercase tracking-wider text-[8px] sm:text-[9px] font-bold leading-none text-slate-400">Due</span>
       </div>
       <div id="task-metric-today" class="text-sm sm:text-base md:text-xl font-black text-amber-400">0</div>
-      <p id="task-metric-overdue" class="text-[10px] text-rose-400 font-mono">⚠️ 0</p>
+      <p id="task-metric-overdue" class="text-[9px] sm:text-[10px] text-rose-400 font-mono leading-tight truncate">⚠️ 0</p>
     </div>
 
-    <div class="glass-card p-2 sm:p-3 md:p-4 rounded-2xl border border-purple-500/20 bg-purple-500/[0.03] space-y-0.5 sm:space-y-1 hover:border-rose-500/40 transition">
-      <div class="flex justify-between items-center whitespace-nowrap">
-        <span class="uppercase tracking-wider text-[8px] sm:text-[9px] font-bold leading-none">High</span>
-        <div class="p-0.5 sm:p-1 bg-rose-500/10 text-rose-400 rounded-lg shrink-0">
-          <i data-lucide="flame" class="w-3 h-3 sm:w-3.5 sm:h-3.5"></i>
-        </div>
+    <div class="p-2 sm:p-3.5 space-y-0.5 hover:bg-rose-500/[0.03] transition">
+      <div class="flex items-center gap-1 whitespace-nowrap">
+        <i data-lucide="flame" class="w-3 h-3 sm:w-3.5 sm:h-3.5 text-rose-400 shrink-0"></i>
+        <span class="uppercase tracking-wider text-[8px] sm:text-[9px] font-bold leading-none text-slate-400">High</span>
       </div>
       <div id="task-metric-high" class="text-sm sm:text-base md:text-xl font-black text-rose-400">0</div>
-      <p class="text-[10px] text-slate-500 font-mono hidden sm:block">Urgent</p>
+      <p class="text-[9px] sm:text-[10px] text-slate-500 font-mono leading-tight">Urgent</p>
     </div>
 
-    <div class="glass-card p-2 sm:p-3 md:p-4 rounded-2xl border border-purple-500/20 bg-purple-500/[0.03] space-y-0.5 sm:space-y-1 hover:border-purple-500/40 transition">
-      <div class="flex justify-between items-center whitespace-nowrap">
-        <span class="uppercase tracking-wider text-[8px] sm:text-[9px] font-bold leading-none">Done</span>
-        <div class="p-0.5 sm:p-1 bg-purple-500/10 text-purple-300 rounded-lg shrink-0">
-          <i data-lucide="check-circle-2" class="w-3 h-3 sm:w-3.5 sm:h-3.5"></i>
-        </div>
+    <div class="p-2 sm:p-3.5 space-y-0.5 hover:bg-emerald-500/[0.03] transition">
+      <div class="flex items-center gap-1 whitespace-nowrap">
+        <i data-lucide="check-circle-2" class="w-3 h-3 sm:w-3.5 sm:h-3.5 text-emerald-400 shrink-0"></i>
+        <span class="uppercase tracking-wider text-[8px] sm:text-[9px] font-bold leading-none text-slate-400">Done</span>
       </div>
-      <div id="task-metric-done" class="text-sm sm:text-base md:text-xl font-black text-purple-300">0</div>
-      <p class="text-[10px] text-slate-500 font-mono hidden sm:block">Finished</p>
+      <div id="task-metric-done" class="text-sm sm:text-base md:text-xl font-black text-emerald-400">0</div>
+      <p class="text-[9px] sm:text-[10px] text-slate-500 font-mono leading-tight">Finished</p>
     </div>
   </div>
 
@@ -4384,26 +4376,24 @@ html, body {
         </button>
       </div>
 
-      <!-- Category Filter Pills & Sort Selector -->
-      <div class="space-y-2">
+      <!-- Category Filter Pills + Sort (single row) -->
+      <div class="flex items-center gap-1.5">
         <!-- Folder Type Filters -->
-        <div class="flex items-center gap-1 overflow-x-auto pb-1 text-[11px] no-scrollbar">
+        <div class="flex items-center gap-1 overflow-x-auto no-scrollbar text-[11px] min-w-0 flex-1">
           <button type="button" onclick="setFolderTypeFilter('ALL')" id="folder-filter-btn-all" class="px-2.5 py-1 rounded-lg font-bold transition bg-purple-600 text-white shrink-0 shadow-sm">All</button>
           <button type="button" onclick="setFolderTypeFilter('GOAL')" id="folder-filter-btn-goal" class="px-2.5 py-1 rounded-lg font-medium text-slate-400 hover:text-white bg-slate-900 border border-slate-800 shrink-0">🎯 Goals</button>
           <button type="button" onclick="setFolderTypeFilter('NODE')" id="folder-filter-btn-node" class="px-2.5 py-1 rounded-lg font-medium text-slate-400 hover:text-white bg-slate-900 border border-slate-800 shrink-0">🧠 Nodes</button>
           <button type="button" onclick="setFolderTypeFilter('NORMAL')" id="folder-filter-btn-normal" class="px-2.5 py-1 rounded-lg font-medium text-slate-400 hover:text-white bg-slate-900 border border-slate-800 shrink-0">📁 Custom</button>
         </div>
 
-        <!-- Folder Sort Selector -->
-        <div class="flex items-center justify-between gap-2 bg-slate-950 p-1.5 rounded-xl border border-slate-800 text-[11px]">
-          <span class="text-slate-500 font-semibold px-1 flex items-center gap-1">
-            <i data-lucide="arrow-up-down" class="w-3 h-3 text-purple-400"></i> Sort:
-          </span>
-          <select id="folder-sort-select" onchange="setFolderSortOption(this.value)" class="bg-slate-900 border border-slate-800 text-slate-300 rounded-lg px-2 py-0.5 outline-none font-medium focus:border-purple-400 text-[11px]">
-            <option value="DEFAULT">Default Order</option>
+        <!-- Compact Sort (icon-embedded select, no label bar) -->
+        <div class="relative shrink-0">
+          <i data-lucide="arrow-up-down" class="w-3 h-3 text-purple-400 absolute left-1.5 top-1/2 -translate-y-1/2 pointer-events-none"></i>
+          <select id="folder-sort-select" onchange="setFolderSortOption(this.value)" class="bg-slate-900 border border-slate-800 text-slate-300 rounded-lg pl-6 pr-1 py-1 outline-none font-medium focus:border-purple-400 text-[10px]">
+            <option value="DEFAULT">Default</option>
             <option value="TASKS_DESC">Most Tasks</option>
             <option value="PENDING_DESC">Most Pending</option>
-            <option value="NAME_ASC">Name (A-Z)</option>
+            <option value="NAME_ASC">A-Z</option>
           </select>
         </div>
       </div>
