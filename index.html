@@ -5821,15 +5821,92 @@ html, body {
     };
 
     /* Kanban Drag and Drop Logic */
+    /* Auto-scroll during drag: pointer near viewport/scroll-container edges scrolls up/down
+       (HTML5 drag doesn't reliably scroll natively — needed for dragging far on long boards) */
+    const dragPointerXY = { x: 0, y: 0 };
+    let kanbanAutoScrollTimer = null;
+
+    function findScrollableAncestorAt(x, y) {
+      let el = document.elementFromPoint(x, y);
+      while (el && el !== document.body) {
+        if (el instanceof HTMLElement) {
+          const oy = getComputedStyle(el).overflowY;
+          if ((oy === 'auto' || oy === 'scroll') && el.scrollHeight > el.clientHeight + 4) return el;
+        }
+        el = el.parentElement;
+      }
+      return null;
+    }
+
+    function kanbanAutoScrollStep() {
+      if (!window.__kanbanDragging) return;
+      const zone = 90;   // px from edge where scrolling ramps up
+      const maxSpeed = 18; // px per tick
+      const targets = new Set();
+      const inner = findScrollableAncestorAt(dragPointerXY.x, dragPointerXY.y);
+      if (inner) targets.add(inner);
+      // Fallback: fixed overlays (bottom nav, FAB) swallow elementFromPoint on touch zones —
+      // always include the main workspace scroller so viewport-edge drags always scroll the board
+      const viewEl = document.getElementById('view-tasks');
+      if (viewEl) {
+        let p = viewEl.parentElement;
+        while (p && p !== document.body) {
+          if (p instanceof HTMLElement) {
+            const oy = getComputedStyle(p).overflowY;
+            if ((oy === 'auto' || oy === 'scroll') && p.scrollHeight > p.clientHeight + 4) { targets.add(p); break; }
+          }
+          p = p.parentElement;
+        }
+      }
+      targets.add(document.scrollingElement);
+      targets.forEach(el => {
+        if (!el) return;
+        const rect = el === document.scrollingElement
+          ? { top: 0, bottom: window.innerHeight }
+          : el.getBoundingClientRect();
+        // edge zones are relative to the VISIBLE portion of the scroll area, not its full rect
+        const visTop = Math.max(rect.top, 0);
+        const visBottom = Math.min(rect.bottom, window.innerHeight);
+        const y = dragPointerXY.y;
+        if (y < visTop + zone) {
+          const d = (visTop + zone) - y;
+          el.scrollTop -= Math.min(maxSpeed, Math.ceil((d / zone) * maxSpeed) + 2);
+        } else if (y > visBottom - zone) {
+          const d = y - (visBottom - zone);
+          el.scrollTop += Math.min(maxSpeed, Math.ceil((d / zone) * maxSpeed) + 2);
+        }
+      });
+    }
+
+    function startKanbanAutoScroll() {
+      if (kanbanAutoScrollTimer !== null) return;
+      kanbanAutoScrollTimer = setInterval(kanbanAutoScrollStep, 16);
+    }
+
+    function stopKanbanAutoScroll() {
+      if (kanbanAutoScrollTimer !== null) { clearInterval(kanbanAutoScrollTimer); kanbanAutoScrollTimer = null; }
+    }
+
+    document.addEventListener('dragover', (e) => {
+      dragPointerXY.x = e.clientX;
+      dragPointerXY.y = e.clientY;
+    }, true);
+
     window.handleKanbanDragStart = function(e, taskId) {
       draggedTaskId = taskId;
       e.dataTransfer.setData('text/plain', taskId);
       e.dataTransfer.effectAllowed = 'move';
       if (e.target) e.target.classList.add('opacity-40');
+      dragPointerXY.x = e.clientX;
+      dragPointerXY.y = e.clientY;
+      window.__kanbanDragging = true;
+      startKanbanAutoScroll();
     };
 
     window.handleKanbanDragEnd = function(e) {
       draggedTaskId = null;
+      window.__kanbanDragging = false;
+      stopKanbanAutoScroll();
       if (e.target) e.target.classList.remove('opacity-40');
       document.querySelectorAll('.kanban-drop-zone').forEach(z => z.classList.remove('border-purple-500/60', 'bg-purple-950/20'));
     };
