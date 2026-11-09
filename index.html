@@ -203,7 +203,7 @@ html, body {
         <div class="min-w-0">
           <div class="flex items-center gap-1.5">
             <h1 class="font-extrabold text-base text-white tracking-wide">PrOS</h1>
-            <span class="text-[9px] px-1.5 py-0.2 rounded-full bg-emerald-500/15 text-emerald-300 font-mono font-bold border border-emerald-500/30">v2.8</span>
+            <span class="text-[9px] px-1.5 py-0.5 rounded-full bg-emerald-500/15 text-emerald-300 font-mono font-bold border border-emerald-500/30">v2.8</span>
           </div>
           <p class="text-[10px] text-slate-400 font-medium truncate">Personal Operating System</p>
         </div>
@@ -825,7 +825,7 @@ html, body {
           <h3 class="text-xs font-extrabold text-cyan-300 uppercase tracking-wider flex items-center gap-2">
             <i data-lucide="calendar" class="w-4 h-4 text-cyan-400"></i> Events &amp; Celebrations Radar
           </h3>
-          <span id="dash-radar-count-badge" class="text-[10px] px-2 py-0.2 rounded-full bg-slate-800 text-slate-400 font-mono">0 events</span>
+          <span id="dash-radar-count-badge" class="text-[10px] px-2 py-0.5 rounded-full bg-slate-800 text-slate-400 font-mono">0 events</span>
         </div>
         
         <div class="flex items-center gap-2">
@@ -882,7 +882,7 @@ html, body {
         <div>
           <h3 class="text-xs font-extrabold text-emerald-300 uppercase tracking-wider flex items-center gap-1.5">
             <span>Instant Experience &amp; Diary Capture</span>
-            <span class="text-[9px] px-1.5 py-0.2 rounded-full bg-emerald-500/20 text-emerald-300 font-mono font-bold">Memory Engine</span>
+            <span class="text-[9px] px-1.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 font-mono font-bold">Memory Engine</span>
           </h3>
           <p class="text-[10px] text-slate-400 font-mono">Date-wise timeline capture &bull; Local &amp; Online synced</p>
         </div>
@@ -1774,7 +1774,7 @@ html, body {
                 <p class="font-bold text-slate-200 truncate group-hover:text-purple-300 transition">${escapeHtml(t.title)}</p>
                 ${list ? `<span class="text-[9px] text-slate-500 font-mono">${escapeHtml(list.name)}</span>` : ''}
               </div>
-              ${t.priority === 'High' ? '<span class="text-[9px] px-1.5 py-0.2 rounded bg-rose-500/20 text-rose-300 font-bold border border-rose-500/30 shrink-0">🔥 High</span>' : ''}
+              ${t.priority === 'High' ? '<span class="text-[9px] px-1.5 py-0.5 rounded bg-rose-500/20 text-rose-300 font-bold border border-rose-500/30 shrink-0">🔥 High</span>' : ''}
             </div>
             <span class="text-[10px] font-mono shrink-0 px-2 py-0.5 rounded ${isOverdue ? 'bg-rose-500/20 text-rose-300 font-bold border border-rose-500/30' : isToday ? 'bg-purple-500/20 text-purple-300 font-bold border border-purple-500/30' : 'text-slate-400 bg-slate-900 border border-slate-800'}">
               ${t.dueDate || 'No Date'}
@@ -2733,8 +2733,8 @@ html, body {
       </div>
     </div>
 
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-2 text-xs">
-      <select id="fin-filter-type" onchange="renderFinanceList()" class="lg:col-span-3 bg-slate-950 border border-slate-800 text-slate-200 rounded-xl px-2.5 py-2 outline-none focus:border-emerald-500 transition font-medium text-xs min-w-0">
+    <div class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-12 gap-2 text-xs">
+      <select id="fin-filter-type" onchange="renderFinanceList()" class="col-span-1 lg:col-span-3 bg-slate-950 border border-slate-800 text-slate-200 rounded-xl px-2 py-2 outline-none focus:border-emerald-500 transition font-medium text-xs min-w-0">
         <option value="ALL">All Record Types</option>
         <option value="expense">Expenses Only</option>
         <option value="income">Incomes Only</option>
@@ -2744,12 +2744,11 @@ html, body {
         <option value="DEBT_SETTLED">✅ Settled Debts</option>
       </select>
 
-      <select id="fin-filter-category" onchange="renderFinanceList()" class="lg:col-span-3 bg-slate-950 border border-slate-800 text-slate-200 rounded-xl px-2.5 py-2 outline-none focus:border-emerald-500 transition font-medium truncate text-xs min-w-0">
+      <select id="fin-filter-category" onchange="renderFinanceList()" class="col-span-1 lg:col-span-3 bg-slate-950 border border-slate-800 text-slate-200 rounded-xl px-2 py-2 outline-none focus:border-emerald-500 transition font-medium truncate text-xs min-w-0">
         <option value="ALL">All Categories</option>
       </select>
 
-      <select id="fin-filter-method" onchange="renderFinanceList()" class="lg:col-span-3 bg-slate-950 border border-slate-800 text-slate-200 rounded-xl px-2.5 py-2 outline-none focus:border-emerald-500 transition font-medium text-xs min-w-0">
-        <option value="ALL">All Payment Modes</option>
+      <select id="fin-filter-method" onchange="renderFinanceList()" class="col-span-2 lg:col-span-3 bg-slate-950 border border-slate-800 text-slate-200 rounded-xl px-2 py-2 outline-none focus:border-emerald-500 transition font-medium text-xs min-w-0">        <option value="ALL">All Payment Modes</option>
         <option value="UPI">📱 UPI / QR</option>
         <option value="Credit Card">💳 Credit Card</option>
         <option value="Debit Card">💳 Debit Card</option>
@@ -2758,7 +2757,7 @@ html, body {
         <option value="Net Banking">🌐 Net Banking</option>
       </select>
 
-      <div class="lg:col-span-3 flex items-center justify-between gap-1 bg-slate-950 p-1 border border-slate-800 rounded-xl min-w-0">
+      <div class="col-span-2 lg:col-span-3 flex items-center justify-between gap-1 bg-slate-950 p-1 border border-slate-800 rounded-xl min-w-0">
         <input id="fin-date-start" type="date" onchange="renderFinanceList()" class="w-full bg-slate-900 text-slate-300 text-[10px] px-1.5 py-1 rounded-lg outline-none font-mono min-w-0" title="Start Date" />
         <span class="text-slate-600 font-mono text-[9px] px-0.5 shrink-0">to</span>
         <input id="fin-date-end" type="date" onchange="renderFinanceList()" class="w-full bg-slate-900 text-slate-300 text-[10px] px-1.5 py-1 rounded-lg outline-none font-mono min-w-0" title="End Date" />
@@ -3668,7 +3667,7 @@ html, body {
       const incEl = document.getElementById('fin-sum-income');
       if (incEl) incEl.textContent = `₹${sumIncome.toLocaleString('en-IN')}`;
       const incSub = document.getElementById('fin-sum-income-sub');
-      if (incSub) incSub.textContent = `${incCount} income records`;
+      if (incSub) incSub.textContent = `${incCount} income record${incCount === 1 ? '' : 's'}`;
 
       const expEl = document.getElementById('fin-sum-expense');
       if (expEl) expEl.textContent = `₹${sumExpense.toLocaleString('en-IN')}`;
@@ -3678,12 +3677,12 @@ html, body {
       const lentEl = document.getElementById('fin-sum-lent');
       if (lentEl) lentEl.textContent = `₹${sumLent.toLocaleString('en-IN')}`;
       const lentSub = document.getElementById('fin-sum-lent-sub');
-      if (lentSub) lentSub.textContent = `${pendingLentCount} unsettled loans`;
+      if (lentSub) lentSub.textContent = `${pendingLentCount} unsettled loan${pendingLentCount === 1 ? '' : 's'}`;
       
       const borEl = document.getElementById('fin-sum-borrowed');
       if (borEl) borEl.textContent = `₹${sumBorrowed.toLocaleString('en-IN')}`;
       const borSub = document.getElementById('fin-sum-borrowed-sub');
-      if (borSub) borSub.textContent = `${pendingBorrowedCount} unsettled loans`;
+      if (borSub) borSub.textContent = `${pendingBorrowedCount} unsettled loan${pendingBorrowedCount === 1 ? '' : 's'}`;
 
       // Live Category Expense Distribution Bar
       const distBar = document.getElementById('spending-distribution-bar');
@@ -3730,11 +3729,11 @@ html, body {
           let debtProgressBadge = '';
           if (isDebt) {
             if (item.isSettled) {
-              debtProgressBadge = `<span class="px-1.5 py-0.2 rounded text-[9px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 shrink-0">✅ Settled</span>`;
+              debtProgressBadge = `<span class="px-1.5 py-0.5 rounded text-[9px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 shrink-0">✅ Settled</span>`;
             } else if (paidAmt > 0) {
-              debtProgressBadge = `<button type="button" onclick="openPartialDebtModal('${item.id}')" class="px-1.5 py-0.2 rounded text-[9px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30 hover:bg-amber-500/30 transition shrink-0">⏳ Paid ₹${paidAmt.toLocaleString('en-IN')} / Bal ₹${balAmt.toLocaleString('en-IN')}</button>`;
+              debtProgressBadge = `<button type="button" onclick="openPartialDebtModal('${item.id}')" class="px-1.5 py-0.5 rounded text-[9px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30 hover:bg-amber-500/30 transition shrink-0">⏳ Paid ₹${paidAmt.toLocaleString('en-IN')} / Bal ₹${balAmt.toLocaleString('en-IN')}</button>`;
             } else {
-              debtProgressBadge = `<button type="button" onclick="openPartialDebtModal('${item.id}')" class="px-1.5 py-0.2 rounded text-[9px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30 hover:bg-amber-500/30 transition shrink-0">⏳ Pending</button>`;
+              debtProgressBadge = `<button type="button" onclick="openPartialDebtModal('${item.id}')" class="px-1.5 py-0.5 rounded text-[9px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30 hover:bg-amber-500/30 transition shrink-0">⏳ Pending</button>`;
             }
           }
 
@@ -3749,8 +3748,8 @@ html, body {
                   ${item.personName ? `<span class="text-slate-400 font-normal text-[11px] shrink-0">(${escapeHtml(item.personName)})</span>` : ''}
                 </p>
                 <div class="flex flex-wrap items-center gap-1.5 text-[10px] text-slate-400">
-                  ${!isDebt && item.category ? `<span class="px-1.5 py-0.2 rounded bg-slate-950 border border-slate-800 font-mono text-slate-300 truncate max-w-[120px]">${escapeHtml(item.category)}</span>` : ''}
-                  <span class="px-1.5 py-0.2 rounded bg-slate-900 border border-slate-800 font-mono text-slate-400 shrink-0">${item.paymentMethod || 'UPI'}</span>
+                  ${!isDebt && item.category ? `<span class="px-1.5 py-0.5 rounded bg-slate-950 border border-slate-800 font-mono text-slate-300 truncate max-w-[120px]">${escapeHtml(item.category)}</span>` : ''}
+                  <span class="px-1.5 py-0.5 rounded bg-slate-900 border border-slate-800 font-mono text-slate-400 shrink-0">${item.paymentMethod || 'UPI'}</span>
                   <span class="font-mono text-slate-500 shrink-0">${item.date}</span>
                   ${debtProgressBadge}
                 </div>
@@ -3849,13 +3848,13 @@ html, body {
         const pct = Math.min(100, Math.round((spent / limit) * 100));
 
         let barColor = 'bg-emerald-500';
-        let statusBadge = `<span class="text-[9px] px-1.5 py-0.2 rounded bg-emerald-500/20 text-emerald-300 font-mono font-bold shrink-0">${pct}%</span>`;
+        let statusBadge = `<span class="text-[9px] px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-mono font-bold shrink-0">${pct}%</span>`;
         if (pct >= 100) {
           barColor = 'bg-rose-500';
-          statusBadge = `<span class="text-[9px] px-1.5 py-0.2 rounded bg-rose-500/20 text-rose-300 font-mono font-bold shrink-0">Exceeded 🔥</span>`;
+          statusBadge = `<span class="text-[9px] px-1.5 py-0.5 rounded bg-rose-500/20 text-rose-300 font-mono font-bold shrink-0">Exceeded 🔥</span>`;
         } else if (pct >= 75) {
           barColor = 'bg-amber-400';
-          statusBadge = `<span class="text-[9px] px-1.5 py-0.2 rounded bg-amber-500/20 text-amber-300 font-mono font-bold shrink-0">Near Limit ⚠️</span>`;
+          statusBadge = `<span class="text-[9px] px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 font-mono font-bold shrink-0">Near Limit ⚠️</span>`;
         }
 
         const card = document.createElement('div');
@@ -3929,9 +3928,11 @@ html, body {
         if (s.nextBilling) {
           const diffDays = Math.ceil((new Date(s.nextBilling) - new Date(today)) / (1000 * 60 * 60 * 24));
           if (diffDays < 0) {
-            dueBadge = `<span class="text-[9px] px-1.5 py-0.2 rounded bg-rose-500/20 text-rose-300 font-bold border border-rose-500/30">🚨 Overdue</span>`;
+            dueBadge = `<span class="text-[9px] px-1.5 py-0.5 rounded bg-rose-500/20 text-rose-300 font-bold border border-rose-500/30">🚨 Overdue</span>`;
+          } else if (diffDays === 0) {
+            dueBadge = `<span class="text-[9px] px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 font-bold border border-amber-500/30">📅 Due today</span>`;
           } else if (diffDays <= 3) {
-            dueBadge = `<span class="text-[9px] px-1.5 py-0.2 rounded bg-amber-500/20 text-amber-300 font-bold border border-amber-500/30">⚠️ Due in ${diffDays}d</span>`;
+            dueBadge = `<span class="text-[9px] px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 font-bold border border-amber-500/30">⚠️ Due in ${diffDays}d</span>`;
           }
         }
 
@@ -3960,7 +3961,7 @@ html, body {
           <div class="flex justify-between items-start gap-2 min-w-0">
             <div class="truncate pr-1 min-w-0 flex-1">
               <div class="flex items-center gap-1.5 min-w-0">
-                <span class="text-[9px] px-1.5 py-0.2 rounded font-bold uppercase shrink-0 ${isEmi ? 'bg-purple-500/20 text-purple-300 border border-purple-500/30' : (s.commitmentType === 'utility' ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30' : 'bg-sky-500/20 text-sky-300 border border-sky-500/30')}">
+                <span class="text-[9px] px-1.5 py-0.5 rounded font-bold uppercase shrink-0 ${isEmi ? 'bg-purple-500/20 text-purple-300 border border-purple-500/30' : (s.commitmentType === 'utility' ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30' : 'bg-sky-500/20 text-sky-300 border border-sky-500/30')}">
                   ${isEmi ? 'EMI' : (s.commitmentType === 'utility' ? 'Utility' : 'SaaS')}
                 </span>
                 <h4 class="font-bold text-white truncate text-xs flex-1 min-w-0">${escapeHtml(s.name)}</h4>
@@ -4694,13 +4695,13 @@ html, body {
       }
 
       if (diffDays < 0) {
-        return `<span class="text-[9px] px-1.5 py-0.2 rounded bg-rose-500/20 text-rose-300 font-bold border border-rose-500/30">⚠️ Overdue (${Math.abs(diffDays)}d)</span>`;
+        return `<span class="text-[9px] px-1.5 py-0.5 rounded bg-rose-500/20 text-rose-300 font-bold border border-rose-500/30">⚠️ Overdue (${Math.abs(diffDays)}d)</span>`;
       } else if (diffDays === 0) {
-        return `<span class="text-[9px] px-1.5 py-0.2 rounded bg-amber-500/20 text-amber-300 font-bold border border-amber-500/30">⚡ Today</span>`;
+        return `<span class="text-[9px] px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 font-bold border border-amber-500/30">⚡ Today</span>`;
       } else if (diffDays === 1) {
-        return `<span class="text-[9px] px-1.5 py-0.2 rounded bg-purple-500/20 text-purple-300 font-bold border border-purple-500/30">Tomorrow</span>`;
+        return `<span class="text-[9px] px-1.5 py-0.5 rounded bg-purple-500/20 text-purple-300 font-bold border border-purple-500/30">Tomorrow</span>`;
       } else if (diffDays <= 3) {
-        return `<span class="text-[9px] px-1.5 py-0.2 rounded bg-purple-500/20 text-purple-300 font-bold border border-purple-500/30">In ${diffDays}d</span>`;
+        return `<span class="text-[9px] px-1.5 py-0.5 rounded bg-purple-500/20 text-purple-300 font-bold border border-purple-500/30">In ${diffDays}d</span>`;
       }
       return `<span class="text-[10px] font-mono text-slate-400">${dueDateStr}</span>`;
     }
@@ -5563,10 +5564,10 @@ html, body {
 
         if (isGoalList) {
           iconMarkup = '<div class="p-1 rounded-md bg-rose-500/20 text-rose-400 shrink-0 border border-rose-500/30"><i data-lucide="target" class="w-3.5 h-3.5"></i></div>';
-          badgeMarkup = '<span class="text-[9px] px-1.5 py-0.2 rounded bg-rose-500/20 text-rose-300 font-bold border border-rose-500/40 uppercase">Goal</span>';
+          badgeMarkup = '<span class="text-[9px] px-1.5 py-0.5 rounded bg-rose-500/20 text-rose-300 font-bold border border-rose-500/40 uppercase">Goal</span>';
         } else if (isNodeList) {
           iconMarkup = '<div class="p-1 rounded-md bg-purple-500/20 text-purple-400 shrink-0 border border-purple-500/30"><i data-lucide="brain-circuit" class="w-3.5 h-3.5"></i></div>';
-          badgeMarkup = '<span class="text-[9px] px-1.5 py-0.2 rounded bg-purple-500/20 text-purple-300 font-bold border border-purple-500/30">Node</span>';
+          badgeMarkup = '<span class="text-[9px] px-1.5 py-0.5 rounded bg-purple-500/20 text-purple-300 font-bold border border-purple-500/30">Node</span>';
         }
 
         btn.innerHTML = `
@@ -5575,7 +5576,7 @@ html, body {
             <span class="truncate ${isGoalList ? 'font-bold text-rose-200' : isNodeList ? 'font-bold text-purple-200' : ''}">${escapeHtml(list.name)}</span>
           </div>
           <div class="flex items-center gap-1.5 shrink-0">
-            ${isExcluded ? '<span class="text-[9px] px-1 py-0.2 rounded bg-slate-800 text-slate-400 border border-slate-700" title="Excluded from total count">∅</span>' : ''}
+            ${isExcluded ? '<span class="text-[9px] px-1 py-0.5 rounded bg-slate-800 text-slate-400 border border-slate-700" title="Excluded from total count">∅</span>' : ''}
             ${badgeMarkup}
             <span class="px-2 py-0.5 text-[10px] ${isGoalList ? 'bg-rose-500/30 text-rose-200' : isNodeList ? 'bg-purple-500/30 text-purple-200' : 'bg-slate-800 text-slate-300'} rounded-full font-bold font-mono">${pendingCount}/${totalListTasks.length}</span>
           </div>
@@ -5754,7 +5755,7 @@ html, body {
 
         let recurringBadge = '';
         if (task.recurring && task.recurring !== 'none') {
-          recurringBadge = `<span class="text-[9px] px-1.5 py-0.2 rounded bg-purple-500/20 text-purple-300 font-bold border border-purple-500/30 shrink-0">🔁 ${task.recurring.toUpperCase()}</span>`;
+          recurringBadge = `<span class="text-[9px] px-1.5 py-0.5 rounded bg-purple-500/20 text-purple-300 font-bold border border-purple-500/30 shrink-0">🔁 ${task.recurring.toUpperCase()}</span>`;
         }
 
         let subtasksHtml = '';
@@ -5793,8 +5794,8 @@ html, body {
               <div class="min-w-0 flex-1 space-y-0.5">
                 <div class="flex items-center gap-1.5 flex-wrap">
                   <span class="${isDone ? 'line-through text-slate-500' : 'text-slate-100 font-bold'} truncate">${escapeHtml(task.title)}</span>
-                  ${task.priority === 'High' ? '<span class="text-[9px] px-1.5 py-0.2 rounded bg-rose-500/20 text-rose-300 font-bold border border-rose-500/30 shrink-0">🔥 HIGH</span>' : ''}
-                  ${task.priority === 'Low' ? '<span class="text-[9px] px-1.5 py-0.2 rounded bg-slate-800 text-slate-400 font-bold shrink-0">LOW</span>' : ''}
+                  ${task.priority === 'High' ? '<span class="text-[9px] px-1.5 py-0.5 rounded bg-rose-500/20 text-rose-300 font-bold border border-rose-500/30 shrink-0">🔥 HIGH</span>' : ''}
+                  ${task.priority === 'Low' ? '<span class="text-[9px] px-1.5 py-0.5 rounded bg-slate-800 text-slate-400 font-bold shrink-0">LOW</span>' : ''}
                   ${recurringBadge}
                 </div>
                 ${task.notes ? `<p class="text-[10px] text-slate-400 line-clamp-2">${escapeHtml(task.notes)}</p>` : ''}
@@ -7473,7 +7474,7 @@ html, body {
               <span class="truncate ${isNode ? 'font-bold text-rose-200' : ''}">${escapeHtml(f.name)}</span>
             </div>
             <div class="flex items-center gap-1 shrink-0">
-              ${isNode ? '<span class="text-[9px] px-1.5 py-0.2 rounded bg-rose-500/20 text-rose-300 font-mono font-bold border border-rose-500/30">NODE</span>' : ''}
+              ${isNode ? '<span class="text-[9px] px-1.5 py-0.5 rounded bg-rose-500/20 text-rose-300 font-mono font-bold border border-rose-500/30">NODE</span>' : ''}
               <span class="text-[10px] font-mono text-slate-400">${linkedGoals.length}</span>
               ${f.id !== 'gf_default' ? `<button type="button" onclick="event.stopPropagation(); deleteGoalFolder('${f.id}')" class="opacity-0 group-hover:opacity-100 text-slate-500 hover:text-rose-400 text-xs px-1" title="Delete Collection">✕</button>` : ''}
             </div>
@@ -7728,10 +7729,10 @@ html, body {
             <div class="flex items-start justify-between gap-2">
               <div class="space-y-1 truncate flex-1 min-w-0">
                 <div class="flex flex-wrap items-center gap-1.5">
-                  <span class="text-[9px] px-2 py-0.2 rounded bg-slate-900 text-slate-300 font-bold uppercase tracking-wider border border-slate-800">${escapeHtml(g.category || 'General')}</span>
-                  ${isSequentialGoal ? `<span class="text-[9px] px-1.5 py-0.2 rounded bg-amber-500/10 text-amber-300 font-mono font-bold border border-amber-500/20 flex items-center gap-0.5"><i data-lucide="lock" class="w-2.5 h-2.5"></i> SEQUENTIAL</span>` : ''}
-                  ${g.autoSyncLedger ? `<span class="text-[9px] px-1.5 py-0.2 rounded bg-rose-500/20 text-rose-300 font-mono font-bold border border-rose-500/30">⚡ LEDGER LINK</span>` : ''}
-                  ${isNodeFolder ? `<span class="text-[9px] px-1.5 py-0.2 rounded bg-rose-500/20 text-rose-300 font-mono font-bold border border-rose-500/30 flex items-center gap-1"><i data-lucide="brain-circuit" class="w-3 h-3"></i> NODE</span>` : ''}
+                  <span class="text-[9px] px-2 py-0.5 rounded bg-slate-900 text-slate-300 font-bold uppercase tracking-wider border border-slate-800">${escapeHtml(g.category || 'General')}</span>
+                  ${isSequentialGoal ? `<span class="text-[9px] px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-300 font-mono font-bold border border-amber-500/20 flex items-center gap-0.5"><i data-lucide="lock" class="w-2.5 h-2.5"></i> SEQUENTIAL</span>` : ''}
+                  ${g.autoSyncLedger ? `<span class="text-[9px] px-1.5 py-0.5 rounded bg-rose-500/20 text-rose-300 font-mono font-bold border border-rose-500/30">⚡ LEDGER LINK</span>` : ''}
+                  ${isNodeFolder ? `<span class="text-[9px] px-1.5 py-0.5 rounded bg-rose-500/20 text-rose-300 font-mono font-bold border border-rose-500/30 flex items-center gap-1"><i data-lucide="brain-circuit" class="w-3 h-3"></i> NODE</span>` : ''}
                 </div>
                 <h4 class="font-extrabold text-white text-sm sm:text-base truncate leading-snug ${isAchieved ? 'line-through text-slate-400' : ''}">${escapeHtml(g.title)}</h4>
               </div>
@@ -9348,7 +9349,7 @@ html, body {
             <div class="truncate space-y-0.5 min-w-0">
               <div class="flex items-center gap-2 flex-wrap">
                 <h4 class="font-bold text-white text-xs truncate group-hover:text-amber-300 transition">${escapeHtml(tm.project)}</h4>
-                ${isBillable ? `<span class="text-[9px] px-1.5 py-0.2 rounded bg-amber-500/20 text-amber-300 font-mono font-bold border border-amber-500/30">₹ Billable</span>` : ''}
+                ${isBillable ? `<span class="text-[9px] px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 font-mono font-bold border border-amber-500/30">₹ Billable</span>` : ''}
               </div>
               <p class="text-[11px] text-slate-400 truncate">${escapeHtml(tm.desc)}</p>
               <div class="flex items-center gap-2 text-[10px] text-slate-500 font-mono">
@@ -10676,7 +10677,7 @@ html, body {
               <span class="truncate">${escapeHtml(f.name)}</span>
             </div>
             <div class="flex items-center gap-1 shrink-0">
-              ${isNode ? '<span class="text-[9px] px-1.5 py-0.2 rounded bg-emerald-500/20 text-emerald-300 font-mono font-bold border border-emerald-500/30">NODE</span>' : ''}
+              ${isNode ? '<span class="text-[9px] px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-mono font-bold border border-emerald-500/30">NODE</span>' : ''}
               <span class="text-[10px] font-mono text-slate-500 group-hover:text-slate-300">${noteCount}</span>
               ${f.id !== 'nf_default' ? `<button type="button" onclick="event.stopPropagation(); deleteNoteFolder('${f.id}')" class="opacity-0 group-hover:opacity-100 text-slate-500 hover:text-rose-400 text-xs px-1">✕</button>` : ''}
             </div>
@@ -16143,7 +16144,7 @@ html, body {
           <div class="min-w-0 pr-2 space-y-0.5">
             <div class="flex items-center gap-2 flex-wrap">
               <span class="font-bold text-white truncate">${escapeHtml(t.title)}</span>
-              ${kml ? `<span class="text-[9px] px-1.5 py-0.2 rounded bg-blue-500/20 text-blue-300 font-mono font-bold">${kml} KM/L</span>` : `<span class="text-[9px] px-1.5 py-0.2 rounded bg-amber-500/15 text-amber-300 font-mono">Needs KM/L Data</span>`}
+              ${kml ? `<span class="text-[9px] px-1.5 py-0.5 rounded bg-blue-500/20 text-blue-300 font-mono font-bold">${kml} KM/L</span>` : `<span class="text-[9px] px-1.5 py-0.5 rounded bg-amber-500/15 text-amber-300 font-mono">Needs KM/L Data</span>`}
             </div>
             <p class="text-[11px] text-slate-400 font-mono">Amount: <strong class="text-slate-200">₹${t.amount}</strong> ${m.km ? `• ${m.km} KM • ${m.liters} L` : ''}</p>
             <span class="text-[10px] text-slate-500 font-mono">${t.date}</span>
@@ -20140,8 +20141,8 @@ html, body {
               <div class="flex items-center gap-1.5 flex-wrap">
                 <span class="font-bold text-white text-xs">${e.date || todayStr}</span>
                 <span class="text-[10px] text-slate-500 font-mono">${e.time || ''}</span>
-                <span class="text-[9px] px-2 py-0.2 rounded-full bg-slate-900 text-slate-300 font-semibold border border-slate-800">${escapeHtml(e.type || 'Reflection')}</span>
-                ${e.isPinned ? '<span class="text-[9px] px-1.5 py-0.2 rounded bg-amber-500/20 text-amber-300 font-bold border border-amber-500/30">★ PINNED</span>' : ''}
+                <span class="text-[9px] px-2 py-0.5 rounded-full bg-slate-900 text-slate-300 font-semibold border border-slate-800">${escapeHtml(e.type || 'Reflection')}</span>
+                ${e.isPinned ? '<span class="text-[9px] px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 font-bold border border-amber-500/30">★ PINNED</span>' : ''}
               </div>
               ${e.location ? `<span class="text-[10px] text-slate-400 flex items-center gap-1 font-mono mt-0.5"><i data-lucide="map-pin" class="w-3 h-3 text-emerald-400"></i> ${escapeHtml(e.location)}</span>` : ''}
             </div>
@@ -20159,7 +20160,7 @@ html, body {
 
         <div class="flex justify-between items-center text-[10px] font-mono text-slate-500 pt-1">
           <div class="flex items-center gap-1 flex-wrap">
-            ${(e.tags || '').split(/\s+/).filter(Boolean).map(t => `<span class="px-1.5 py-0.2 rounded bg-emerald-500/10 text-emerald-300 border border-emerald-500/20">${escapeHtml(t)}</span>`).join('')}
+            ${(e.tags || '').split(/\s+/).filter(Boolean).map(t => `<span class="px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-300 border border-emerald-500/20">${escapeHtml(t)}</span>`).join('')}
           </div>
           <span class="text-amber-400/80">Energy: ${'⚡'.repeat(e.energy || 4)}</span>
         </div>
