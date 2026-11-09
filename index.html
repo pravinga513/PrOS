@@ -4430,12 +4430,17 @@ html, body {
             </div>
             <p id="active-todo-stats" class="text-[11px] text-purple-300/80 font-mono mt-0.5">0 of 0 tasks completed</p>
           </div>
+          <!-- + Task: top-right on mobile, mirrors + New List -->
+          <button type="button" onclick="openAddTaskModal()"
+            class="sm:hidden ml-auto shrink-0 text-[11px] px-2 py-1 bg-purple-500/10 hover:bg-purple-500/20 text-purple-300 border border-purple-500/30 rounded-lg font-bold transition flex items-center gap-1 active:scale-95">
+            <i data-lucide="plus" class="w-3 h-3"></i> Task
+          </button>
         </div>
 
         <div class="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-end">
-          <!-- Add Task: mirrors the sidebar's + New List position -->
+          <!-- Add Task chip (desktop): same slot the sidebar uses for + New List -->
           <button type="button" onclick="openAddTaskModal()"
-            class="text-[11px] px-2 py-1 bg-purple-500/10 hover:bg-purple-500/20 text-purple-300 border border-purple-500/30 rounded-lg font-bold transition flex items-center gap-1 active:scale-95 shrink-0">
+            class="hidden sm:flex text-[11px] px-2 py-1 bg-purple-500/10 hover:bg-purple-500/20 text-purple-300 border border-purple-500/30 rounded-lg font-bold transition items-center gap-1 active:scale-95 shrink-0">
             <i data-lucide="plus" class="w-3 h-3"></i> Task
           </button>
 
@@ -6078,16 +6083,12 @@ html, body {
     };
 
     window.openCreateTaskListModal = function() {
-      const name = prompt('Enter new task list name:');
-      if (!name) return;
-      ensureTasksInitialized();
-      const id = 'list_' + Date.now();
-      window.appState.taskLists.push({ id, name: name.trim(), excludeFromTotal: false, createdAt: new Date().toISOString() });
-      window.appState.activeListId = id;
-      persistTasksAndSync();
-      window.renderTodoListsNav();
-      window.renderTodoItems();
-      if (window.showToast) window.showToast(`List '${name}' created!`, 'success');
+      triggerHaptic();
+      const input = document.getElementById('new-tasklist-name');
+      if (input) input.value = '';
+      window.showModalDirect('add-tasklist-modal');
+      if (window.refreshIconsScoped) window.refreshIconsScoped(document.getElementById('add-tasklist-modal'));
+      setTimeout(() => { if (input) input.focus(); }, 80);
     };
 
     window.deleteActiveTodoList = function() {
@@ -20412,7 +20413,7 @@ html, body {
       <div class="space-y-3 text-xs">
         <div>
           <label class="block text-slate-400 mb-1 font-semibold">Category Name</label>
-          <input id="new-tasklist-name" type="text" placeholder="e.g. Work Projects, Vehicle Maintenance" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-slate-100 outline-none focus:border-purple-500 transition" />
+          <input id="new-tasklist-name" type="text" placeholder="e.g. Work Projects, Vehicle Maintenance" onkeydown="if(event.key==='Enter'){event.preventDefault();confirmCreateTaskList();}" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-slate-100 outline-none focus:border-purple-500 transition" />
         </div>
         <div class="flex gap-2 pt-2">
           <button onclick="closeModal('add-tasklist-modal')" class="flex-1 py-2.5 bg-slate-800 text-slate-300 font-semibold rounded-xl hover:bg-slate-700 transition">Cancel</button>
@@ -20499,15 +20500,23 @@ html, body {
       window.closeDrawer = function(id) { document.getElementById(id)?.classList.add('hidden'); };
 
       window.confirmCreateTaskList = function() {
-        const name = document.getElementById('new-tasklist-name').value.trim();
-        if (!name) return;
+        const nameEl = document.getElementById('new-tasklist-name');
+        const name = (nameEl?.value || '').trim();
+        if (!name) {
+          if (window.showToast) window.showToast('Please enter a list name.', 'error');
+          return;
+        }
+        if (!Array.isArray(window.appState.taskLists)) window.appState.taskLists = [];
         const id = 'list_' + Date.now();
-        window.appState.taskLists.push({ id, name, createdAt: new Date().toISOString() });
+        window.appState.taskLists.push({ id, name, excludeFromTotal: false, createdAt: new Date().toISOString() });
         window.appState.activeListId = id;
-        document.getElementById('new-tasklist-name').value = '';
-        window.closeModal('add-tasklist-modal');
-        window.saveCloudData();
-        window.refreshAllViews();
+        if (nameEl) nameEl.value = '';
+        window.closeModalDirect('add-tasklist-modal');
+        try { if (window.Store) window.Store.set('pros_task_lists', JSON.stringify(window.appState.taskLists)); } catch (e) {}
+        window.renderTodoListsNav();
+        window.renderTodoItems();
+        if (window.saveCloudData) { try { window.saveCloudData(); } catch (e) {} }
+        if (window.showToast) window.showToast('List created!', 'success');
       };
 
       window.populateCategoryDropdowns = function() {
