@@ -56,18 +56,22 @@
     }
 
     ::-webkit-scrollbar {
-      width: 6px;
-      height: 6px;
+      width: 4px;
+      height: 4px;
     }
     ::-webkit-scrollbar-track {
-      background: #090d16;
+      background: transparent;
     }
     ::-webkit-scrollbar-thumb {
       background: #1e293b;
-      border-radius: 4px;
+      border-radius: 999px;
     }
     ::-webkit-scrollbar-thumb:hover {
       background: #334155;
+    }
+    html {
+      scrollbar-width: thin;
+      scrollbar-color: #1e293b transparent;
     }
 
     /* Native <select> restyle: consistent dark dropdowns app-wide */
@@ -4370,29 +4374,31 @@ html, body {
         <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
           <i data-lucide="folders" class="w-3.5 h-3.5 text-purple-400"></i> Category Lists
         </h3>
-        <button type="button" onclick="openCreateTaskListModal()"
-          class="text-[11px] px-2 py-1 bg-purple-500/10 hover:bg-purple-500/20 text-purple-300 border border-purple-500/30 rounded-lg font-bold transition flex items-center gap-1 active:scale-95">
-          <i data-lucide="plus" class="w-3 h-3"></i> New List
-        </button>
+        <div class="flex items-center gap-1.5 shrink-0">
+          <button type="button" onclick="openCreateTaskListModal()"
+            class="text-[11px] px-2 py-1 bg-purple-500/10 hover:bg-purple-500/20 text-purple-300 border border-purple-500/30 rounded-lg font-bold transition flex items-center gap-1 active:scale-95">
+            <i data-lucide="plus" class="w-3 h-3"></i> New List
+          </button>
+        </div>
       </div>
 
       <!-- Category Filter Pills + Sort (single row) -->
       <div class="flex items-center gap-1.5">
         <!-- Folder Type Filters -->
-        <div class="flex items-center gap-1 overflow-x-auto no-scrollbar text-[11px] min-w-0 flex-1">
-          <button type="button" onclick="setFolderTypeFilter('ALL')" id="folder-filter-btn-all" class="px-2.5 py-1 rounded-lg font-bold transition bg-purple-600 text-white shrink-0 shadow-sm">All</button>
-          <button type="button" onclick="setFolderTypeFilter('GOAL')" id="folder-filter-btn-goal" class="px-2.5 py-1 rounded-lg font-medium text-slate-400 hover:text-white bg-slate-900 border border-slate-800 shrink-0">🎯 Goals</button>
-          <button type="button" onclick="setFolderTypeFilter('NODE')" id="folder-filter-btn-node" class="px-2.5 py-1 rounded-lg font-medium text-slate-400 hover:text-white bg-slate-900 border border-slate-800 shrink-0">🧠 Nodes</button>
-          <button type="button" onclick="setFolderTypeFilter('NORMAL')" id="folder-filter-btn-normal" class="px-2.5 py-1 rounded-lg font-medium text-slate-400 hover:text-white bg-slate-900 border border-slate-800 shrink-0">📁 Custom</button>
+        <div class="flex items-center gap-1 overflow-x-auto no-scrollbar min-w-0 flex-1">
+          <button type="button" onclick="setFolderTypeFilter('ALL')" id="folder-filter-btn-all" class="px-3.5 py-2 sm:px-2.5 sm:py-1 text-[12px] sm:text-[11px] rounded-lg font-bold transition bg-purple-600 text-white shrink-0 shadow-sm">All</button>
+          <button type="button" onclick="setFolderTypeFilter('GOAL')" id="folder-filter-btn-goal" class="px-3.5 py-2 sm:px-2.5 sm:py-1 text-[12px] sm:text-[11px] rounded-lg font-medium text-slate-400 hover:text-white bg-slate-900 border border-slate-800 shrink-0">🎯 Goals</button>
+          <button type="button" onclick="setFolderTypeFilter('NODE')" id="folder-filter-btn-node" class="px-3.5 py-2 sm:px-2.5 sm:py-1 text-[12px] sm:text-[11px] rounded-lg font-medium text-slate-400 hover:text-white bg-slate-900 border border-slate-800 shrink-0">🧠 Nodes</button>
+          <button type="button" onclick="setFolderTypeFilter('NORMAL')" id="folder-filter-btn-normal" class="px-3.5 py-2 sm:px-2.5 sm:py-1 text-[12px] sm:text-[11px] rounded-lg font-medium text-slate-400 hover:text-white bg-slate-900 border border-slate-800 shrink-0">📁 Custom</button>
         </div>
 
         <!-- Compact Sort (icon-embedded select, no label bar) -->
         <div class="relative shrink-0">
           <i data-lucide="arrow-up-down" class="w-3 h-3 text-purple-400 absolute left-1.5 top-1/2 -translate-y-1/2 pointer-events-none"></i>
-          <select id="folder-sort-select" onchange="setFolderSortOption(this.value)" class="bg-slate-900 border border-slate-800 text-slate-300 rounded-lg pl-6 pr-1 py-1 outline-none font-medium focus:border-purple-400 text-[10px]">
+          <select id="folder-sort-select" onchange="setFolderSortOption(this.value)" class="bg-slate-900 border border-slate-800 text-slate-300 rounded-lg pl-6 pr-1.5 py-1.5 outline-none font-medium focus:border-purple-400 text-[11px] sm:pl-5 sm:pr-0.5 sm:py-1 sm:text-[10px]">
             <option value="DEFAULT">Default</option>
-            <option value="TASKS_DESC">Most Tasks</option>
-            <option value="PENDING_DESC">Most Pending</option>
+            <option value="TASKS_DESC">Tasks</option>
+            <option value="PENDING_DESC">Pending</option>
             <option value="NAME_ASC">A-Z</option>
           </select>
         </div>
@@ -4627,6 +4633,8 @@ html, body {
     let activeTagFilter = '';
     let activeFolderTypeFilter = 'ALL'; // 'ALL', 'GOAL', 'NODE', 'NORMAL'
     let activeFolderSortOption = 'DEFAULT'; // 'DEFAULT', 'TASKS_DESC', 'PENDING_DESC', 'NAME_ASC'
+    let tasksScopeAll = false; // false = this folder only, true = all folders
+    try { tasksScopeAll = window.localStorage.getItem('pros_tasks_scope_all') === '1'; } catch (e) {}
     let draggedTaskId = null;
     let isFirebaseListenerAttached = false;
     let modalTempSubtasks = [];
@@ -4721,9 +4729,9 @@ html, body {
         const btn = document.getElementById(`folder-filter-btn-${btnKey}`);
         if (!btn) return;
         if (btnKey.toUpperCase() === filterType) {
-          btn.className = 'px-2.5 py-1 rounded-lg font-bold transition bg-purple-600 text-white shrink-0 shadow-sm';
+          btn.className = 'px-3.5 py-2 sm:px-2.5 sm:py-1 text-[12px] sm:text-[11px] rounded-lg font-bold transition bg-purple-600 text-white shrink-0 shadow-sm';
         } else {
-          btn.className = 'px-2.5 py-1 rounded-lg font-medium text-slate-400 hover:text-white bg-slate-900 border border-slate-800 shrink-0';
+          btn.className = 'px-3.5 py-2 sm:px-2.5 sm:py-1 text-[12px] sm:text-[11px] rounded-lg font-medium text-slate-400 hover:text-white bg-slate-900 border border-slate-800 shrink-0';
         }
       });
 
@@ -5466,6 +5474,39 @@ html, body {
 
       const fragment = document.createDocumentFragment();
 
+      /* "All Folders" card — always first, above every folder, outside type filters & sort */
+      const allTasksG = window.appState.tasks || [];
+      const allPendingG = allTasksG.filter(t => !t.completed && t.status !== 'done').length;
+      const allBtn = document.createElement('button');
+      allBtn.type = 'button';
+      allBtn.className = `w-full text-left p-2.5 rounded-xl text-xs font-semibold flex items-center justify-between transition min-w-0 ${
+        tasksScopeAll
+          ? 'bg-purple-600/30 text-purple-100 border border-purple-400/60 shadow-md'
+          : 'bg-slate-900/60 text-slate-300 border border-slate-800 hover:bg-slate-900'
+      }`;
+      allBtn.innerHTML = `
+        <div class="flex items-center gap-2 truncate pr-2 min-w-0">
+          <div class="p-1 rounded-md bg-purple-500/20 text-purple-400 shrink-0 border border-purple-500/30"><i data-lucide="layers" class="w-3.5 h-3.5"></i></div>
+          <span class="truncate font-bold text-purple-200">All Folders</span>
+        </div>
+        <span class="px-2 py-0.5 text-[10px] bg-slate-800 text-slate-300 rounded-full font-bold font-mono shrink-0">${allPendingG}/${allTasksG.length}</span>`;
+      allBtn.onclick = () => {
+        triggerHaptic();
+        tasksScopeAll = true;
+        try { window.localStorage.setItem('pros_tasks_scope_all', '1'); } catch (e) {}
+        window.renderTodoListsNav();
+        window.renderTodoItems();
+        if (window.innerWidth < 1024) window.showMobileTasksPanel();
+      };
+      fragment.appendChild(allBtn);
+
+      if (taskLists.length === 0) {
+        const note = document.createElement('div');
+        note.className = 'p-3 text-center text-[11px] text-slate-500 bg-slate-950 rounded-xl border border-slate-800';
+        note.textContent = 'No folders match this filter.';
+        fragment.appendChild(note);
+      }
+
       taskLists.forEach(list => {
         const isNodeList = list.isNodeFolder || list.folderType === 'node';
         const isGoalList = list.isGoalFolder || list.folderType === 'goal';
@@ -5523,6 +5564,8 @@ html, body {
 
         btn.onclick = () => {
           triggerHaptic();
+          tasksScopeAll = false;
+          try { window.localStorage.setItem('pros_tasks_scope_all', '0'); } catch (e) {}
           window.appState.activeListId = list.id;
           window.renderTodoListsNav();
           window.renderTodoItems();
@@ -5535,6 +5578,16 @@ html, body {
       container.appendChild(fragment);
       refreshIconsScoped(container);
     };
+
+    /* Folder scope helpers (This Folder ⇄ All Folders) */
+    function getListMeta(listId) {
+      const l = (window.appState.taskLists || []).find(x => x.id === listId);
+      if (!l) return { name: 'Unassigned', cls: 'bg-slate-800 text-slate-400 border border-slate-700', dot: 'bg-slate-400' };
+      if (l.isGoalFolder || l.folderType === 'goal') return { name: l.name, cls: 'bg-rose-500/20 text-rose-300 border border-rose-500/30', dot: 'bg-rose-400' };
+      if (l.isNodeFolder || l.folderType === 'node') return { name: l.name, cls: 'bg-purple-500/20 text-purple-300 border border-purple-500/30', dot: 'bg-purple-400' };
+      if (l.id === 'list-inbox') return { name: l.name || 'Inbox', cls: 'bg-slate-800 text-slate-400 border border-slate-700', dot: 'bg-slate-400' };
+      return { name: l.name, cls: 'bg-slate-800/80 text-slate-400 border border-slate-700', dot: 'bg-slate-400' };
+    }
 
     /* Main Todo Items Renderer */
     window.renderTodoItems = function() {
@@ -5549,7 +5602,12 @@ html, body {
       const toggleLabel = document.getElementById('folder-metric-toggle-label');
       const toggleBtn = document.getElementById('btn-toggle-folder-metrics');
 
-      if (activeList) {
+      if (tasksScopeAll) {
+        // All-Folders mode: global title, no per-folder badge, no per-folder metric toggle
+        if (titleEl) titleEl.textContent = 'All Folders';
+        if (badgeEl) badgeEl.classList.add('hidden');
+        if (toggleBtn) toggleBtn.classList.add('hidden');
+      } else if (activeList) {
         if (titleEl) titleEl.textContent = activeList.name;
         if (badgeEl) {
           if (activeList.isGoalFolder || activeList.folderType === 'goal') {
@@ -5578,7 +5636,7 @@ html, body {
 
       const filterStatus = document.getElementById('todo-status-filter')?.value || 'ALL';
       const today = new Date().toISOString().split('T')[0];
-      let tasks = (window.appState.tasks || []).filter(t => t.listId === window.appState.activeListId);
+      let tasks = (window.appState.tasks || []).filter(t => tasksScopeAll || t.listId === window.appState.activeListId);
 
       if (taskSearchQuery) {
         tasks = tasks.filter(t => 
@@ -5627,9 +5685,11 @@ html, body {
         return (b.completedAt || b.createdAt || 0) - (a.completedAt || a.createdAt || 0);
       });
 
-      const allListTasks = (window.appState.tasks || []).filter(t => t.listId === window.appState.activeListId);
-      const totalCount = allListTasks.length;
-      const completedCount = allListTasks.filter(t => t.completed || t.status === 'done').length;
+      const scopedTasks = tasksScopeAll
+        ? (window.appState.tasks || [])
+        : (window.appState.tasks || []).filter(t => t.listId === window.appState.activeListId);
+      const totalCount = scopedTasks.length;
+      const completedCount = scopedTasks.filter(t => t.completed || t.status === 'done').length;
 
       const statsEl = document.getElementById('active-todo-stats');
       if (statsEl) statsEl.textContent = `${completedCount} of ${totalCount} tasks completed`;
@@ -5645,7 +5705,30 @@ html, body {
 
       const fragment = document.createDocumentFragment();
 
+      if (tasksScopeAll) {
+        // Group rows by folder (sidebar order), keeping the in-folder sort intact
+        const listOrder = {};
+        (window.appState.taskLists || []).forEach((l, i) => { listOrder[l.id] = i; });
+        tasks.sort((a, b) => (listOrder[a.listId] ?? 9999) - (listOrder[b.listId] ?? 9999));
+      }
+
+      let lastGroupId = null;
       tasks.forEach(task => {
+        if (tasksScopeAll && task.listId !== lastGroupId) {
+          lastGroupId = task.listId;
+          const meta = getListMeta(task.listId);
+          const gAll = (window.appState.tasks || []).filter(t => t.listId === task.listId);
+          const gDone = gAll.filter(t => t.completed || t.status === 'done').length;
+          const gh = document.createElement('div');
+          gh.className = 'flex items-center justify-between pt-1.5 px-0.5';
+          gh.innerHTML = `
+            <span class="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-slate-400 min-w-0">
+              <span class="w-1.5 h-1.5 rounded-full ${meta.dot} shrink-0"></span>
+              <span class="truncate">${escapeHtml(meta.name)}</span>
+            </span>
+            <span class="text-[10px] font-mono text-slate-500 shrink-0">${gAll.length - gDone}/${gAll.length} left</span>`;
+          fragment.appendChild(gh);
+        }
         const isDone = task.completed || task.status === 'done';
         const subtasks = Array.isArray(task.subtasks) ? task.subtasks : [];
         const completedSubtasks = subtasks.filter(s => s.completed).length;
@@ -5758,6 +5841,19 @@ html, body {
     /* Kanban Board View Renderer */
     window.renderKanbanBoard = function() {
       ensureTasksInitialized();
+      // Kanban always shows every folder's tasks — scope controls live in List view only
+      const titleElK = document.getElementById('active-todo-list-name');
+      const badgeElK = document.getElementById('active-todo-list-badge');
+      if (titleElK) titleElK.textContent = 'All Folders';
+      if (badgeElK) badgeElK.classList.add('hidden');
+      const incBtnK = document.getElementById('btn-toggle-folder-metrics');
+      if (incBtnK) incBtnK.classList.add('hidden');
+      const statsElK = document.getElementById('active-todo-stats');
+      if (statsElK) {
+        const at = window.appState.tasks || [];
+        const dc = at.filter(t => t.completed || t.status === 'done').length;
+        statsElK.textContent = `All folders: ${at.length - dc} of ${at.length} left`;
+      }
       const cols = ['backlog', 'progress', 'review', 'done'];
 
       cols.forEach(col => {
@@ -5765,7 +5861,7 @@ html, body {
         if (!container) return;
         container.innerHTML = '';
 
-        let items = (window.appState.tasks || []).filter(t => (t.status || 'backlog') === col && t.listId === window.appState.activeListId);
+        let items = (window.appState.tasks || []).filter(t => (t.status || 'backlog') === col);
         if (taskSearchQuery) {
           items = items.filter(t =>
             (t.title && t.title.toLowerCase().includes(taskSearchQuery)) ||
@@ -5817,8 +5913,15 @@ html, body {
             isDone ? 'border-slate-800/60 opacity-70' : 'border-slate-800 hover:border-purple-500/40'
           }`;
 
+          let folderChip = '';
+          {
+            const meta = getListMeta(t.listId);
+            folderChip = `<span class="text-[9px] px-1 py-0.5 rounded font-bold border truncate shrink-0 max-w-[80px] ${meta.cls}">${escapeHtml(meta.name)}</span>`;
+          }
+
           card.innerHTML = `
             <div class="flex items-start justify-between gap-2">
+              ${folderChip}
               <span class="font-bold text-white ${isDone ? 'line-through text-slate-500' : ''} truncate flex-1">${escapeHtml(t.title)}</span>
               <div class="flex items-center gap-1 shrink-0">
                 <button type="button" onclick="duplicateTask('${t.id}')" class="text-slate-500 hover:text-purple-400 p-0.5" title="Duplicate"><i data-lucide="copy" class="w-3 h-3"></i></button>
