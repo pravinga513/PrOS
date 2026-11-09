@@ -4272,18 +4272,6 @@ html, body {
           </span>
         </h2>
       </div>
-
-      <!-- Mobile Panel Switcher: Folders ↺ Tasks (like Notes module) -->
-      <button type="button" onclick="toggleMobileTasksPanel()" id="tasks-mobile-toggle-btn" class="lg:hidden shrink-0 px-2.5 py-1.5 bg-slate-900 border border-slate-800 hover:border-purple-500/40 text-purple-300 font-bold text-xs rounded-xl transition flex items-center gap-1.5 active:scale-95 touch-manipulation">
-        <i data-lucide="list-todo" class="w-4 h-4 shrink-0"></i>
-        <span id="tasks-mobile-toggle-text">Tasks</span>
-      </button>
-
-      <!-- Quick Action Mobile Button -->
-      <button type="button" onclick="showMobileTasksPanel(); openAddTaskModal()" class="sm:hidden shrink-0 px-3 py-1.5 bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs rounded-xl transition flex items-center gap-1 shadow-lg shadow-purple-600/20 active:scale-95 touch-manipulation">
-        <i data-lucide="plus" class="w-4 h-4 shrink-0"></i>
-        <span>Task</span>
-      </button>
     </div>
 
     <!-- Toolbar Filters, Search, Batch Actions & View Modes -->
@@ -4320,12 +4308,6 @@ html, body {
           </button>
         </div>
       </div>
-
-      <!-- New List Button -->
-      <button type="button" onclick="openCreateTaskListModal()" class="px-3 py-2 bg-slate-900 border border-slate-800 hover:border-purple-500/40 text-purple-300 font-semibold rounded-xl transition flex items-center gap-1.5 shadow-sm active:scale-95 touch-manipulation shrink-0">
-        <i data-lucide="folder-plus" class="w-3.5 h-3.5 text-purple-400 shrink-0"></i>
-        <span>New List</span>
-      </button>
 
       <!-- Desktop Create Task Button -->
       <button type="button" onclick="openAddTaskModal()" class="hidden sm:flex px-3.5 py-2 bg-purple-600 hover:bg-purple-500 font-bold text-xs text-white rounded-xl shadow-lg shadow-purple-600/20 transition items-center gap-1.5 active:scale-95 touch-manipulation shrink-0">
@@ -4395,15 +4377,34 @@ html, body {
     
     <!-- Left Sidebar: Task Category Lists, Node Folders & Goal Folders -->
     <div id="tasks-sidebar-panel" class="lg:col-span-4 glass-card rounded-2xl p-3.5 sm:p-4 space-y-3 border border-purple-500/20 bg-purple-500/[0.02]">
-      
+
+      <!-- Mobile Panel Switcher: Folders ⇄ Tasks (lives with the folder list) -->
+      <div class="lg:hidden flex justify-between items-center bg-slate-950/70 border border-slate-800 rounded-xl px-2.5 py-1.5">
+        <span class="text-[11px] font-bold text-slate-400 flex items-center gap-1.5">
+          <i data-lucide="folders" class="w-3.5 h-3.5 text-purple-400"></i> Folders
+        </span>
+        <button type="button" id="tasks-mobile-toggle-btn" onclick="toggleMobileTasksPanel()"
+          class="px-2.5 py-1 bg-purple-600 hover:bg-purple-500 text-white font-bold text-[11px] rounded-lg flex items-center gap-1 shadow-md shadow-purple-600/20 active:scale-95 transition">
+          <i data-lucide="list-todo" class="w-3.5 h-3.5"></i>
+          <span class="tasks-mobile-toggle-text">Tasks</span>
+        </button>
+      </div>
+
       <!-- Category Lists Header -->
       <div class="flex justify-between items-center px-1 border-b border-slate-800/80 pb-2">
         <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
           <i data-lucide="folders" class="w-3.5 h-3.5 text-purple-400"></i> Category Lists
         </h3>
-        <button type="button" onclick="openCreateTaskListModal()" class="text-[11px] px-2 py-1 bg-purple-500/10 hover:bg-purple-500/20 text-purple-300 border border-purple-500/30 rounded-lg font-bold transition flex items-center gap-1 active:scale-95">
-          <i data-lucide="plus" class="w-3 h-3"></i> New List
-        </button>
+        <div class="flex items-center gap-1.5">
+          <button type="button" onclick="showMobileTasksPanel(); openAddTaskModal()"
+            class="text-[11px] px-2 py-1 bg-purple-600 hover:bg-purple-500 text-white rounded-lg font-bold transition flex items-center gap-1 shadow-md shadow-purple-600/20 active:scale-95">
+            <i data-lucide="plus" class="w-3 h-3"></i> Task
+          </button>
+          <button type="button" onclick="openCreateTaskListModal()"
+            class="text-[11px] px-2 py-1 bg-purple-500/10 hover:bg-purple-500/20 text-purple-300 border border-purple-500/30 rounded-lg font-bold transition flex items-center gap-1 active:scale-95">
+            <i data-lucide="plus" class="w-3 h-3"></i> New List
+          </button>
+        </div>
       </div>
 
       <!-- Category Filter Pills & Sort Selector -->
@@ -4448,6 +4449,13 @@ html, body {
         </div>
         
         <div class="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-end">
+          <!-- Mobile switch back to folders -->
+          <button type="button" onclick="toggleMobileTasksPanel()"
+            class="lg:hidden shrink-0 px-2.5 py-1.5 bg-purple-600 hover:bg-purple-500 text-white font-bold text-[11px] rounded-lg flex items-center gap-1 shadow-md shadow-purple-600/20 active:scale-95 transition">
+            <i data-lucide="folders" class="w-3.5 h-3.5"></i>
+            <span class="tasks-mobile-toggle-text">Folders</span>
+          </button>
+
           <!-- Folder Metric Inclusion Toggle -->
           <button type="button" id="btn-toggle-folder-metrics" onclick="toggleActiveFolderMetricInclusion()" class="px-2.5 py-1.5 bg-slate-950 border border-slate-800 hover:border-purple-500/40 rounded-xl text-[11px] font-semibold flex items-center gap-1.5 transition text-slate-400" title="Toggle whether this folder counts in Total Tasks and global stats">
             <i data-lucide="calculator" class="w-3.5 h-3.5 text-purple-400"></i>
@@ -4469,26 +4477,6 @@ html, body {
         </div>
       </div>
 
-      <!-- Quick Inline Task Input Bar (one-line; date/priority collapse behind ⚙️ on mobile) -->
-      <div class="flex items-center gap-1.5 bg-slate-950 p-1.5 sm:p-2.5 rounded-xl border border-slate-800 text-xs">
-        <input id="todo-input" type="text" placeholder="Add task or #hashtag..." onkeypress="if(event.key === 'Enter') addTodoItem()" class="flex-1 min-w-0 bg-transparent text-slate-100 outline-none px-2 py-1.5 text-xs placeholder:text-slate-500 focus:border-purple-400" />
-        <button type="button" onclick="toggleQuickAddExtras()" title="Due date & priority"
-          class="p-2 shrink-0 text-slate-400 hover:text-purple-300 hover:bg-slate-900 rounded-lg border border-slate-800 transition active:scale-95">
-          <i data-lucide="settings-2" class="w-3.5 h-3.5"></i>
-        </button>
-        <div id="todo-quick-extra" class="hidden sm:flex items-center gap-1.5 flex-wrap">
-          <input id="todo-due-date" type="date" class="bg-slate-900 border border-slate-800 text-slate-300 rounded-lg text-[10px] px-2 py-1 outline-none font-mono focus:border-purple-400" title="Due Date" />
-          <select id="todo-priority-input" class="bg-slate-900 border border-slate-800 text-slate-300 rounded-lg text-[11px] px-2 py-1 outline-none font-medium focus:border-purple-400">
-            <option value="Normal">Normal</option>
-            <option value="High">🔥 High</option>
-            <option value="Low">Low</option>
-          </select>
-        </div>
-        <button type="button" onclick="addTodoItem()" class="py-1.5 px-3 shrink-0 bg-purple-600 hover:bg-purple-500 font-bold rounded-lg transition text-white flex items-center justify-center gap-1 shadow-md active:scale-95 shadow-purple-600/20">
-          <i data-lucide="plus" class="w-3.5 h-3.5"></i> Add
-        </button>
-      </div>
-
       <!-- Task Items Container -->
       <div id="todo-items-container" class="space-y-2 max-h-[520px] overflow-y-auto pr-1">
         <!-- Injected via JS -->
@@ -4503,20 +4491,22 @@ html, body {
       
       <!-- Column 1: Backlog -->
       <div class="glass-card p-3.5 rounded-2xl border border-purple-500/20 bg-purple-500/[0.02] space-y-3 flex flex-col justify-start kanban-drop-zone w-[78vw] max-w-[320px] shrink-0 snap-start sm:w-auto sm:max-w-none" data-status="backlog" ondragover="handleKanbanDragOver(event)" ondragleave="handleKanbanDragLeave(event)" ondrop="handleKanbanDrop(event, 'backlog')">
-        <div class="flex justify-between items-center border-b border-slate-800 pb-2">
-          <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-2">
-            <span class="w-2 h-2 rounded-full bg-slate-500"></span> Backlog
+        <div class="flex justify-between items-center border-b border-slate-800 pb-2.5">
+          <h4 class="text-xs font-bold text-slate-300 uppercase tracking-wider flex items-center gap-2">
+            <span class="p-1.5 rounded-lg bg-slate-500/10 text-slate-400 border border-slate-500/20 inline-flex"><i data-lucide="inbox" class="w-3.5 h-3.5"></i></span>
+            Backlog
           </h4>
-          <span id="kanban-count-backlog" class="text-[10px] px-2 py-0.5 rounded-full bg-slate-900 border border-slate-800 text-slate-400 font-mono">0</span>
+          <span id="kanban-count-backlog" class="text-[10px] px-2 py-0.5 rounded-full bg-slate-900 border border-slate-700/70 text-slate-400 font-mono">0</span>
         </div>
         <div id="kanban-col-backlog" class="space-y-2 min-h-[260px]"></div>
       </div>
 
       <!-- Column 2: In Progress -->
       <div class="glass-card p-3.5 rounded-2xl border border-purple-500/20 bg-purple-500/[0.02] space-y-3 flex flex-col justify-start kanban-drop-zone w-[78vw] max-w-[320px] shrink-0 snap-start sm:w-auto sm:max-w-none" data-status="progress" ondragover="handleKanbanDragOver(event)" ondragleave="handleKanbanDragLeave(event)" ondrop="handleKanbanDrop(event, 'progress')">
-        <div class="flex justify-between items-center border-b border-slate-800 pb-2">
-          <h4 class="text-xs font-bold text-purple-400 uppercase tracking-wider flex items-center gap-2">
-            <span class="w-2 h-2 rounded-full bg-purple-400"></span> In Progress
+        <div class="flex justify-between items-center border-b border-slate-800 pb-2.5">
+          <h4 class="text-xs font-bold text-purple-300 uppercase tracking-wider flex items-center gap-2">
+            <span class="p-1.5 rounded-lg bg-purple-500/15 text-purple-300 border border-purple-500/30 inline-flex"><i data-lucide="zap" class="w-3.5 h-3.5"></i></span>
+            In Progress
           </h4>
           <span id="kanban-count-progress" class="text-[10px] px-2 py-0.5 rounded-full bg-purple-500/20 text-purple-300 font-mono font-bold border border-purple-500/30">0</span>
         </div>
@@ -4525,9 +4515,10 @@ html, body {
 
       <!-- Column 3: In Review -->
       <div class="glass-card p-3.5 rounded-2xl border border-purple-500/20 bg-purple-500/[0.02] space-y-3 flex flex-col justify-start kanban-drop-zone w-[78vw] max-w-[320px] shrink-0 snap-start sm:w-auto sm:max-w-none" data-status="review" ondragover="handleKanbanDragOver(event)" ondragleave="handleKanbanDragLeave(event)" ondrop="handleKanbanDrop(event, 'review')">
-        <div class="flex justify-between items-center border-b border-slate-800 pb-2">
-          <h4 class="text-xs font-bold text-amber-400 uppercase tracking-wider flex items-center gap-2">
-            <span class="w-2 h-2 rounded-full bg-amber-400"></span> In Review
+        <div class="flex justify-between items-center border-b border-slate-800 pb-2.5">
+          <h4 class="text-xs font-bold text-amber-300 uppercase tracking-wider flex items-center gap-2">
+            <span class="p-1.5 rounded-lg bg-amber-500/15 text-amber-300 border border-amber-500/30 inline-flex"><i data-lucide="eye" class="w-3.5 h-3.5"></i></span>
+            In Review
           </h4>
           <span id="kanban-count-review" class="text-[10px] px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 font-mono font-bold border border-amber-500/30">0</span>
         </div>
@@ -4536,11 +4527,12 @@ html, body {
 
       <!-- Column 4: Done -->
       <div class="glass-card p-3.5 rounded-2xl border border-purple-500/20 bg-purple-500/[0.02] space-y-3 flex flex-col justify-start kanban-drop-zone w-[78vw] max-w-[320px] shrink-0 snap-start sm:w-auto sm:max-w-none" data-status="done" ondragover="handleKanbanDragOver(event)" ondragleave="handleKanbanDragLeave(event)" ondrop="handleKanbanDrop(event, 'done')">
-        <div class="flex justify-between items-center border-b border-slate-800 pb-2">
-          <h4 class="text-xs font-bold text-purple-300 uppercase tracking-wider flex items-center gap-2">
-            <span class="w-2 h-2 rounded-full bg-purple-400"></span> Done
+        <div class="flex justify-between items-center border-b border-slate-800 pb-2.5">
+          <h4 class="text-xs font-bold text-emerald-300 uppercase tracking-wider flex items-center gap-2">
+            <span class="p-1.5 rounded-lg bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 inline-flex"><i data-lucide="check-circle-2" class="w-3.5 h-3.5"></i></span>
+            Done
           </h4>
-          <span id="kanban-count-done" class="text-[10px] px-2 py-0.5 rounded-full bg-purple-500/20 text-purple-300 font-mono font-bold border border-purple-500/30">0</span>
+          <span id="kanban-count-done" class="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 font-mono font-bold border border-emerald-500/30">0</span>
         </div>
         <div id="kanban-col-done" class="space-y-2 min-h-[260px]"></div>
       </div>
@@ -4993,36 +4985,19 @@ html, body {
       window.applyTaskEditorMode();
     };
 
-    /* Quick-add bar: reveal due date + priority behind the gear button (mobile) */
-    window.toggleQuickAddExtras = function() {
-      triggerHaptic();
-      const extra = document.getElementById('todo-quick-extra');
-      if (extra) {
-        if (extra.classList.contains('hidden')) { extra.classList.remove('hidden'); extra.classList.add('sm:flex'); }
-        else { extra.classList.add('hidden'); extra.classList.remove('sm:flex'); }
-      }
-    };
-
     /* Mobile panel switcher (Notes-style): Folders list ↔ Tasks panel, one at a time */
     window.toggleMobileTasksPanel = function() {
       triggerHaptic();
       const side = document.getElementById('tasks-sidebar-panel');
       const main = document.getElementById('tasks-main-panel');
-      const txt = document.getElementById('tasks-mobile-toggle-text');
-      const icon = document.querySelector('#tasks-mobile-toggle-btn [data-lucide]');
+      const txts = document.querySelectorAll('.tasks-mobile-toggle-text');
       if (!side || !main) return;
 
-      if (side.classList.contains('hidden')) {
-        // Currently showing tasks → switch to folders
-        side.classList.remove('hidden');
-        main.classList.add('hidden');
-        if (txt) txt.textContent = 'Tasks';
-      } else {
-        // Currently showing folders → switch to tasks
-        side.classList.add('hidden');
-        main.classList.remove('hidden');
-        if (txt) txt.textContent = 'Folders';
-      }
+      const showFolders = !side.classList.contains('hidden');
+      side.classList.toggle('hidden', showFolders);
+      main.classList.toggle('hidden', !showFolders);
+      // Each button shows the destination panel
+      txts.forEach(el => { el.textContent = showFolders ? 'Folders' : 'Tasks'; });
       if (window.refreshIconsScoped) window.refreshIconsScoped(document.getElementById('view-tasks'));
       if (window.appState?.taskViewMode === 'list') window.renderTodoItems();
     };
@@ -5032,10 +5007,10 @@ html, body {
       if (window.innerWidth >= 1024) return;
       const side = document.getElementById('tasks-sidebar-panel');
       const main = document.getElementById('tasks-main-panel');
-      const txt = document.getElementById('tasks-mobile-toggle-text');
+      const txts = document.querySelectorAll('.tasks-mobile-toggle-text');
       if (side) side.classList.add('hidden');
       if (main) main.classList.remove('hidden');
-      if (txt) txt.textContent = 'Folders';
+      txts.forEach(el => { el.textContent = 'Folders'; });
     };
 
     function populateTaskListDropdownInModal(selectedListId = '') {
@@ -5841,7 +5816,8 @@ html, body {
         if (countEl) countEl.textContent = items.length;
 
         if (items.length === 0) {
-          container.innerHTML = `<div class="p-3 text-center text-[11px] text-slate-600 border border-dashed border-slate-800/80 rounded-xl">Drag task here</div>`;
+          container.innerHTML = `<div class="p-4 text-center text-[11px] text-slate-600 border border-dashed border-slate-700/70 rounded-xl bg-slate-950/40 space-y-1.5"><i data-lucide="move" class="w-4 h-4 mx-auto opacity-50"></i><p class="font-semibold">Drag a task here</p></div>`;
+          refreshIconsScoped(container);
           return;
         }
 
