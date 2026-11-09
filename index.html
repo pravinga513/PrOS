@@ -2683,20 +2683,41 @@ html, body {
     </div>
   </div>
 
-  <!-- Monthly Category Budgets & Spending Distribution Bar -->
-  <div class="glass-card rounded-2xl p-3 sm:p-4 border border-slate-800 space-y-3">
+  <!-- Budgets & Caps: live stats + quick-add chips + cap rows + distribution -->
+  <div class="glass-card rounded-2xl p-3 sm:p-4 border border-slate-800 space-y-2.5">
     <div class="flex justify-between items-center border-b border-slate-800/80 pb-2 gap-2">
       <h3 class="text-xs font-extrabold text-white uppercase tracking-wider flex items-center gap-1.5 truncate">
         <i data-lucide="target" class="w-4 h-4 text-amber-400 shrink-0"></i>
-        <span class="truncate">Monthly Category Budgets &amp; Limits</span>
+        <span class="truncate">Budgets &amp; Caps</span>
       </h3>
       <button type="button" onclick="openCategoryManagerModal()" class="text-[11px] text-amber-400 hover:underline font-bold shrink-0">
         + Manage &rarr;
       </button>
     </div>
 
+    <!-- Live limit health stats -->
+    <div id="budget-stats" class="flex items-center gap-1.5 flex-wrap text-[10px] font-bold"></div>
+
+    <!-- Quick add cap chips (uncapped expense categories) -->
+    <div id="budget-chips-wrap" class="space-y-1">
+      <span class="text-[9px] uppercase tracking-wider text-slate-500 font-bold">Quick add cap &mdash; tap a chip</span>
+      <div id="budget-uncapped-chips" class="flex flex-wrap gap-1.5"></div>
+      <div id="budget-quick-row" class="hidden flex items-center gap-1.5 bg-slate-950 rounded-lg border border-amber-500/40 p-1.5">
+        <span id="budget-quick-cat" class="text-[11px] font-bold text-amber-300 truncate max-w-[34%] shrink-0"></span>
+        <span class="text-slate-500 text-xs font-mono shrink-0">&rarr; ₹</span>
+        <input id="budget-quick-input" type="number" min="1" placeholder="cap amount" class="flex-1 min-w-0 bg-slate-900 border border-slate-800 rounded-md px-2 py-1 text-[11px] font-mono text-slate-100 outline-none focus:border-amber-500" />
+        <button type="button" onclick="quickSaveCategoryBudget()" class="px-2.5 py-1 bg-amber-500 hover:bg-amber-400 text-slate-950 text-[11px] font-bold rounded-md shrink-0 active:scale-95">Set</button>
+        <button type="button" onclick="closeQuickCapRow()" class="text-slate-500 hover:text-white px-1 text-xs shrink-0">✕</button>
+      </div>
+    </div>
+
+    <!-- Capped category one-liners -->
+    <div id="category-budgets-grid" class="space-y-1.5 text-xs">
+      <!-- Dynamically Populated -->
+    </div>
+
     <!-- Visual Category Distribution Bar -->
-    <div id="spending-distribution-container" class="space-y-1">
+    <div id="spending-distribution-container" class="space-y-1 pt-0.5">
       <div class="flex justify-between text-[10px] text-slate-400 font-mono">
         <span>Expense Category Distribution</span>
         <span id="distribution-total-text">Total: ₹0</span>
@@ -2704,10 +2725,6 @@ html, body {
       <div id="spending-distribution-bar" class="w-full h-1.5 bg-slate-900 rounded-full flex overflow-hidden border border-slate-800">
         <!-- Colored percentage segments injected via JS -->
       </div>
-    </div>
-
-    <div id="category-budgets-grid" class="space-y-1.5 text-xs">
-      <!-- Dynamically Populated -->
     </div>
   </div>
 
@@ -3909,19 +3926,64 @@ html, body {
         return t.type === 'expense' && d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
       });
 
+      const fmtK = (v) => v >= 1000 ? (Math.round(v / 100) / 10) + 'k' : String(Math.round(v));
+
       const keys = Object.keys(budgets);
+      let crossed = 0, near = 0, within = 0, capTotal = 0, capSpent = 0;
+      const perCat = keys.map(cat => {
+        const limit = budgets[cat];
+        const spent = monthExpenses.filter(t => t.category === cat).reduce((acc, curr) => acc + curr.amount, 0);
+        const pctRaw = limit > 0 ? (spent / limit) * 100 : 0;
+        const pct = Math.min(100, Math.round(pctRaw));
+        capTotal += limit;
+        capSpent += spent;
+        if (pctRaw >= 100) crossed++;
+        else if (pctRaw >= 75) near++;
+        else within++;
+        return { cat, limit, spent, pct };
+      });
+
+      // Live health stats strip
+      const statsEl = document.getElementById('budget-stats');
+      if (statsEl) {
+        const chip = (label, n, tone) => {
+          const zero = n === 0;
+          const cls = zero
+            ? 'px-2 py-0.5 rounded-lg bg-slate-800 text-slate-500 border border-slate-700'
+            : tone;
+          return `<span class="${cls}">${label} ${n}</span>`;
+        };
+        statsEl.innerHTML = `
+          ${chip('🔥 crossed', crossed, 'px-2 py-0.5 rounded-lg bg-rose-500/20 text-rose-300 border border-rose-500/30')}
+          ${chip('⚠️ near', near, 'px-2 py-0.5 rounded-lg bg-amber-500/20 text-amber-300 border border-amber-500/30')}
+          ${chip('✅ within', within, 'px-2 py-0.5 rounded-lg bg-emerald-500/20 text-emerald-300 border border-emerald-500/30')}
+          <span class="px-2 py-0.5 rounded-lg bg-slate-800 text-slate-300 border border-slate-700 font-mono">₹${fmtK(capSpent)} / ₹${fmtK(capTotal)} of ${keys.length} caps</span>
+        `;
+      }
+
+      // Quick-add chips: every uncapped expense category
+      const chipsEl = document.getElementById('budget-uncapped-chips');
+      if (chipsEl) {
+        ensureCategoriesInitializedInternal();
+        const uncapped = (window.appState.categories || [])
+          .filter(c => c.type === 'expense' && !keys.includes(c.name));
+        if (uncapped.length === 0) {
+          chipsEl.innerHTML = '<span class="text-[10px] text-slate-500 italic">All categories have caps 🎯</span>';
+        } else {
+          chipsEl.innerHTML = uncapped.map(c =>
+            `<button type="button" onclick="openQuickCapRow('${escapeHtml(c.name)}')" class="px-2 py-0.5 rounded-lg bg-slate-950 border border-dashed border-slate-700 text-slate-400 hover:text-amber-300 hover:border-amber-500/50 text-[10px] font-bold transition active:scale-95">${escapeHtml(c.name)}</button>`
+          ).join('');
+        }
+      }
+
       if (keys.length === 0) {
-        container.innerHTML = '<div class="col-span-full p-2.5 text-center text-slate-500 text-xs italic bg-slate-950/60 rounded-xl border border-slate-800">No monthly category budget caps configured. Click "+ Manage" to set one.</div>';
+        container.innerHTML = '<div class="p-2 text-center text-slate-500 text-xs italic bg-slate-950/60 rounded-xl border border-slate-800">No caps yet &mdash; tap a chip above to set one in seconds.</div>';
         return;
       }
 
       const fragment = document.createDocumentFragment();
 
-      keys.forEach(cat => {
-        const limit = budgets[cat];
-        const spent = monthExpenses.filter(t => t.category === cat).reduce((acc, curr) => acc + curr.amount, 0);
-        const pct = Math.min(100, Math.round((spent / limit) * 100));
-
+      perCat.forEach(({ cat, limit, spent, pct }) => {
         let barColor = 'bg-emerald-500';
         let statusBadge = `<span class="text-[9px] px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-mono font-bold shrink-0">${pct}%</span>`;
         if (pct >= 100) {
@@ -3929,7 +3991,7 @@ html, body {
           statusBadge = `<span class="text-[9px] px-1.5 py-0.5 rounded bg-rose-500/20 text-rose-300 font-mono font-bold shrink-0">Exceeded 🔥</span>`;
         } else if (pct >= 75) {
           barColor = 'bg-amber-400';
-          statusBadge = `<span class="text-[9px] px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 font-mono font-bold shrink-0">Near Limit ⚠️</span>`;
+          statusBadge = `<span class="text-[9px] px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 font-mono font-bold shrink-0">Near ⚠️ ${pct}%</span>`;
         }
 
         const card = document.createElement('div');
@@ -3946,13 +4008,49 @@ html, body {
             <div class="w-full bg-slate-900 h-1 rounded-full overflow-hidden border border-slate-800">
               <div class="${barColor} h-full transition-all duration-300" style="width: ${pct}%"></div>
             </div>
-            <span class="text-[10px] font-mono text-slate-400 truncate shrink-0">₹${spent.toLocaleString('en-IN')} / ₹${limit.toLocaleString('en-IN')}</span>
+            <span class="text-[10px] font-mono text-slate-400 truncate shrink-0">₹${fmtK(spent)} / ₹${fmtK(limit)}</span>
           </div>
         `;
         fragment.appendChild(card);
       });
 
       container.appendChild(fragment);
+      refreshIcons();
+    };
+
+    /* Quick cap chips */
+    window.openQuickCapRow = function(cat) {
+      const rowEl = document.getElementById('budget-quick-row');
+      const catEl = document.getElementById('budget-quick-cat');
+      const input = document.getElementById('budget-quick-input');
+      if (!rowEl || !catEl || !input) return;
+      catEl.textContent = cat;
+      input.value = '';
+      rowEl.classList.remove('hidden');
+      try { input.focus(); } catch (e) {}
+    };
+
+    window.closeQuickCapRow = function() {
+      document.getElementById('budget-quick-row')?.classList.add('hidden');
+      const input = document.getElementById('budget-quick-input');
+      if (input) input.value = '';
+    };
+
+    window.quickSaveCategoryBudget = function() {
+      const catEl = document.getElementById('budget-quick-cat');
+      const input = document.getElementById('budget-quick-input');
+      const cat = catEl?.textContent;
+      const limit = parseFloat(input?.value);
+      if (!cat || isNaN(limit) || limit <= 0) {
+        if (window.showToast) window.showToast('Enter a valid cap amount.', 'error');
+        return;
+      }
+      if (!window.appState.categoryBudgets) window.appState.categoryBudgets = {};
+      window.appState.categoryBudgets[cat] = limit;
+      persistCategoriesAndSync();
+      window.renderCategoryBudgets();
+      closeQuickCapRow();
+      if (window.showToast) window.showToast(`Cap set: ${cat} at ₹${limit.toLocaleString('en-IN')}/mo`, 'success');
       refreshIcons();
     };
 
