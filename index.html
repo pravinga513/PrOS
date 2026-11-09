@@ -600,22 +600,22 @@ html, body {
       <!-- ================================================================= -->
       <!-- SECTION: HEADER & TOP NAVBAR                                      -->
       <!-- ================================================================= -->
-      <header class="h-16 glass-nav px-4 md:px-6 flex items-center justify-between shrink-0 z-20">
-        <div class="flex items-center gap-3">
-          <button onclick="toggleSidebar()" class="lg:hidden p-2 text-slate-400 hover:text-white bg-slate-900 border border-slate-800 rounded-xl">
+      <header class="h-16 glass-nav px-3 sm:px-4 md:px-6 flex items-center justify-between gap-2 shrink-0 z-20">
+        <div class="flex items-center gap-2 sm:gap-3 flex-1 min-w-0 sm:flex-none">
+          <button onclick="toggleSidebar()" class="lg:hidden p-2 text-slate-400 hover:text-white bg-slate-900 border border-slate-800 rounded-xl shrink-0">
             <i data-lucide="menu" class="w-5 h-5"></i>
           </button>
-          
+
           <!-- Universal Global Search Bar -->
-          <div class="relative w-48 sm:w-80">
+          <div class="relative flex-1 sm:flex-none sm:w-80 min-w-0 max-w-sm">
             <i data-lucide="search" class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-500"></i>
-            <input id="global-search-input" type="text" onkeyup="handleGlobalSearch(event)" placeholder="Search tasks, notes, finances... (Press '/')" class="w-full bg-slate-900 border border-slate-800/80 rounded-xl pl-9 pr-8 py-2 text-xs text-slate-200 outline-none focus:border-sky-500/60 transition" />
-            <span class="absolute right-2.5 top-1/2 -translate-y-1/2 text-[10px] text-slate-500 bg-slate-950 px-1.5 py-0.5 rounded border border-slate-800">/</span>
+            <input id="global-search-input" type="text" onkeyup="handleGlobalSearch(event)" placeholder="Search tasks, notes, finances..." class="w-full bg-slate-900 border border-slate-800/80 rounded-xl pl-9 pr-8 py-2 text-xs text-slate-200 outline-none focus:border-sky-500/60 transition" />
+            <span class="hidden sm:flex absolute right-2.5 top-1/2 -translate-y-1/2 text-[10px] text-slate-500 bg-slate-950 px-1.5 py-0.5 rounded border border-slate-800">/</span>
           </div>
         </div>
 
         <!-- Right Header Status & Actions -->
-        <div class="flex items-center gap-3">
+        <div class="flex items-center gap-2 sm:gap-3 shrink-0">
           <div id="live-clock" class="hidden sm:flex items-center gap-2 font-mono text-xs font-semibold bg-slate-900 border border-slate-800/80 px-3 py-1.5 rounded-xl text-slate-300">
             <i data-lucide="clock" class="w-3.5 h-3.5 text-sky-400"></i>
             <span id="clock-text">00:00:00 AM</span>
@@ -4471,11 +4471,11 @@ html, body {
 
   <!-- 2. KANBAN BOARD VIEW CONTAINER (WITH HTML5 DRAG & DROP) -->
   <div id="task-container-kanban-view" class="hidden pb-4">
-    <!-- Mobile: horizontal swipe rail with snap; sm+: standard grid -->
-    <div class="flex gap-3 overflow-x-auto no-scrollbar snap-x snap-mandatory pb-2 sm:grid sm:grid-cols-2 sm:gap-3.5 lg:grid-cols-4 sm:overflow-visible sm:snap-none items-stretch">
-      
+    <!-- Mobile: stacked vertical columns; sm+: 2-col grid; lg: full 4-col board (drag & drop) -->
+    <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-3.5 lg:grid-cols-4 items-stretch">
+
       <!-- Column 1: Backlog -->
-      <div class="glass-card p-3.5 rounded-2xl border border-purple-500/20 bg-purple-500/[0.02] space-y-3 flex flex-col justify-start kanban-drop-zone w-[78vw] max-w-[320px] shrink-0 snap-start sm:w-auto sm:max-w-none" data-status="backlog" ondragover="handleKanbanDragOver(event)" ondragleave="handleKanbanDragLeave(event)" ondrop="handleKanbanDrop(event, 'backlog')">
+      <div class="glass-card p-3.5 rounded-2xl border border-purple-500/20 bg-purple-500/[0.02] space-y-3 flex flex-col justify-start kanban-drop-zone" data-status="backlog" ondragover="handleKanbanDragOver(event)" ondragleave="handleKanbanDragLeave(event)" ondrop="handleKanbanDrop(event, 'backlog')">
         <div class="flex justify-between items-center border-b border-slate-800 pb-2.5">
           <h4 class="text-xs font-bold text-slate-300 uppercase tracking-wider flex items-center gap-2">
             <span class="p-1.5 rounded-lg bg-slate-500/10 text-slate-400 border border-slate-500/20 inline-flex"><i data-lucide="inbox" class="w-3.5 h-3.5"></i></span>
@@ -4487,7 +4487,7 @@ html, body {
       </div>
 
       <!-- Column 2: In Progress -->
-      <div class="glass-card p-3.5 rounded-2xl border border-purple-500/20 bg-purple-500/[0.02] space-y-3 flex flex-col justify-start kanban-drop-zone w-[78vw] max-w-[320px] shrink-0 snap-start sm:w-auto sm:max-w-none" data-status="progress" ondragover="handleKanbanDragOver(event)" ondragleave="handleKanbanDragLeave(event)" ondrop="handleKanbanDrop(event, 'progress')">
+      <div class="glass-card p-3.5 rounded-2xl border border-purple-500/20 bg-purple-500/[0.02] space-y-3 flex flex-col justify-start kanban-drop-zone" data-status="progress" ondragover="handleKanbanDragOver(event)" ondragleave="handleKanbanDragLeave(event)" ondrop="handleKanbanDrop(event, 'progress')">
         <div class="flex justify-between items-center border-b border-slate-800 pb-2.5">
           <h4 class="text-xs font-bold text-purple-300 uppercase tracking-wider flex items-center gap-2">
             <span class="p-1.5 rounded-lg bg-purple-500/15 text-purple-300 border border-purple-500/30 inline-flex"><i data-lucide="zap" class="w-3.5 h-3.5"></i></span>
@@ -4499,7 +4499,7 @@ html, body {
       </div>
 
       <!-- Column 3: In Review -->
-      <div class="glass-card p-3.5 rounded-2xl border border-purple-500/20 bg-purple-500/[0.02] space-y-3 flex flex-col justify-start kanban-drop-zone w-[78vw] max-w-[320px] shrink-0 snap-start sm:w-auto sm:max-w-none" data-status="review" ondragover="handleKanbanDragOver(event)" ondragleave="handleKanbanDragLeave(event)" ondrop="handleKanbanDrop(event, 'review')">
+      <div class="glass-card p-3.5 rounded-2xl border border-purple-500/20 bg-purple-500/[0.02] space-y-3 flex flex-col justify-start kanban-drop-zone" data-status="review" ondragover="handleKanbanDragOver(event)" ondragleave="handleKanbanDragLeave(event)" ondrop="handleKanbanDrop(event, 'review')">
         <div class="flex justify-between items-center border-b border-slate-800 pb-2.5">
           <h4 class="text-xs font-bold text-amber-300 uppercase tracking-wider flex items-center gap-2">
             <span class="p-1.5 rounded-lg bg-amber-500/15 text-amber-300 border border-amber-500/30 inline-flex"><i data-lucide="eye" class="w-3.5 h-3.5"></i></span>
@@ -4511,7 +4511,7 @@ html, body {
       </div>
 
       <!-- Column 4: Done -->
-      <div class="glass-card p-3.5 rounded-2xl border border-purple-500/20 bg-purple-500/[0.02] space-y-3 flex flex-col justify-start kanban-drop-zone w-[78vw] max-w-[320px] shrink-0 snap-start sm:w-auto sm:max-w-none" data-status="done" ondragover="handleKanbanDragOver(event)" ondragleave="handleKanbanDragLeave(event)" ondrop="handleKanbanDrop(event, 'done')">
+      <div class="glass-card p-3.5 rounded-2xl border border-purple-500/20 bg-purple-500/[0.02] space-y-3 flex flex-col justify-start kanban-drop-zone" data-status="done" ondragover="handleKanbanDragOver(event)" ondragleave="handleKanbanDragLeave(event)" ondrop="handleKanbanDrop(event, 'done')">
         <div class="flex justify-between items-center border-b border-slate-800 pb-2.5">
           <h4 class="text-xs font-bold text-emerald-300 uppercase tracking-wider flex items-center gap-2">
             <span class="p-1.5 rounded-lg bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 inline-flex"><i data-lucide="check-circle-2" class="w-3.5 h-3.5"></i></span>
