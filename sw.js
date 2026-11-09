@@ -1,11 +1,11 @@
-/* PrOS Service Worker — v2
+/* PrOS Service Worker — v3
  * Strategies:
  *  - Navigation requests: network-first, offline fallback to cached shell
  *  - Local core assets: cache-first (precached at install)
- *  - CDN assets (Tailwind/Lucide/Chart.js): stale-while-revalidate
+ *  - CDN assets (Tailwind/Lucide/Chart.js/Firebase/Fonts): stale-while-revalidate, precached where possible
  *  - Install is tolerant: precache failures don't block activation
  */
-const CACHE_NAME = 'pros-cache-v2';
+const CACHE_NAME = 'pros-cache-v3';
 
 const APP_SHELL = [
   './',
@@ -20,6 +20,14 @@ const CDN_ASSETS = [
   'https://unpkg.com/lucide@0.469.0/dist/umd/lucide.js',
   'https://cdn.jsdelivr.net/npm/chart.js',
   'https://placehold.co/100x100/1e293b/10b981?text=U',
+  // Firebase ES modules (imported by <script type="module"> — required at first paint)
+  'https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js',
+  'https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js',
+  'https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js',
+  // App fonts (woff2 files are covered at runtime by the SWR handler below)
+  'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap',
+  // Favicon placeholder used by bookmark cards
+  'https://placehold.co/64x64/0f172a/38bdf8?text=%F0%9F%94%97',
 ];
 
 self.addEventListener('install', (event) => {
@@ -30,6 +38,11 @@ self.addEventListener('install', (event) => {
       ...APP_SHELL.map(url => cache.add(url)),
       ...CDN_ASSETS.map(url => cache.add(url)),
     ]);
+    // cdn.tailwindcss.com serves without CORS headers — grab it opaque instead
+    try {
+      const tw = await fetch('https://cdn.tailwindcss.com', { mode: 'no-cors' });
+      if (tw) await cache.put('https://cdn.tailwindcss.com', tw);
+    } catch (e) {}
     await self.skipWaiting();
   })());
 });
@@ -87,7 +100,8 @@ self.addEventListener('fetch', (event) => {
     const cache = await caches.open(CACHE_NAME);
     const cached = await cache.match(req);
     const refresh = fetch(req).then(res => {
-      if (res && res.status === 200) cache.put(req, res.clone());
+      // Cache successful AND opaque (no-cors) responses — opaque ones report status 0
+      if (res && (res.status === 200 || res.type === 'opaque')) cache.put(req, res.clone());
       return res;
     }).catch(() => null);
     if (cached) {
