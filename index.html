@@ -4338,49 +4338,49 @@ html, body {
   </div>
 
   <!-- KPI Overview Metrics -->
-  <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3 md:gap-4">
-    <div class="glass-card p-3 sm:p-4 rounded-2xl border border-purple-500/20 bg-purple-500/[0.03] space-y-1 hover:border-purple-500/40 transition">
-      <div class="flex justify-between items-center text-xs font-bold text-slate-400">
-        <span class="uppercase tracking-wider text-[9px]">Total Tasks</span>
-        <div class="p-1 bg-purple-500/10 text-purple-400 rounded-lg shrink-0">
-          <i data-lucide="list-todo" class="w-3.5 h-3.5"></i>
+  <div class="grid grid-cols-4 gap-1.5 sm:gap-3 md:gap-4">
+    <div class="glass-card p-2 sm:p-3 md:p-4 rounded-2xl border border-purple-500/20 bg-purple-500/[0.03] space-y-0.5 sm:space-y-1 hover:border-purple-500/40 transition">
+      <div class="flex justify-between items-center whitespace-nowrap">
+        <span class="uppercase tracking-wider text-[8px] sm:text-[9px] font-bold leading-none">Total</span>
+        <div class="p-0.5 sm:p-1 bg-purple-500/10 text-purple-400 rounded-lg shrink-0">
+          <i data-lucide="list-todo" class="w-3 h-3 sm:w-3.5 sm:h-3.5"></i>
         </div>
       </div>
-      <div id="task-metric-total" class="text-base sm:text-lg md:text-xl font-black text-slate-100">0</div>
-      <p id="task-metric-rate" class="text-[10px] text-purple-400 font-mono">0% Completed</p>
+      <div id="task-metric-total" class="text-sm sm:text-base md:text-xl font-black text-slate-100">0</div>
+      <p id="task-metric-rate" class="text-[10px] text-purple-400 font-mono hidden xs:block sm:block">0%</p>
     </div>
 
-    <div class="glass-card p-3 sm:p-4 rounded-2xl border border-purple-500/20 bg-purple-500/[0.03] space-y-1 hover:border-amber-500/40 transition">
-      <div class="flex justify-between items-center text-xs font-bold text-slate-400">
-        <span class="uppercase tracking-wider text-[9px]">Due Today / Soon</span>
-        <div class="p-1 bg-amber-500/10 text-amber-400 rounded-lg shrink-0">
-          <i data-lucide="calendar" class="w-3.5 h-3.5"></i>
+    <div class="glass-card p-2 sm:p-3 md:p-4 rounded-2xl border border-purple-500/20 bg-purple-500/[0.03] space-y-0.5 sm:space-y-1 hover:border-amber-500/40 transition">
+      <div class="flex justify-between items-center whitespace-nowrap">
+        <span class="uppercase tracking-wider text-[8px] sm:text-[9px] font-bold leading-none">Due</span>
+        <div class="p-0.5 sm:p-1 bg-amber-500/10 text-amber-400 rounded-lg shrink-0">
+          <i data-lucide="calendar" class="w-3 h-3 sm:w-3.5 sm:h-3.5"></i>
         </div>
       </div>
-      <div id="task-metric-today" class="text-base sm:text-lg md:text-xl font-black text-amber-400">0</div>
-      <p id="task-metric-overdue" class="text-[10px] text-rose-400 font-mono">0 Overdue</p>
+      <div id="task-metric-today" class="text-sm sm:text-base md:text-xl font-black text-amber-400">0</div>
+      <p id="task-metric-overdue" class="text-[10px] text-rose-400 font-mono">⚠️ 0</p>
     </div>
 
-    <div class="glass-card p-3 sm:p-4 rounded-2xl border border-purple-500/20 bg-purple-500/[0.03] space-y-1 hover:border-rose-500/40 transition">
-      <div class="flex justify-between items-center text-xs font-bold text-slate-400">
-        <span class="uppercase tracking-wider text-[9px]">High Priority</span>
-        <div class="p-1 bg-rose-500/10 text-rose-400 rounded-lg shrink-0">
-          <i data-lucide="flame" class="w-3.5 h-3.5"></i>
+    <div class="glass-card p-2 sm:p-3 md:p-4 rounded-2xl border border-purple-500/20 bg-purple-500/[0.03] space-y-0.5 sm:space-y-1 hover:border-rose-500/40 transition">
+      <div class="flex justify-between items-center whitespace-nowrap">
+        <span class="uppercase tracking-wider text-[8px] sm:text-[9px] font-bold leading-none">High</span>
+        <div class="p-0.5 sm:p-1 bg-rose-500/10 text-rose-400 rounded-lg shrink-0">
+          <i data-lucide="flame" class="w-3 h-3 sm:w-3.5 sm:h-3.5"></i>
         </div>
       </div>
-      <div id="task-metric-high" class="text-base sm:text-lg md:text-xl font-black text-rose-400">0</div>
-      <p class="text-[10px] text-slate-500 font-mono">Urgent attention</p>
+      <div id="task-metric-high" class="text-sm sm:text-base md:text-xl font-black text-rose-400">0</div>
+      <p class="text-[10px] text-slate-500 font-mono hidden sm:block">Urgent</p>
     </div>
 
-    <div class="glass-card p-3 sm:p-4 rounded-2xl border border-purple-500/20 bg-purple-500/[0.03] space-y-1 hover:border-purple-500/40 transition">
-      <div class="flex justify-between items-center text-xs font-bold text-slate-400">
-        <span class="uppercase tracking-wider text-[9px]">Completed</span>
-        <div class="p-1 bg-purple-500/10 text-purple-300 rounded-lg shrink-0">
-          <i data-lucide="check-circle-2" class="w-3.5 h-3.5"></i>
+    <div class="glass-card p-2 sm:p-3 md:p-4 rounded-2xl border border-purple-500/20 bg-purple-500/[0.03] space-y-0.5 sm:space-y-1 hover:border-purple-500/40 transition">
+      <div class="flex justify-between items-center whitespace-nowrap">
+        <span class="uppercase tracking-wider text-[8px] sm:text-[9px] font-bold leading-none">Done</span>
+        <div class="p-0.5 sm:p-1 bg-purple-500/10 text-purple-300 rounded-lg shrink-0">
+          <i data-lucide="check-circle-2" class="w-3 h-3 sm:w-3.5 sm:h-3.5"></i>
         </div>
       </div>
-      <div id="task-metric-done" class="text-base sm:text-lg md:text-xl font-black text-purple-300">0</div>
-      <p class="text-[10px] text-slate-500 font-mono">Finished records</p>
+      <div id="task-metric-done" class="text-sm sm:text-base md:text-xl font-black text-purple-300">0</div>
+      <p class="text-[10px] text-slate-500 font-mono hidden sm:block">Finished</p>
     </div>
   </div>
 
@@ -4388,7 +4388,7 @@ html, body {
   <div id="task-container-list-view" class="grid grid-cols-1 lg:grid-cols-12 gap-3 sm:gap-4 items-start">
     
     <!-- Left Sidebar: Task Category Lists, Node Folders & Goal Folders -->
-    <div class="lg:col-span-4 glass-card rounded-2xl p-3.5 sm:p-4 space-y-3 border border-purple-500/20 bg-purple-500/[0.02]">
+    <div class="order-2 lg:order-1 lg:col-span-4 glass-card rounded-2xl p-3.5 sm:p-4 space-y-3 border border-purple-500/20 bg-purple-500/[0.02]">
       
       <!-- Category Lists Header -->
       <div class="flex justify-between items-center px-1 border-b border-slate-800/80 pb-2">
@@ -4431,7 +4431,7 @@ html, body {
     </div>
 
     <!-- Right Main Task Panel -->
-    <div class="lg:col-span-8 glass-card rounded-2xl p-3.5 sm:p-5 space-y-3.5 border border-purple-500/20 bg-purple-500/[0.02] flex flex-col">
+    <div class="order-1 lg:order-2 lg:col-span-8 glass-card rounded-2xl p-3.5 sm:p-5 space-y-3.5 border border-purple-500/20 bg-purple-500/[0.02] flex flex-col">
       <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between border-b border-slate-800/80 pb-3 gap-2">
         <div class="min-w-0">
           <div class="flex items-center gap-2 flex-wrap">
@@ -4463,16 +4463,22 @@ html, body {
         </div>
       </div>
 
-      <!-- Quick Inline Task Input Bar -->
-      <div class="grid grid-cols-1 sm:grid-cols-12 gap-2 bg-slate-950 p-2 sm:p-2.5 rounded-xl border border-slate-800 text-xs">
-        <input id="todo-input" type="text" placeholder="Add task or hashtag (#dev, #urgent)..." onkeypress="if(event.key === 'Enter') addTodoItem()" class="sm:col-span-5 bg-transparent text-slate-100 outline-none px-2 py-1.5 text-xs placeholder:text-slate-500 focus:border-purple-400" />
-        <input id="todo-due-date" type="date" class="sm:col-span-3 bg-slate-900 border border-slate-800 text-slate-300 rounded-lg text-[10px] px-2 py-1 outline-none font-mono focus:border-purple-400" title="Due Date" />
-        <select id="todo-priority-input" class="sm:col-span-2 bg-slate-900 border border-slate-800 text-slate-300 rounded-lg text-[11px] px-2 py-1 outline-none font-medium focus:border-purple-400">
-          <option value="Normal">Normal</option>
-          <option value="High">🔥 High</option>
-          <option value="Low">Low</option>
-        </select>
-        <button type="button" onclick="addTodoItem()" class="sm:col-span-2 py-1.5 bg-purple-600 hover:bg-purple-500 font-bold rounded-lg transition text-white flex items-center justify-center gap-1 shadow-md active:scale-95 shadow-purple-600/20">
+      <!-- Quick Inline Task Input Bar (one-line; date/priority collapse behind ⚙️ on mobile) -->
+      <div class="flex items-center gap-1.5 bg-slate-950 p-1.5 sm:p-2.5 rounded-xl border border-slate-800 text-xs">
+        <input id="todo-input" type="text" placeholder="Add task or #hashtag..." onkeypress="if(event.key === 'Enter') addTodoItem()" class="flex-1 min-w-0 bg-transparent text-slate-100 outline-none px-2 py-1.5 text-xs placeholder:text-slate-500 focus:border-purple-400" />
+        <button type="button" onclick="toggleQuickAddExtras()" title="Due date & priority"
+          class="p-2 shrink-0 text-slate-400 hover:text-purple-300 hover:bg-slate-900 rounded-lg border border-slate-800 transition active:scale-95">
+          <i data-lucide="settings-2" class="w-3.5 h-3.5"></i>
+        </button>
+        <div id="todo-quick-extra" class="hidden sm:flex items-center gap-1.5 flex-wrap">
+          <input id="todo-due-date" type="date" class="bg-slate-900 border border-slate-800 text-slate-300 rounded-lg text-[10px] px-2 py-1 outline-none font-mono focus:border-purple-400" title="Due Date" />
+          <select id="todo-priority-input" class="bg-slate-900 border border-slate-800 text-slate-300 rounded-lg text-[11px] px-2 py-1 outline-none font-medium focus:border-purple-400">
+            <option value="Normal">Normal</option>
+            <option value="High">🔥 High</option>
+            <option value="Low">Low</option>
+          </select>
+        </div>
+        <button type="button" onclick="addTodoItem()" class="py-1.5 px-3 shrink-0 bg-purple-600 hover:bg-purple-500 font-bold rounded-lg transition text-white flex items-center justify-center gap-1 shadow-md active:scale-95 shadow-purple-600/20">
           <i data-lucide="plus" class="w-3.5 h-3.5"></i> Add
         </button>
       </div>
@@ -4485,11 +4491,12 @@ html, body {
   </div>
 
   <!-- 2. KANBAN BOARD VIEW CONTAINER (WITH HTML5 DRAG & DROP) -->
-  <div id="task-container-kanban-view" class="hidden overflow-x-auto pb-4">
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5 min-w-[300px] sm:min-w-[700px] lg:min-w-full">
+  <div id="task-container-kanban-view" class="hidden pb-4">
+    <!-- Mobile: horizontal swipe rail with snap; sm+: standard grid -->
+    <div class="flex gap-3 overflow-x-auto no-scrollbar snap-x snap-mandatory pb-2 sm:grid sm:grid-cols-2 sm:gap-3.5 lg:grid-cols-4 sm:overflow-visible sm:snap-none items-stretch">
       
       <!-- Column 1: Backlog -->
-      <div class="glass-card p-3.5 rounded-2xl border border-purple-500/20 bg-purple-500/[0.02] space-y-3 flex flex-col justify-start kanban-drop-zone" data-status="backlog" ondragover="handleKanbanDragOver(event)" ondragleave="handleKanbanDragLeave(event)" ondrop="handleKanbanDrop(event, 'backlog')">
+      <div class="glass-card p-3.5 rounded-2xl border border-purple-500/20 bg-purple-500/[0.02] space-y-3 flex flex-col justify-start kanban-drop-zone w-[78vw] max-w-[320px] shrink-0 snap-start sm:w-auto sm:max-w-none" data-status="backlog" ondragover="handleKanbanDragOver(event)" ondragleave="handleKanbanDragLeave(event)" ondrop="handleKanbanDrop(event, 'backlog')">
         <div class="flex justify-between items-center border-b border-slate-800 pb-2">
           <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-2">
             <span class="w-2 h-2 rounded-full bg-slate-500"></span> Backlog
@@ -4500,7 +4507,7 @@ html, body {
       </div>
 
       <!-- Column 2: In Progress -->
-      <div class="glass-card p-3.5 rounded-2xl border border-purple-500/20 bg-purple-500/[0.02] space-y-3 flex flex-col justify-start kanban-drop-zone" data-status="progress" ondragover="handleKanbanDragOver(event)" ondragleave="handleKanbanDragLeave(event)" ondrop="handleKanbanDrop(event, 'progress')">
+      <div class="glass-card p-3.5 rounded-2xl border border-purple-500/20 bg-purple-500/[0.02] space-y-3 flex flex-col justify-start kanban-drop-zone w-[78vw] max-w-[320px] shrink-0 snap-start sm:w-auto sm:max-w-none" data-status="progress" ondragover="handleKanbanDragOver(event)" ondragleave="handleKanbanDragLeave(event)" ondrop="handleKanbanDrop(event, 'progress')">
         <div class="flex justify-between items-center border-b border-slate-800 pb-2">
           <h4 class="text-xs font-bold text-purple-400 uppercase tracking-wider flex items-center gap-2">
             <span class="w-2 h-2 rounded-full bg-purple-400"></span> In Progress
@@ -4511,7 +4518,7 @@ html, body {
       </div>
 
       <!-- Column 3: In Review -->
-      <div class="glass-card p-3.5 rounded-2xl border border-purple-500/20 bg-purple-500/[0.02] space-y-3 flex flex-col justify-start kanban-drop-zone" data-status="review" ondragover="handleKanbanDragOver(event)" ondragleave="handleKanbanDragLeave(event)" ondrop="handleKanbanDrop(event, 'review')">
+      <div class="glass-card p-3.5 rounded-2xl border border-purple-500/20 bg-purple-500/[0.02] space-y-3 flex flex-col justify-start kanban-drop-zone w-[78vw] max-w-[320px] shrink-0 snap-start sm:w-auto sm:max-w-none" data-status="review" ondragover="handleKanbanDragOver(event)" ondragleave="handleKanbanDragLeave(event)" ondrop="handleKanbanDrop(event, 'review')">
         <div class="flex justify-between items-center border-b border-slate-800 pb-2">
           <h4 class="text-xs font-bold text-amber-400 uppercase tracking-wider flex items-center gap-2">
             <span class="w-2 h-2 rounded-full bg-amber-400"></span> In Review
@@ -4522,7 +4529,7 @@ html, body {
       </div>
 
       <!-- Column 4: Done -->
-      <div class="glass-card p-3.5 rounded-2xl border border-purple-500/20 bg-purple-500/[0.02] space-y-3 flex flex-col justify-start kanban-drop-zone" data-status="done" ondragover="handleKanbanDragOver(event)" ondragleave="handleKanbanDragLeave(event)" ondrop="handleKanbanDrop(event, 'done')">
+      <div class="glass-card p-3.5 rounded-2xl border border-purple-500/20 bg-purple-500/[0.02] space-y-3 flex flex-col justify-start kanban-drop-zone w-[78vw] max-w-[320px] shrink-0 snap-start sm:w-auto sm:max-w-none" data-status="done" ondragover="handleKanbanDragOver(event)" ondragleave="handleKanbanDragLeave(event)" ondrop="handleKanbanDrop(event, 'done')">
         <div class="flex justify-between items-center border-b border-slate-800 pb-2">
           <h4 class="text-xs font-bold text-purple-300 uppercase tracking-wider flex items-center gap-2">
             <span class="w-2 h-2 rounded-full bg-purple-400"></span> Done
@@ -4543,7 +4550,14 @@ html, body {
           <i data-lucide="plus-circle" class="w-4 h-4 text-purple-400 shrink-0"></i>
           <span class="truncate">Create Action Task</span>
         </h3>
-        <button type="button" onclick="closeModalDirect('task-editor-modal')" class="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-slate-800 transition"><i data-lucide="x" class="w-5 h-5"></i></button>
+        <div class="flex items-center gap-1.5">
+          <button type="button" id="task-editor-mode-btn" onclick="toggleTaskEditorMode()"
+            class="flex items-center gap-1 text-[10px] px-2 py-1 rounded-lg font-bold bg-purple-500/10 text-purple-300 border border-purple-500/30 hover:bg-purple-500/20 transition">
+            <i data-lucide="sliders-horizontal" class="w-3 h-3"></i>
+            <span id="task-editor-mode-label">Simple</span>
+          </button>
+          <button type="button" onclick="closeModalDirect('task-editor-modal')" class="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-slate-800 transition"><i data-lucide="x" class="w-5 h-5"></i></button>
+        </div>
       </div>
 
       <form id="full-task-form" onsubmit="submitFullTaskForm(event)" class="space-y-3 text-xs">
@@ -4554,11 +4568,11 @@ html, body {
           <input id="task-input-title" type="text" placeholder="What needs to be accomplished?" required class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 sm:p-3 text-slate-100 outline-none focus:border-purple-400 transition font-bold text-xs" />
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
           <div>
             <label class="block text-slate-400 mb-1 font-semibold">Assign to List / Node</label>
             <select id="task-input-list" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-slate-100 outline-none focus:border-purple-400 transition text-xs font-semibold">
-              <!-- Dynamically populated with all lists, goal folders, and node folders -->
+              <!-- Dynamically populated with all lists, goal folders, and node folders (Inbox first) -->
             </select>
           </div>
 
@@ -4571,18 +4585,6 @@ html, body {
             </select>
           </div>
 
-          <div>
-            <label class="block text-slate-400 mb-1 font-semibold">Recurring Schedule</label>
-            <select id="task-input-recurring" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-slate-100 outline-none focus:border-purple-400 transition text-xs font-semibold">
-              <option value="none" selected>None (One-time)</option>
-              <option value="daily">🔁 Daily</option>
-              <option value="weekly">🔁 Weekly</option>
-              <option value="monthly">🔁 Monthly</option>
-            </select>
-          </div>
-        </div>
-
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
           <div>
             <label class="block text-slate-400 mb-1 font-semibold">Due Date</label>
             <input id="task-input-due-date" type="date" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-slate-100 outline-none focus:border-purple-400 font-mono transition text-xs" />
@@ -4599,29 +4601,42 @@ html, body {
           </div>
         </div>
 
-        <div>
-          <label class="block text-slate-400 mb-1 font-semibold">Notes &amp; Tags (#project, #dev, links)</label>
-          <textarea id="task-input-notes" rows="2" placeholder="Add descriptions, reference links or hashtags (#dev, #finance)..." class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 sm:p-3 text-slate-100 outline-none focus:border-purple-400 transition text-xs resize-none"></textarea>
-        </div>
-
-        <!-- Subtasks Checklist in Modal -->
-        <div class="p-3 bg-slate-950 rounded-xl border border-slate-800 space-y-2">
-          <div class="flex justify-between items-center">
-            <span class="text-[11px] font-bold text-slate-300">Action Checklist / Subtasks</span>
-            <span id="modal-subtask-progress" class="text-[10px] font-mono text-purple-400">0/0</span>
+        <!-- ADVANCED: recurring, notes, subtasks (toggleable, choice remembered) -->
+        <div id="task-editor-advanced" class="hidden space-y-3">
+          <div>
+            <label class="block text-slate-400 mb-1 font-semibold">Recurring Schedule</label>
+            <select id="task-input-recurring" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-slate-100 outline-none focus:border-purple-400 transition text-xs font-semibold">
+              <option value="none" selected>None (One-time)</option>
+              <option value="daily">🔁 Daily</option>
+              <option value="weekly">🔁 Weekly</option>
+              <option value="monthly">🔁 Monthly</option>
+            </select>
           </div>
 
-          <div class="flex gap-2">
-            <input id="new-subtask-input" type="text" placeholder="Add subtask step..." onkeypress="if(event.key==='Enter'){event.preventDefault();addSubtaskToModal();}" class="flex-1 bg-slate-900 border border-slate-800 rounded-lg px-2.5 py-1.5 text-xs text-slate-200 outline-none focus:border-purple-400" />
-            <button type="button" onclick="addSubtaskToModal()" class="px-3 py-1.5 bg-purple-600 hover:bg-purple-500 text-white font-bold rounded-lg transition text-xs shadow-sm">Add</button>
+          <div>
+            <label class="block text-slate-400 mb-1 font-semibold">Notes &amp; Tags (#project, #dev, links)</label>
+            <textarea id="task-input-notes" rows="2" placeholder="Add descriptions, reference links or hashtags (#dev, #finance)..." class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 sm:p-3 text-slate-100 outline-none focus:border-purple-400 transition text-xs resize-none"></textarea>
           </div>
 
-          <div id="modal-subtasks-container" class="space-y-1.5 max-h-32 overflow-y-auto pt-1"></div>
+          <!-- Subtasks Checklist in Modal -->
+          <div class="p-3 bg-slate-950 rounded-xl border border-slate-800 space-y-2">
+            <div class="flex justify-between items-center">
+              <span class="text-[11px] font-bold text-slate-300">Action Checklist / Subtasks</span>
+              <span id="modal-subtask-progress" class="text-[10px] font-mono text-purple-400">0/0</span>
+            </div>
+
+            <div class="flex gap-2">
+              <input id="new-subtask-input" type="text" placeholder="Add subtask step..." onkeypress="if(event.key==='Enter'){event.preventDefault();addSubtaskToModal();}" class="flex-1 bg-slate-900 border border-slate-800 rounded-lg px-2.5 py-1.5 text-xs text-slate-200 outline-none focus:border-purple-400" />
+              <button type="button" onclick="addSubtaskToModal()" class="px-3 py-1.5 bg-purple-600 hover:bg-purple-500 text-white font-bold rounded-lg transition text-xs shadow-sm">Add</button>
+            </div>
+
+            <div id="modal-subtasks-container" class="space-y-1.5 max-h-32 overflow-y-auto pt-1"></div>
+          </div>
         </div>
 
         <div class="flex gap-2 pt-2 border-t border-slate-800">
-          <button type="button" onclick="closeModalDirect('task-editor-modal')" class="flex-1 py-2.5 sm:py-3 bg-slate-800 text-slate-300 font-semibold rounded-xl hover:bg-slate-700 transition active:scale-98">Cancel</button>
-          <button type="submit" class="flex-1 py-2.5 sm:py-3 bg-purple-600 hover:bg-purple-500 text-white font-bold rounded-xl transition shadow-lg shadow-purple-600/20 active:scale-98">Save Task</button>
+          <button type="button" onclick="closeModalDirect('task-editor-modal')" class="flex-1 py-2.5 sm:py-3 bg-slate-800 text-slate-300 font-semibold rounded-xl hover:bg-slate-700 transition active:scale-95">Cancel</button>
+          <button type="submit" class="flex-1 py-2.5 sm:py-3 bg-purple-600 hover:bg-purple-500 text-white font-bold rounded-xl transition shadow-lg shadow-purple-600/20 active:scale-95">Save Task</button>
         </div>
       </form>
     </div>
@@ -4917,6 +4932,16 @@ html, body {
 
       window.syncGoalAndNodeFolders();
 
+      // Inbox: default folder for tasks that aren't assigned to any list yet
+      if (!window.appState.taskLists.some(l => l.id === 'list-inbox')) {
+        window.appState.taskLists.unshift({
+          id: 'list-inbox',
+          name: '📥 Inbox',
+          excludeFromTotal: false,
+          createdAt: new Date().toISOString()
+        });
+      }
+
       if (!window.appState.activeListId && window.appState.taskLists.length > 0) {
         window.appState.activeListId = window.appState.taskLists[0].id;
       }
@@ -4943,6 +4968,35 @@ html, body {
     }
 
     /* Populates the Assign to List select box inside the Create/Edit modal */
+    /* Task Editor Mode: Simple vs Advanced (choice remembered via localStorage) */
+    function taskEditorIsAdvanced() {
+      try { return window.localStorage.getItem('pros_task_editor_advanced') === '1'; } catch (e) { return false; }
+    }
+
+    window.applyTaskEditorMode = function() {
+      const panel = document.getElementById('task-editor-advanced');
+      const label = document.getElementById('task-editor-mode-label');
+      const advanced = taskEditorIsAdvanced();
+      if (panel) panel.classList.toggle('hidden', !advanced);
+      if (label) label.textContent = advanced ? 'Advanced' : 'Simple';
+    };
+
+    window.toggleTaskEditorMode = function() {
+      triggerHaptic();
+      try { window.localStorage.setItem('pros_task_editor_advanced', taskEditorIsAdvanced() ? '0' : '1'); } catch (e) {}
+      window.applyTaskEditorMode();
+    };
+
+    /* Quick-add bar: reveal due date + priority behind the gear button (mobile) */
+    window.toggleQuickAddExtras = function() {
+      triggerHaptic();
+      const extra = document.getElementById('todo-quick-extra');
+      if (extra) {
+        if (extra.classList.contains('hidden')) { extra.classList.remove('hidden'); extra.classList.add('sm:flex'); }
+        else { extra.classList.add('hidden'); extra.classList.remove('sm:flex'); }
+      }
+    };
+
     function populateTaskListDropdownInModal(selectedListId = '') {
       window.syncGoalAndNodeFolders();
       const select = document.getElementById('task-input-list');
@@ -4951,8 +5005,20 @@ html, body {
       select.innerHTML = '';
       const lists = window.appState?.taskLists || [];
 
+      // Inbox first: default landing zone for unassigned tasks
+      const inbox = lists.find(l => l.id === 'list-inbox');
+      if (inbox) {
+        const groupInbox = document.createElement('optgroup');
+        groupInbox.label = '📥 Default (Unassigned)';
+        const optInbox = document.createElement('option');
+        optInbox.value = inbox.id;
+        optInbox.textContent = inbox.name;
+        groupInbox.appendChild(optInbox);
+        select.appendChild(groupInbox);
+      }
+
       // Organize lists into categories for clean scanning
-      const customLists = lists.filter(l => !l.isGoalFolder && !l.isNodeFolder && l.folderType !== 'goal' && l.folderType !== 'node');
+      const customLists = lists.filter(l => l.id !== 'list-inbox' && !l.isGoalFolder && !l.isNodeFolder && l.folderType !== 'goal' && l.folderType !== 'node');
       const nodeLists = lists.filter(l => l.isNodeFolder || l.folderType === 'node');
       const goalLists = lists.filter(l => l.isGoalFolder || l.folderType === 'goal');
 
@@ -5072,7 +5138,7 @@ html, body {
       if (prioritySelect) prioritySelect.value = 'Normal';
       if (recurringSelect) recurringSelect.value = 'none';
       if (dueDateInput) dueDateInput.value = new Date().toISOString().split('T')[0];
-      if (statusSelect) statusSelect.value = 'progress';
+      if (statusSelect) statusSelect.value = 'backlog';
       if (notesTextarea) notesTextarea.value = '';
 
       if (modalTitle) {
@@ -5083,6 +5149,7 @@ html, body {
       renderModalSubtasks();
       showModalDirect('task-editor-modal');
       refreshIconsScoped(document.getElementById('task-editor-modal'));
+      window.applyTaskEditorMode();
     };
 
     window.openGlobalTaskModal = window.openAddTaskModal;
@@ -5119,6 +5186,7 @@ html, body {
       renderModalSubtasks();
       showModalDirect('task-editor-modal');
       refreshIconsScoped(document.getElementById('task-editor-modal'));
+      window.applyTaskEditorMode();
     };
 
     /* Full Task Form Submission */
@@ -5128,10 +5196,10 @@ html, body {
         ensureTasksInitialized();
         const editId = document.getElementById('task-edit-id')?.value;
         const title = document.getElementById('task-input-title')?.value.trim();
-        const listId = document.getElementById('task-input-list')?.value || window.appState.activeListId || 'list-general';
+        const listId = document.getElementById('task-input-list')?.value || window.appState.activeListId || 'list-inbox';
         const priority = document.getElementById('task-input-priority')?.value || 'Normal';
         const recurring = document.getElementById('task-input-recurring')?.value || 'none';
-        const status = document.getElementById('task-input-status')?.value || 'progress';
+        const status = document.getElementById('task-input-status')?.value || 'backlog';
         const dueDate = document.getElementById('task-input-due-date')?.value || '';
         const notes = document.getElementById('task-input-notes')?.value.trim() || '';
         const isDone = (status === 'done');
@@ -5850,7 +5918,7 @@ html, body {
 
       window.appState.tasks.unshift({
         id: 't_' + Date.now(),
-        listId: window.appState.activeListId || 'list-general',
+        listId: window.appState.activeListId || 'list-inbox',
         nodeTag,
         nodeId,
         goalId,
@@ -7095,11 +7163,12 @@ html, body {
       const folder = (window.appState.goalFolders || []).find(f => f.id === goal.folderId);
       const folderName = folder ? folder.name : 'General Tasks';
       
-      let targetListId = 'list-general';
+      let targetListId = 'list-inbox';
       if (window.appState.taskLists) {
         const existingList = window.appState.taskLists.find(l => l.name.toLowerCase() === folderName.toLowerCase());
+        const firstFolder = window.appState.taskLists.find(l => l.id !== 'list-inbox');
         if (existingList) targetListId = existingList.id;
-        else if (window.appState.taskLists.length > 0) targetListId = window.appState.taskLists[0].id;
+        else if (firstFolder) targetListId = firstFolder.id;
       }
 
       goal.keyResults.forEach((kr, idx) => {
