@@ -3116,11 +3116,12 @@ html, body {
       const cats = window.appState.categories || [];
       const expenseCats = cats.filter(c => c.type === 'expense');
       const incomeCats = cats.filter(c => c.type === 'income');
+      const budgets = window.appState.categoryBudgets || {};
 
       container.innerHTML = `
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 max-h-52 overflow-y-auto p-1 w-full box-border">
           <div class="space-y-1.5 min-w-0">
-            <span class="text-[10px] uppercase font-extrabold text-rose-400 block px-1 tracking-wider truncate">Expense Categories</span>
+            <span class="text-[10px] uppercase font-extrabold text-rose-400 block px-1 tracking-wider truncate">Expense Categories <span class="text-slate-500 normal-case font-bold">&middot; ☐ = cap</span></span>
             <div id="col-expense-chips" class="flex flex-col gap-1.5 min-w-0"></div>
           </div>
           <div class="space-y-1.5 min-w-0">
@@ -3134,10 +3135,14 @@ html, body {
       const incList = document.getElementById('col-income-chips');
 
       expenseCats.forEach(c => {
+        const hasCap = Object.prototype.hasOwnProperty.call(budgets, c.name);
         const chip = document.createElement('div');
-        chip.className = 'px-2.5 py-1.5 rounded-xl text-xs font-semibold bg-slate-900 border border-slate-800 flex items-center justify-between text-slate-200 gap-2 shadow-sm hover:border-slate-700 transition min-w-0 box-border';
+        chip.setAttribute('data-chip-cap', c.name);
+        chip.className = 'px-2.5 py-1.5 rounded-xl text-xs font-semibold bg-slate-900 flex items-center text-slate-200 gap-2 shadow-sm transition min-w-0 box-border border ' + (hasCap ? 'border-amber-500/40' : 'border-slate-800 hover:border-slate-700');
         chip.innerHTML = `
-          <span class="truncate flex-1 min-w-0">${escapeHtml(c.name)}</span>
+          <input type="checkbox" ${hasCap ? 'checked' : ''} onchange="toggleChipCap(this)" title="Monthly budget cap" class="w-3.5 h-3.5 rounded accent-amber-500 cursor-pointer shrink-0" />
+          <span class="truncate flex-1 min-w-0 ${hasCap ? 'text-amber-100 font-bold' : ''}">${escapeHtml(c.name)}</span>
+          <input type="number" min="1" value="${hasCap ? budgets[c.name] : ''}" placeholder="cap ₹" onchange="saveChipCapValue(this)" class="w-14 sm:w-16 bg-slate-950 border border-slate-800 rounded-md px-1.5 py-0.5 text-[10px] font-mono text-slate-100 outline-none focus:border-amber-500 shrink-0 ${hasCap ? '' : 'hidden'}" />
           <button type="button" onclick="deleteCategoryDirectly('${c.id}', '${escapeHtml(c.name).replace(/'/g, '\u0027')}')" class="px-2 py-0.5 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 hover:text-rose-300 border border-rose-500/30 text-xs font-bold shrink-0 transition active:scale-95 touch-manipulation cursor-pointer" title="Delete Category">✕</button>
         `;
         expList.appendChild(chip);
@@ -3153,6 +3158,50 @@ html, body {
         incList.appendChild(chip);
       });
     }
+
+    /* Chip-cap handlers: caps live inside expense chips (checkbox + inline amount, auto-save) */
+    window.toggleChipCap = function(cb) {
+      const chip = cb.closest('[data-chip-cap]');
+      if (!chip) return;
+      const cat = chip.getAttribute('data-chip-cap');
+      const num = chip.querySelector('input[type="number"]');
+      const nameEl = chip.querySelector('span');
+      if (cb.checked) {
+        num.classList.remove('hidden');
+        chip.classList.add('border-amber-500/40');
+        nameEl.classList.add('text-amber-100', 'font-bold');
+        if (!window.appState.categoryBudgets) window.appState.categoryBudgets = {};
+        if (!window.appState.categoryBudgets[cat]) num.value = '';
+        try { num.focus(); } catch (e) {}
+      } else {
+        if (window.appState.categoryBudgets && window.appState.categoryBudgets[cat]) {
+          delete window.appState.categoryBudgets[cat];
+          persistCategoriesAndSync();
+          window.renderCategoryBudgets();
+          if (window.showToast) window.showToast(`Cap removed for ${cat}`, 'info');
+        }
+        num.value = '';
+        num.classList.add('hidden');
+        chip.classList.remove('border-amber-500/40');
+        nameEl.classList.remove('text-amber-100', 'font-bold');
+      }
+    };
+
+    window.saveChipCapValue = function(input) {
+      const chip = input.closest('[data-chip-cap]');
+      if (!chip) return;
+      const cat = chip.getAttribute('data-chip-cap');
+      const val = parseFloat(input.value);
+      if (isNaN(val) || val <= 0) {
+        input.value = (window.appState.categoryBudgets && window.appState.categoryBudgets[cat]) || '';
+        return;
+      }
+      if (!window.appState.categoryBudgets) window.appState.categoryBudgets = {};
+      window.appState.categoryBudgets[cat] = val;
+      persistCategoriesAndSync();
+      window.renderCategoryBudgets();
+      if (window.showToast) window.showToast(`Cap set: ${cat} at ₹${val.toLocaleString('en-IN')}/mo`, 'success');
+    };
 
     function populateCategoryDropdownsInternal() {
       ensureCategoriesInitializedInternal();
@@ -3305,7 +3354,6 @@ html, body {
       ensureCategoriesInitializedInternal();
       populateCategoryDropdownsInternal();
       renderCategoryChipsInternal();
-      renderBudgetCheckboxList();
       if (window.openModal) window.openModal('custom-category-modal');
       else document.getElementById('custom-category-modal')?.classList.remove('hidden');
       refreshIcons();
@@ -3576,62 +3624,6 @@ html, body {
         if (window.showToast) window.showToast(`Budget cap removed for ${cat}`, 'info');
         refreshIcons();
       }
-    };
-
-    /* Manage modal: checkbox list editor for monthly caps */
-    window.renderBudgetCheckboxList = function() {
-      const box = document.getElementById('budget-checkbox-list');
-      if (!box) return;
-      ensureCategoriesInitializedInternal();
-      const budgets = window.appState.categoryBudgets || {};
-      const cats = (window.appState.categories || []).filter(c => c.type === 'expense');
-
-      if (cats.length === 0) {
-        box.innerHTML = '<p class="text-[11px] text-slate-500 italic">No expense categories yet.</p>';
-        return;
-      }
-
-      box.innerHTML = cats.map(c => {
-        const has = Object.prototype.hasOwnProperty.call(budgets, c.name);
-        return `
-          <div class="flex items-center gap-2 px-2 py-1 rounded-lg border ${has ? 'bg-slate-900 border-amber-500/30' : 'bg-slate-950 border-slate-800'}" data-budget-cat="${escapeHtml(c.name)}">
-            <input type="checkbox" ${has ? 'checked' : ''} onchange="toggleBudgetRow(this)" class="w-3.5 h-3.5 rounded accent-amber-500 cursor-pointer shrink-0" />
-            <span class="text-[11px] font-bold ${has ? 'text-amber-300' : 'text-slate-300'} truncate flex-1 min-w-0">${escapeHtml(c.name)}</span>
-            <input type="number" min="1" value="${has ? budgets[c.name] : ''}" class="w-16 bg-slate-950 border border-slate-800 rounded-md px-1.5 py-0.5 text-[10px] font-mono text-slate-100 outline-none focus:border-amber-500 shrink-0 ${has ? '' : 'opacity-40 pointer-events-none'}" />
-          </div>`;
-      }).join('');
-      refreshIcons();
-    };
-
-    window.toggleBudgetRow = function(cb) {
-      const row = cb.closest('[data-budget-cat]');
-      if (!row) return;
-      const num = row.querySelector('input[type="number"]');
-      const active = cb.checked;
-      num.classList.toggle('opacity-40', !active);
-      num.classList.toggle('pointer-events-none', !active);
-      if (active) num.focus();
-      if (!active) num.value = '';
-      row.classList.toggle('bg-slate-900', active);
-      row.classList.toggle('bg-slate-950', !active);
-      row.classList.toggle('border-amber-500/30', active);
-      row.classList.toggle('border-slate-800', !active);
-    };
-
-    window.saveBudgetCheckboxList = function() {
-      const rows = document.querySelectorAll('#budget-checkbox-list [data-budget-cat]');
-      const budgets = {};
-      rows.forEach(row => {
-        const cat = row.getAttribute('data-budget-cat');
-        const cb = row.querySelector('input[type="checkbox"]');
-        const val = parseFloat(row.querySelector('input[type="number"]').value);
-        if (cb.checked && !isNaN(val) && val > 0) budgets[cat] = val;
-      });
-      window.appState.categoryBudgets = budgets;
-      persistCategoriesAndSync();
-      window.renderCategoryBudgets();
-      if (window.showToast) window.showToast('Budget caps updated.', 'success');
-      refreshIcons();
     };
 
     /* Partial Debt Repayment System */
@@ -20635,17 +20627,6 @@ html, body {
               <option value="income">Income</option>
             </select>
             <button type="button" onclick="addNewCustomCategory()" class="px-3 py-2 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold rounded-xl transition shrink-0 active:scale-95 touch-manipulation">Add</button>
-          </div>
-        </div>
-
-        <!-- Budget Cap Box: checkbox list of expense categories -->
-        <div class="p-2.5 sm:p-3 bg-slate-950 rounded-xl border border-slate-800 space-y-2">
-          <div class="flex justify-between items-center">
-            <label class="block text-slate-300 font-bold">Monthly Caps (₹) &mdash; check to set</label>
-            <button type="button" onclick="saveBudgetCheckboxList()" class="text-[10px] px-2.5 py-1 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-lg transition shrink-0 active:scale-95">Save Caps</button>
-          </div>
-          <div id="budget-checkbox-list" class="space-y-1 max-h-44 overflow-y-auto pr-1 text-xs">
-            <!-- Rendered via JS -->
           </div>
         </div>
 
