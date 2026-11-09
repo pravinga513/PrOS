@@ -4285,7 +4285,7 @@ html, body {
       <!-- Search Bar -->
       <div class="relative flex-1 sm:flex-none sm:w-48 min-w-[140px]">
         <i data-lucide="search" class="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none"></i>
-        <input id="task-search-input" type="text" onkeyup="searchTasks(this.value)" placeholder="Search tasks, #tag..." class="w-full bg-slate-950 border border-slate-800 rounded-xl pl-8 pr-7 py-2 text-xs text-slate-200 outline-none focus:border-purple-400 transition" />
+        <input id="task-search-input" type="text" oninput="searchTasks(this.value)" placeholder="Search tasks, #tag..." class="w-full bg-slate-950 border border-slate-800 rounded-xl pl-8 pr-7 py-2 text-xs text-slate-200 outline-none focus:border-purple-400 transition" />
         <button type="button" onclick="clearTaskSearchQuery()" id="task-search-clear-btn" class="hidden absolute right-2 top-1/2 -translate-y-1/2 text-slate-500 hover:text-white p-0.5 text-xs">✕</button>
       </div>
 
@@ -5546,10 +5546,32 @@ html, body {
       if (filterStatus === 'DONE') tasks = tasks.filter(t => t.completed || t.status === 'done');
       if (filterStatus === 'RECURRING') tasks = tasks.filter(t => t.recurring && t.recurring !== 'none');
       if (filterStatus === 'TODAY_NEAR') {
-        tasks = tasks.filter(t => t.dueDate === today || (!t.completed && t.status !== 'done'));
+        const soon = new Date();
+        soon.setDate(soon.getDate() + 7);
+        const soonStr = soon.toISOString().split('T')[0];
+        tasks = tasks.filter(t => {
+          if (t.completed || t.status === 'done') return false;
+          const d = t.dueDate;
+          return !!d && d <= soonStr; // today, overdue, or within the next 7 days
+        });
       }
 
-      tasks.sort((a, b) => (a.completed === b.completed ? 0 : a.completed ? 1 : -1));
+      tasks.sort((a, b) => {
+        const doneA = a.completed || a.status === 'done';
+        const doneB = b.completed || b.status === 'done';
+        if (doneA !== doneB) return doneA ? 1 : -1;
+        if (!doneA) {
+          // Soonest/overdue due-date first, then High > Normal > Low, then newest
+          const dA = a.dueDate || '9999-12-31';
+          const dB = b.dueDate || '9999-12-31';
+          if (dA !== dB) return dA < dB ? -1 : 1;
+          const wA = a.priority === 'High' ? 0 : a.priority === 'Low' ? 2 : 1;
+          const wB = b.priority === 'High' ? 0 : b.priority === 'Low' ? 2 : 1;
+          if (wA !== wB) return wA - wB;
+          return (b.createdAt || 0) - (a.createdAt || 0);
+        }
+        return (b.completedAt || b.createdAt || 0) - (a.completedAt || a.createdAt || 0);
+      });
 
       const allListTasks = (window.appState.tasks || []).filter(t => t.listId === window.appState.activeListId);
       const totalCount = allListTasks.length;
@@ -5559,7 +5581,11 @@ html, body {
       if (statsEl) statsEl.textContent = `${completedCount} of ${totalCount} tasks completed`;
 
       if (tasks.length === 0) {
-        container.innerHTML = `<div class="p-6 text-center text-xs text-slate-500 bg-slate-950 rounded-xl border border-slate-800">No action tasks found in this view.</div>`;
+        container.innerHTML = `<div class="p-5 text-center space-y-1 bg-slate-950/60 rounded-xl border border-slate-800/80">
+          <div class="text-2xl opacity-60">🗂️</div>
+          <p class="text-xs text-slate-400 font-semibold">Nothing here for this view</p>
+          <p class="text-[10px] text-slate-600">Add a task above, or switch filters.</p>
+        </div>`;
         return;
       }
 
@@ -5685,11 +5711,12 @@ html, body {
         if (!container) return;
         container.innerHTML = '';
 
-        let items = (window.appState.tasks || []).filter(t => (t.status || 'backlog') === col);
+        let items = (window.appState.tasks || []).filter(t => (t.status || 'backlog') === col && t.listId === window.appState.activeListId);
         if (taskSearchQuery) {
-          items = items.filter(t => 
+          items = items.filter(t =>
             (t.title && t.title.toLowerCase().includes(taskSearchQuery)) ||
-            (t.notes && t.notes.toLowerCase().includes(taskSearchQuery))
+            (t.notes && t.notes.toLowerCase().includes(taskSearchQuery)) ||
+            (Array.isArray(t.subtasks) && t.subtasks.some(s => s.title.toLowerCase().includes(taskSearchQuery)))
           );
         }
 
@@ -5830,7 +5857,7 @@ html, body {
         title,
         priority,
         dueDate,
-        status: 'progress',
+        status: 'backlog',
         completed: false,
         recurring: 'none',
         subtasks: [],
