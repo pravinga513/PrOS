@@ -2431,6 +2431,9 @@ html, body {
               ? 'border-pink-500/60 bg-slate-900/90' 
               : 'border-slate-800 bg-slate-950 hover:border-slate-700 hover:bg-slate-900/50'
         }`;
+        if (searchQuery && calDayMatchesSearch(dateStr) && !isSelected) {
+          cell.className += ' ring-1 ring-cyan-400/60 border-cyan-500/50 bg-cyan-500/5';
+        }
 
         // simple colored dots (kept minimal per user preference)
         let dotsHtml = '<div class="flex items-center gap-1 justify-end flex-wrap overflow-hidden">';
@@ -2458,6 +2461,82 @@ html, body {
       window.renderCalendarDayLogs();
     };
 
+    /* Global schedule search: sweep events, tasks, transactions and daily logs across all dates */
+    window.renderCalSearchResults = function() {
+      const container = document.getElementById('cal-day-logs-container');
+      const titleEl = document.getElementById('cal-selected-date-title');
+      const subEl = document.getElementById('cal-selected-date-sub');
+      const summaryEl = document.getElementById('cal-day-summary-text');
+      if (!container) return;
+      const q = searchQuery;
+      if (titleEl) titleEl.innerHTML = `<i data-lucide="search" class="w-4 h-4 text-cyan-400"></i> Search Results`;
+      if (subEl) subEl.textContent = `Matches across all dates & modules`;
+
+      const results = [];
+      (window.appState.calendarEvents || []).forEach(ev => {
+        if (ev.title && ev.title.toLowerCase().includes(q)) results.push({ date: ev.date || '', type: ev.type || 'Event', title: ev.title, tagCls: 'text-pink-300', boxCls: 'border-pink-500/30 bg-pink-500/5' });
+      });
+      (window.appState.tasks || []).forEach(t => {
+        if (t.dueDate && t.title && t.title.toLowerCase().includes(q)) results.push({ date: t.dueDate, type: 'Task', title: t.title, tagCls: 'text-purple-300', boxCls: 'border-purple-500/30 bg-purple-500/5' });
+      });
+      (window.appState.transactions || []).forEach(t => {
+        if (t.date && ((t.title || '') + ' ' + (t.category || '')).toLowerCase().includes(q)) {
+          const isInc = t.type === 'income';
+          results.push({ date: t.date, type: isInc ? 'Income' : 'Expense', title: (t.title || '') + (t.category ? ' (' + t.category + ')' : ''), tagCls: isInc ? 'text-teal-300' : 'text-rose-300', boxCls: isInc ? 'border-teal-500/30 bg-teal-500/5' : 'border-rose-500/30 bg-rose-500/5' });
+        }
+      });
+      (window.appState.diaryEntries || []).forEach(n => {
+        if (n.date && ((n.text || '') + ' ' + (n.tags || '')).toLowerCase().includes(q)) results.push({ date: n.date, type: 'Daily Log', title: (n.text || '').replace(/\s+/g, ' ').trim().slice(0, 60), tagCls: 'text-amber-300', boxCls: 'border-amber-500/30 bg-amber-500/5' });
+      });
+      results.sort((a, b) => (a.date || '').localeCompare(b.date || ''));
+
+      if (summaryEl) summaryEl.textContent = `${results.length} search results`;
+      if (subEl) subEl.textContent = `${results.length} matches across all dates`;
+
+      container.innerHTML = '';
+      if (!results.length) {
+        container.innerHTML = `<div class="p-6 text-center text-xs text-slate-500 bg-slate-950/60 rounded-xl border border-slate-800 space-y-1"><p class="font-semibold text-slate-400">No matches for &ldquo;${escapeHtml(q)}&rdquo;.</p><p class="text-[10px]">Searches events, tasks, finance and daily logs on every date.</p></div>`;
+        return;
+      }
+      const cap = results.slice(0, 50);
+      cap.forEach(r => {
+        const el = document.createElement('div');
+        el.className = `p-2 border rounded-xl text-xs space-y-1 cursor-pointer transition hover:border-cyan-400 ${r.boxCls}`;
+        el.onclick = () => {
+          const inp = document.getElementById('cal-search-input');
+          if (inp) inp.value = '';
+          searchQuery = '';
+          window.selectCalendarDate(r.date);
+        };
+        el.innerHTML = `
+          <div class="flex items-center justify-between">
+            <span class="text-[10px] font-bold uppercase ${r.tagCls}">${escapeHtml(r.type)}</span>
+            <span class="text-[9px] font-mono text-cyan-300">${escapeHtml(r.date || '—')}</span>
+          </div>
+          <p class="font-semibold text-slate-200">${escapeHtml(r.title)}</p>
+        `;
+        container.appendChild(el);
+      });
+      if (results.length > cap.length) {
+        const note = document.createElement('div');
+        note.className = 'text-center text-[10px] text-slate-500 font-mono py-1';
+        note.textContent = `showing 50 of ${results.length} — refine your search`;
+        container.appendChild(note);
+      }
+      if (typeof refreshIconsScoped === 'function') refreshIconsScoped(titleEl || document.body);
+    };
+
+    /* Does any entry matching the current search land on this date? (grid ring highlight) */
+    function calDayMatchesSearch(dateStr) {
+      if (!searchQuery) return false;
+      const q = searchQuery;
+      if ((window.appState.calendarEvents || []).some(ev => eventMatchesDate(ev, dateStr) && ev.title && ev.title.toLowerCase().includes(q))) return true;
+      if ((window.appState.tasks || []).some(t => t.dueDate === dateStr && !t.completed && t.title && t.title.toLowerCase().includes(q))) return true;
+      if ((window.appState.transactions || []).some(t => t.date === dateStr && ((t.title || '') + ' ' + (t.category || '')).toLowerCase().includes(q))) return true;
+      if ((window.appState.diaryEntries || []).some(n => n.date === dateStr && ((n.text || '') + ' ' + (n.tags || '')).toLowerCase().includes(q))) return true;
+      return false;
+    }
+
     window.renderCalendarDayLogs = function() {
       const container = document.getElementById('cal-day-logs-container');
       const titleEl = document.getElementById('cal-selected-date-title');
@@ -2476,17 +2555,16 @@ html, body {
       container.innerHTML = '';
       ensureCalendarEventsInitialized();
 
+      // Search mode: query runs across ALL dates & sources, results listed with their dates
+      if (searchQuery) {
+        window.renderCalSearchResults();
+        return;
+      }
+
       let dayEvents = (window.appState.calendarEvents || []).filter(ev => eventMatchesDate(ev, selectedDate));
       let dayTasks = (window.appState.tasks || []).filter(t => t.dueDate === selectedDate);
       let dayTrans = (window.appState.transactions || []).filter(t => t.date === selectedDate);
       let dayDiary = (window.appState.diaryEntries || []).filter(n => n.date === selectedDate);
-
-      if (searchQuery) {
-        dayEvents = dayEvents.filter(ev => (ev.title && ev.title.toLowerCase().includes(searchQuery)));
-        dayTasks = dayTasks.filter(t => t.title && t.title.toLowerCase().includes(searchQuery));
-        dayTrans = dayTrans.filter(t => t.title && t.title.toLowerCase().includes(searchQuery));
-        dayDiary = dayDiary.filter(n => (n.text && n.text.toLowerCase().includes(searchQuery)) || (n.tags && n.tags.toLowerCase().includes(searchQuery)));
-      }
 
       let totalLogs = 0;
       const fragment = document.createDocumentFragment();
