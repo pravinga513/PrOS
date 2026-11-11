@@ -2100,6 +2100,10 @@ html, body {
     };
 
     window.selectCalendarDate = function(dateStr) {
+      // any explicit date selection cancels search mode -> normal day view
+      searchQuery = '';
+      const sInp = document.getElementById('cal-search-input');
+      if (sInp) sInp.value = '';
       window.appState.selectedCalendarDate = dateStr;
       window.renderCalendarView();
       window.scrollToCalInspector();
@@ -2474,19 +2478,19 @@ html, body {
 
       const results = [];
       (window.appState.calendarEvents || []).forEach(ev => {
-        if (ev.title && ev.title.toLowerCase().includes(q)) results.push({ date: ev.date || '', type: ev.type || 'Event', title: ev.title, tagCls: 'text-pink-300', boxCls: 'border-pink-500/30 bg-pink-500/5' });
+        if (ev.title && ev.title.toLowerCase().includes(q)) results.push({ date: ev.date || '', kind: 'event', id: ev.id, type: ev.type || 'Event', title: ev.title, tagCls: 'text-pink-300', boxCls: 'border-pink-500/30 bg-pink-500/5' });
       });
       (window.appState.tasks || []).forEach(t => {
-        if (t.dueDate && t.title && t.title.toLowerCase().includes(q)) results.push({ date: t.dueDate, type: 'Task', title: t.title, tagCls: 'text-purple-300', boxCls: 'border-purple-500/30 bg-purple-500/5' });
+        if (t.dueDate && t.title && t.title.toLowerCase().includes(q)) results.push({ date: t.dueDate, kind: 'task', id: t.id, listId: t.listId, type: 'Task', title: t.title, tagCls: 'text-purple-300', boxCls: 'border-purple-500/30 bg-purple-500/5' });
       });
       (window.appState.transactions || []).forEach(t => {
         if (t.date && ((t.title || '') + ' ' + (t.category || '')).toLowerCase().includes(q)) {
           const isInc = t.type === 'income';
-          results.push({ date: t.date, type: isInc ? 'Income' : 'Expense', title: (t.title || '') + (t.category ? ' (' + t.category + ')' : ''), tagCls: isInc ? 'text-teal-300' : 'text-rose-300', boxCls: isInc ? 'border-teal-500/30 bg-teal-500/5' : 'border-rose-500/30 bg-rose-500/5' });
+          results.push({ date: t.date, kind: 'finance', category: t.category, type: isInc ? 'Income' : 'Expense', title: (t.title || '') + (t.category ? ' (' + t.category + ')' : ''), tagCls: isInc ? 'text-teal-300' : 'text-rose-300', boxCls: isInc ? 'border-teal-500/30 bg-teal-500/5' : 'border-rose-500/30 bg-rose-500/5' });
         }
       });
       (window.appState.diaryEntries || []).forEach(n => {
-        if (n.date && ((n.text || '') + ' ' + (n.tags || '')).toLowerCase().includes(q)) results.push({ date: n.date, type: 'Daily Log', title: (n.text || '').replace(/\s+/g, ' ').trim().slice(0, 60), tagCls: 'text-amber-300', boxCls: 'border-amber-500/30 bg-amber-500/5' });
+        if (n.date && ((n.text || '') + ' ' + (n.tags || '')).toLowerCase().includes(q)) results.push({ date: n.date, kind: 'logbook', type: 'Daily Log', title: (n.text || '').replace(/\s+/g, ' ').trim().slice(0, 60), tagCls: 'text-amber-300', boxCls: 'border-amber-500/30 bg-amber-500/5' });
       });
       results.sort((a, b) => (a.date || '').localeCompare(b.date || ''));
 
@@ -2503,10 +2507,24 @@ html, body {
         const el = document.createElement('div');
         el.className = `p-2 border rounded-xl text-xs space-y-1 cursor-pointer transition hover:border-cyan-400 ${r.boxCls}`;
         el.onclick = () => {
-          const inp = document.getElementById('cal-search-input');
-          if (inp) inp.value = '';
-          searchQuery = '';
-          window.selectCalendarDate(r.date);
+          // land on the result's date first (this also clears search mode),
+          // then perform the same deep-link action as the date-wise cards
+          window.selectCalendarDate(r.date || getTodayDateStr());
+          if (r.kind === 'event') { window.editCalendarEvent(r.id); return; }
+          if (r.kind === 'task') {
+            if (window.PrOSLinker) window.PrOSLinker.jumpTo('taskList', { listId: r.listId });
+            else window.switchTab('tasks');
+            return;
+          }
+          if (r.kind === 'finance') {
+            if (window.PrOSLinker) window.PrOSLinker.jumpTo('financeCategory', { category: r.category });
+            else window.switchTab('finance');
+            return;
+          }
+          if (r.kind === 'logbook') {
+            if (window.PrOSLinker) window.PrOSLinker.jumpTo('logbook');
+            else window.switchTab('logbook');
+          }
         };
         el.innerHTML = `
           <div class="flex items-center justify-between">
