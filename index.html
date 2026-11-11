@@ -2072,7 +2072,6 @@ html, body {
               if (el) {
                 window.scrollToElement(el);
                 flashTarget(el, 'ring-purple-400');
-                if (typeof window.showToast === 'function') window.showToast('✓ Task found & highlighted', 'info');
               }
             });
           }
@@ -2112,7 +2111,6 @@ html, body {
               if (el) {
                 window.scrollToElement(el);
                 flashTarget(el, 'ring-teal-400');
-                if (typeof window.showToast === 'function') window.showToast('✓ Entry found & highlighted', 'info');
               }
             });
           }
@@ -2133,7 +2131,6 @@ html, body {
               if (el) {
                 window.scrollToElement(el);
                 flashTarget(el, 'ring-amber-400');
-                if (typeof window.showToast === 'function') window.showToast('✓ Log entry found & highlighted', 'info');
               }
             });
           } else if (opts.entryId) {
@@ -2141,7 +2138,6 @@ html, body {
               if (el) {
                 window.scrollToElement(el);
                 flashTarget(el, 'ring-amber-400');
-                if (typeof window.showToast === 'function') window.showToast('✓ Log entry found & highlighted', 'info');
               }
             });
           }
