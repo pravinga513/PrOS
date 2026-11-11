@@ -2057,17 +2057,20 @@ html, body {
         opts = opts || {};
         if (!window.switchAppView) return;
 
-        /* Tasks: go to list + optional exact task */
+        /* Tasks: open the task's list, then scroll to and flash the exact card */
         if (where === 'taskList') {
           if (opts.listId) window.appState.activeListId = opts.listId;
           window.switchAppView('tasks');
           if (opts.taskId) {
-            setTimeout(() => { window.scrollToTask(opts.taskId); flashTarget(opts.taskId, 'task-', 'ring-purple-400'); }, 300);
+            setTimeout(() => {
+              const el = document.querySelector('[data-task-id="' + escapeHtmlAttr(opts.taskId) + '"]');
+              if (el) { window.scrollToElement(el); flashTarget(el, 'ring-purple-400'); }
+            }, 350);
           }
           return;
         }
 
-        /* Finance: switch app view + show-all period + category filter */
+        /* Finance: show-all period, filter to the transaction's category, then flash the exact row */
         if (where === 'financeCategory') {
           window.appState.financePeriod = 'all';
           document.querySelectorAll('.fin-p-btn').forEach(b => { b.className = 'fin-p-btn text-slate-400 hover:text-white px-2.5 py-1 rounded-lg transition touch-manipulation'; });
@@ -2076,24 +2079,22 @@ html, body {
           const sel = document.getElementById('fin-filter-category');
           if (sel) sel.value = opts.category || 'ALL';
           window.switchAppView('finance');
-          if (opts.title) {
-            // fall back: scroll to first row whose visible title contains opts.title
+          if (opts.id) {
             setTimeout(() => {
-              const rows = Array.from(document.querySelectorAll('[data-trans-id]'));
-              const hit = rows.find(r => r.textContent.includes(opts.title));
-              if (hit) { window.scrollToElement(hit); flashTarget(hit, 'trans-', 'ring-teal-400'); }
-            }, 300);
+              const el = document.querySelector('[data-trans-id="' + escapeHtmlAttr(opts.id) + '"]');
+              if (el) { window.scrollToElement(el); flashTarget(el, 'ring-teal-400'); }
+            }, 350);
           }
           return;
         }
 
-        /* Logbook: switch app view + scroll to exact entry if present */
+        /* Logbook: open the logbook and scroll to / flash the exact entry card */
         if (where === 'logbook') {
           window.switchAppView('logbook');
           if (opts.entryId) {
             setTimeout(() => {
               const el = document.querySelector('[data-entry-id="' + escapeHtmlAttr(opts.entryId) + '"]');
-              if (el) { window.scrollToElement(el); flashTarget(opts.entryId, 'entry-', 'ring-amber-400'); }
+              if (el) { window.scrollToElement(el); flashTarget(el, 'ring-amber-400'); }
             }, 400);
           }
           return;
@@ -2121,7 +2122,7 @@ html, body {
       } else { el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
     };
 
-    /* Scroll to a task by id (list or kanban card) then flash it */
+    /* Scroll to a task by id (list or kanban card) */
     window.scrollToTask = function(taskId) {
       const el = document.querySelector('[data-task-id="' + escapeHtmlAttr(taskId) + '"]');
       if (el) window.scrollToElement(el);
@@ -2129,9 +2130,8 @@ html, body {
 
     function escapeHtmlAttr(str) { return String(str || '').replace(/"/g, '&quot;'); }
 
-    /* Flash a target row with a colored ring, then fade */
-    function flashTarget(id, prefix, ringCls) {
-      const el = document.querySelector('[' + prefix + 'id="' + escapeHtmlAttr(id) + '"]');
+    /* Flash a target element with a colored ring for one second, then fade */
+    function flashTarget(el, ringCls) {
       if (!el) return;
       el.classList.add(ringCls);
       setTimeout(() => el.classList.remove(ringCls), 1200);
@@ -2574,7 +2574,7 @@ html, body {
       (window.appState.transactions || []).forEach(t => {
         if (t.date && ((t.title || '') + ' ' + (t.category || '')).toLowerCase().includes(q)) {
           const isInc = t.type === 'income';
-          results.push({ date: t.date, kind: 'finance', category: t.category, type: isInc ? 'Income' : 'Expense', title: (t.title || '') + (t.category ? ' (' + t.category + ')' : ''), tagCls: isInc ? 'text-teal-300' : 'text-rose-300', boxCls: isInc ? 'border-teal-500/30 bg-teal-500/5' : 'border-rose-500/30 bg-rose-500/5' });
+          results.push({ date: t.date, id: t.id, kind: 'finance', category: t.category, type: isInc ? 'Income' : 'Expense', title: (t.title || '') + (t.category ? ' (' + t.category + ')' : ''), tagCls: isInc ? 'text-teal-300' : 'text-rose-300', boxCls: isInc ? 'border-teal-500/30 bg-teal-500/5' : 'border-rose-500/30 bg-rose-500/5' });
         }
       });
       (window.appState.diaryEntries || []).forEach(n => {
@@ -2606,7 +2606,7 @@ html, body {
             return;
           }
           if (r.kind === 'finance') {
-            if (window.PrOSLinker) window.PrOSLinker.jumpTo('financeCategory', { category: r.category, title: r.title });
+            if (window.PrOSLinker) window.PrOSLinker.jumpTo('financeCategory', { category: r.category, id: r.id });
             else window.switchTab('finance');
             return;
           }
