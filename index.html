@@ -2061,7 +2061,7 @@ html, body {
         if (where === 'taskList') {
           if (opts.listId) window.appState.activeListId = opts.listId;
           // scope to this specific folder (not "All Folders")
-          window.tasksScopeAll = false;
+          if (typeof window.setTaskScopeAll === 'function') window.setTaskScopeAll(false);
           try { window.localStorage.removeItem('pros_tasks_scope_all'); } catch (e) {}
           if (window.appState.taskViewMode === 'kanban' && typeof window.setTaskViewMode === 'function') {
             window.setTaskViewMode('list');
@@ -5210,6 +5210,7 @@ html, body {
     let activeFolderSortOption = 'DEFAULT'; // 'DEFAULT', 'TASKS_DESC', 'PENDING_DESC', 'NAME_ASC'
     let tasksScopeAll = false; // false = this folder only, true = all folders
     try { tasksScopeAll = window.localStorage.getItem('pros_tasks_scope_all') === '1'; } catch (e) {}
+    window.setTaskScopeAll = function(val) { tasksScopeAll = !!val; };
     let draggedTaskId = null;
     let isFirebaseListenerAttached = false;
     let modalTempSubtasks = [];
