@@ -4840,6 +4840,23 @@ html, body {
           </span>
         </h2>
       </div>
+      <!-- Mobile-only Actions button: top-right next to header title -->
+      <div class="sm:hidden flex items-center gap-1.5">
+        <button type="button" onclick="toggleTaskActionMenu(event)" class="px-3 py-2 bg-slate-900 border border-slate-800 hover:border-purple-500/40 text-slate-300 font-semibold rounded-xl transition flex items-center gap-1.5 shadow-sm active:scale-95 touch-manipulation">
+          <i data-lucide="more-horizontal" class="w-3.5 h-3.5 text-purple-400 shrink-0"></i>
+        </button>
+        <div id="task-action-dropdown-mobile" class="hidden absolute right-0 mt-2 w-48 bg-slate-900/95 border border-slate-800 rounded-xl shadow-2xl py-1.5 z-50 text-xs backdrop-blur-xl divide-y divide-slate-800/60">
+          <button type="button" onclick="clearAllCompletedTasks(); toggleTaskActionMenu(event);" class="w-full px-3 py-2.5 text-left text-slate-300 hover:bg-purple-950/30 hover:text-purple-300 flex items-center gap-2 font-medium transition">
+            <i data-lucide="check-check" class="w-3.5 h-3.5 text-purple-400 shrink-0"></i> Clear Completed
+          </button>
+          <button type="button" onclick="exportTasksCSV(); toggleTaskActionMenu(event);" class="w-full px-3 py-2.5 text-left text-slate-300 hover:bg-purple-950/30 hover:text-purple-300 flex items-center gap-2 font-medium transition">
+            <i data-lucide="file-spreadsheet" class="w-3.5 h-3.5 text-purple-400 shrink-0"></i> Export CSV (.csv)
+          </button>
+          <button type="button" onclick="exportTasksAudit(); toggleTaskActionMenu(event);" class="w-full px-3 py-2.5 text-left text-slate-300 hover:bg-purple-950/30 hover:text-purple-300 flex items-center gap-2 font-medium transition">
+            <i data-lucide="file-text" class="w-3.5 h-3.5 text-purple-400 shrink-0"></i> Export Tasks (.txt)
+          </button>
+        </div>
+      </div>
     </div>
 
     <!-- Toolbar Filters, Search, Batch Actions & View Modes -->
@@ -4857,8 +4874,8 @@ html, body {
         <button type="button" onclick="setTaskViewMode('kanban')" id="task-view-btn-kanban" class="px-3 py-1 text-slate-400 hover:text-white rounded-lg transition touch-manipulation">Kanban</button>
       </div>
 
-      <!-- Export & Batch Action Dropdown -->
-      <div class="relative inline-block text-left shrink-0" id="task-action-dropdown-wrapper">
+      <!-- Desktop-only Actions button (mobile version lives in header row above) -->
+      <div class="relative inline-block text-left shrink-0 hidden sm:inline-flex" id="task-action-dropdown-wrapper">
         <button type="button" onclick="toggleTaskActionMenu(event)" class="px-3 py-2 bg-slate-900 border border-slate-800 hover:border-purple-500/40 text-slate-300 font-semibold rounded-xl transition flex items-center gap-1.5 shadow-sm active:scale-95 touch-manipulation">
           <i data-lucide="more-horizontal" class="w-3.5 h-3.5 text-purple-400 shrink-0"></i>
           <span class="hidden sm:inline">Actions</span>
@@ -5276,18 +5293,25 @@ html, body {
 
     window.toggleTaskActionMenu = function(e) {
       if (e) e.stopPropagation();
-      const menu = document.getElementById('task-action-dropdown');
-      if (menu) {
-        menu.classList.toggle('hidden');
-        refreshIconsScoped(menu);
-      }
+      ['task-action-dropdown', 'task-action-dropdown-mobile'].forEach(id => {
+        const menu = document.getElementById(id);
+        if (menu) {
+          menu.classList.toggle('hidden');
+          refreshIconsScoped(menu);
+        }
+      });
     };
 
     document.addEventListener('click', function(e) {
       const wrapper = document.getElementById('task-action-dropdown-wrapper');
+      const wrapperMobile = document.querySelector('[id="task-action-dropdown-mobile"]')?.parentElement;
       const menu = document.getElementById('task-action-dropdown');
+      const menuMobile = document.getElementById('task-action-dropdown-mobile');
       if (menu && !menu.classList.contains('hidden') && wrapper && !wrapper.contains(e.target)) {
         menu.classList.add('hidden');
+      }
+      if (menuMobile && !menuMobile.classList.contains('hidden') && wrapperMobile && !wrapperMobile.contains(e.target)) {
+        menuMobile.classList.add('hidden');
       }
     });
 
