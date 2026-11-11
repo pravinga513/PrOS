@@ -6576,7 +6576,7 @@ html, body {
           }
 
           const card = document.createElement('div');
-          card.draggable = true;
+          card.draggable = window.innerWidth >= 1024;
           card.dataset.taskId = t.id;
           card.ondragstart = (e) => handleKanbanDragStart(e, t.id);
           card.ondragend = (e) => handleKanbanDragEnd(e);
