@@ -2082,11 +2082,11 @@ html, body {
     window.selectCalendarDate = function(dateStr) {
       window.appState.selectedCalendarDate = dateStr;
       window.renderCalendarView();
-      // mobile: bring the day-inspector card into view (it stacks below the grid)
+      // mobile (stacked layout): always bring the day-inspector card to the top of the viewport
       const panel = document.querySelector('#view-calendar .lg\\:col-span-4');
-      if (!panel) return;
+      if (!panel || window.innerWidth >= 1024) return;
       const r = panel.getBoundingClientRect();
-      if (r.top < 0 || r.top > window.innerHeight - 80) {
+      {
         let scroller = null, node = panel.parentElement;
         while (node && node !== document.documentElement) {
           const oy = getComputedStyle(node).overflowY;
