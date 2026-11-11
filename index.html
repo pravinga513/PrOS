@@ -2066,7 +2066,11 @@ html, body {
           window.switchAppView('tasks');
           if (opts.taskId) {
             waitForElement('[data-task-id="' + escapeHtmlAttr(opts.taskId) + '"]', 2000, 100, function(el) {
-              if (el) { window.scrollToElement(el); flashTarget(el, 'ring-purple-400'); }
+              if (el) {
+                window.scrollToElement(el);
+                flashTarget(el, 'ring-purple-400');
+                if (typeof window.showToast === 'function') window.showToast('✓ Task found & highlighted', 'info');
+              }
             });
           }
           return;
@@ -2102,7 +2106,11 @@ html, body {
           window.renderFinanceList();
           if (opts.id) {
             waitForElement('[data-trans-id="' + escapeHtmlAttr(opts.id) + '"]', 2000, 100, function(el) {
-              if (el) { window.scrollToElement(el); flashTarget(el, 'ring-teal-400'); }
+              if (el) {
+                window.scrollToElement(el);
+                flashTarget(el, 'ring-teal-400');
+                if (typeof window.showToast === 'function') window.showToast('✓ Entry found & highlighted', 'info');
+              }
             });
           }
           return;
@@ -2119,11 +2127,19 @@ html, body {
             window.logbookActiveMonthFilter = '';
             window.renderLogbookTimeline(true);
             waitForElement('[data-entry-id="' + escapeHtmlAttr(opts.entryId) + '"]', 2000, 100, function(el) {
-              if (el) { window.scrollToElement(el); flashTarget(el, 'ring-amber-400'); }
+              if (el) {
+                window.scrollToElement(el);
+                flashTarget(el, 'ring-amber-400');
+                if (typeof window.showToast === 'function') window.showToast('✓ Log entry found & highlighted', 'info');
+              }
             });
           } else if (opts.entryId) {
             waitForElement('[data-entry-id="' + escapeHtmlAttr(opts.entryId) + '"]', 2000, 100, function(el) {
-              if (el) { window.scrollToElement(el); flashTarget(el, 'ring-amber-400'); }
+              if (el) {
+                window.scrollToElement(el);
+                flashTarget(el, 'ring-amber-400');
+                if (typeof window.showToast === 'function') window.showToast('✓ Log entry found & highlighted', 'info');
+              }
             });
           }
           return;
@@ -2194,11 +2210,11 @@ html, body {
 
     function escapeHtmlAttr(str) { return String(str || '').replace(/"/g, '&quot;'); }
 
-    /* Flash a target element with a thick colored ring for 2 seconds, then fade (temporary) */
+    /* Flash a target element: thick colored ring + background pulse for 2 seconds, then fade (temporary) */
     function flashTarget(el, ringCls) {
       if (!el) return;
-      el.classList.add(ringCls, 'ring-4');
-      setTimeout(() => el.classList.remove(ringCls, 'ring-4'), 2000);
+      el.classList.add(ringCls, 'ring-4', 'bg-cyan-500/20');
+      setTimeout(() => el.classList.remove(ringCls, 'ring-4', 'bg-cyan-500/20'), 2000);
     }
 
     /* Poll for an element to appear in the DOM, then call cb(el). Times out after `maxWait` ms. */
