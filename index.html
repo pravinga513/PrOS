@@ -2060,6 +2060,9 @@ html, body {
         /* ---------- Tasks: switch kanban->list, open folder, scroll+highlight ---------- */
         if (where === 'taskList') {
           if (opts.listId) window.appState.activeListId = opts.listId;
+          // scope to this specific folder (not "All Folders")
+          window.tasksScopeAll = false;
+          try { window.localStorage.removeItem('pros_tasks_scope_all'); } catch (e) {}
           if (window.appState.taskViewMode === 'kanban' && typeof window.setTaskViewMode === 'function') {
             window.setTaskViewMode('list');
           }
