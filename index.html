@@ -2049,6 +2049,94 @@ html, body {
       if (!window.appState.calendarEvents) window.appState.calendarEvents = [];
     }
 
+    /* --------------------------------------------------------------------- */
+    /* GLOBAL LINKER — exact-item deep linking from calendar search results   */
+    /* --------------------------------------------------------------------- */
+    window.PrOSLinker = {
+      jumpTo: function(where, opts) {
+        opts = opts || {};
+        if (!window.switchAppView) return;
+
+        /* Tasks: go to list + optional exact task */
+        if (where === 'taskList') {
+          if (opts.listId) window.appState.activeListId = opts.listId;
+          window.switchAppView('tasks');
+          if (opts.taskId) {
+            setTimeout(() => { window.scrollToTask(opts.taskId); flashTarget(opts.taskId, 'task-', 'ring-purple-400'); }, 300);
+          }
+          return;
+        }
+
+        /* Finance: switch app view + show-all period + category filter */
+        if (where === 'financeCategory') {
+          window.appState.financePeriod = 'all';
+          document.querySelectorAll('.fin-p-btn').forEach(b => { b.className = 'fin-p-btn text-slate-400 hover:text-white px-2.5 py-1 rounded-lg transition touch-manipulation'; });
+          const allBtn = document.getElementById('fin-p-all');
+          if (allBtn) allBtn.className = 'fin-p-btn bg-emerald-600 text-white font-bold px-2.5 py-1 rounded-lg transition touch-manipulation';
+          const sel = document.getElementById('fin-filter-category');
+          if (sel) sel.value = opts.category || 'ALL';
+          window.switchAppView('finance');
+          if (opts.title) {
+            // fall back: scroll to first row whose visible title contains opts.title
+            setTimeout(() => {
+              const rows = Array.from(document.querySelectorAll('[data-trans-id]'));
+              const hit = rows.find(r => r.textContent.includes(opts.title));
+              if (hit) { window.scrollToElement(hit); flashTarget(hit, 'trans-', 'ring-teal-400'); }
+            }, 300);
+          }
+          return;
+        }
+
+        /* Logbook: switch app view + scroll to exact entry if present */
+        if (where === 'logbook') {
+          window.switchAppView('logbook');
+          if (opts.entryId) {
+            setTimeout(() => {
+              const el = document.querySelector('[data-entry-id="' + escapeHtmlAttr(opts.entryId) + '"]');
+              if (el) { window.scrollToElement(el); flashTarget(opts.entryId, 'entry-', 'ring-amber-400'); }
+            }, 400);
+          }
+          return;
+        }
+
+        /* Default: any other string treated as a view name */
+        if (typeof where === 'string') window.switchAppView(where);
+      }
+    };
+
+    /* Scroll any element into view within its scrollable ancestor */
+    window.scrollToElement = function(el) {
+      if (!el) return;
+      const r = el.getBoundingClientRect();
+      let scroller = null, node = el.parentElement;
+      while (node && node !== document.documentElement) {
+        const oy = getComputedStyle(node).overflowY;
+        if ((oy === 'auto' || oy === 'scroll') && node.scrollHeight > node.clientHeight + 10) { scroller = node; break; }
+        node = node.parentElement;
+      }
+      if (scroller) {
+        const delta = r.top - scroller.getBoundingClientRect().top - 10;
+        try { scroller.scrollTo({ top: Math.max(0, scroller.scrollTop + delta), behavior: 'smooth' }); }
+        catch (e) { scroller.scrollTop = Math.max(0, scroller.scrollTop + delta); }
+      } else { el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+    };
+
+    /* Scroll to a task by id (list or kanban card) then flash it */
+    window.scrollToTask = function(taskId) {
+      const el = document.querySelector('[data-task-id="' + escapeHtmlAttr(taskId) + '"]');
+      if (el) window.scrollToElement(el);
+    };
+
+    function escapeHtmlAttr(str) { return String(str || '').replace(/"/g, '&quot;'); }
+
+    /* Flash a target row with a colored ring, then fade */
+    function flashTarget(id, prefix, ringCls) {
+      const el = document.querySelector('[' + prefix + 'id="' + escapeHtmlAttr(id) + '"]');
+      if (!el) return;
+      el.classList.add(ringCls);
+      setTimeout(() => el.classList.remove(ringCls), 1200);
+    }
+
     window.calPrevMonth = function() {
       const d = window.appState.calendarDateCursor || new Date();
       d.setMonth(d.getMonth() - 1);
@@ -2490,7 +2578,7 @@ html, body {
         }
       });
       (window.appState.diaryEntries || []).forEach(n => {
-        if (n.date && ((n.text || '') + ' ' + (n.tags || '')).toLowerCase().includes(q)) results.push({ date: n.date, kind: 'logbook', type: 'Daily Log', title: (n.text || '').replace(/\s+/g, ' ').trim().slice(0, 60), tagCls: 'text-amber-300', boxCls: 'border-amber-500/30 bg-amber-500/5' });
+        if (n.date && ((n.text || '') + ' ' + (n.tags || '')).toLowerCase().includes(q)) results.push({ date: n.date, id: n.id, kind: 'logbook', type: 'Daily Log', title: (n.text || '').replace(/\s+/g, ' ').trim().slice(0, 60), tagCls: 'text-amber-300', boxCls: 'border-amber-500/30 bg-amber-500/5' });
       });
       results.sort((a, b) => (a.date || '').localeCompare(b.date || ''));
 
@@ -2508,21 +2596,22 @@ html, body {
         el.className = `p-2 border rounded-xl text-xs space-y-1 cursor-pointer transition hover:border-cyan-400 ${r.boxCls}`;
         el.onclick = () => {
           // land on the result's date first (this also clears search mode),
-          // then perform the same deep-link action as the date-wise cards
+          // then perform the same deep-link action as the date-wise cards,
+          // opening the exact item
           window.selectCalendarDate(r.date || getTodayDateStr());
           if (r.kind === 'event') { window.editCalendarEvent(r.id); return; }
           if (r.kind === 'task') {
-            if (window.PrOSLinker) window.PrOSLinker.jumpTo('taskList', { listId: r.listId });
+            if (window.PrOSLinker) window.PrOSLinker.jumpTo('taskList', { listId: r.listId, taskId: r.id });
             else window.switchTab('tasks');
             return;
           }
           if (r.kind === 'finance') {
-            if (window.PrOSLinker) window.PrOSLinker.jumpTo('financeCategory', { category: r.category });
+            if (window.PrOSLinker) window.PrOSLinker.jumpTo('financeCategory', { category: r.category, title: r.title });
             else window.switchTab('finance');
             return;
           }
           if (r.kind === 'logbook') {
-            if (window.PrOSLinker) window.PrOSLinker.jumpTo('logbook');
+            if (window.PrOSLinker) window.PrOSLinker.jumpTo('logbook', { entryId: r.id });
             else window.switchTab('logbook');
           }
         };
@@ -4060,6 +4149,7 @@ html, body {
 
         items.forEach(item => {
           const row = document.createElement('div');
+          row.dataset.transId = item.id;
           row.className = 'bg-slate-950 p-2.5 rounded-xl flex items-center justify-between text-xs border border-slate-800 hover:border-slate-700 transition gap-2 min-w-0 box-border';
           
           let colorClass = 'text-teal-400';
@@ -6170,6 +6260,7 @@ html, body {
         }
 
         const row = document.createElement('div');
+        row.dataset.taskId = task.id;
         row.className = `p-3 bg-slate-950 border rounded-xl flex flex-col justify-between text-xs transition gap-2 ${
           isDone ? 'border-slate-800/60 opacity-60 bg-slate-950/40' : 'border-slate-800 hover:border-purple-500/40'
         }`;
@@ -6391,6 +6482,7 @@ html, body {
 
           const card = document.createElement('div');
           card.draggable = true;
+          card.dataset.taskId = t.id;
           card.ondragstart = (e) => handleKanbanDragStart(e, t.id);
           card.ondragend = (e) => handleKanbanDragEnd(e);
           card.className = `glass-card p-3 rounded-xl border text-xs space-y-2 cursor-grab active:cursor-grabbing transition ${
@@ -20509,6 +20601,7 @@ html, body {
     /* HTML Card Builder for Timeline Entries */
     function createLogbookEntryCard(e, todayStr) {
       const card = document.createElement('div');
+      card.dataset.entryId = e.id;
       card.className = `glass-card p-4 rounded-2xl border transition space-y-2.5 bg-slate-950/80 ${e.isPinned ? 'border-amber-500/40 shadow-md shadow-amber-500/5' : 'border-slate-800 hover:border-emerald-500/40'}`;
 
       let mediaHtml = '';
