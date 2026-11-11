@@ -2019,9 +2019,6 @@ html, body {
       <!-- Quick Action Summary Footer -->
       <div class="pt-2.5 border-t border-slate-800/80 flex items-center justify-between text-xs text-slate-400">
         <span id="cal-day-summary-text" class="font-mono text-[10px]">0 logs scheduled</span>
-        <button onclick="openAddCalendarEventModal()" class="text-pink-400 hover:underline font-bold text-xs">
-          + Add New Event
-        </button>
       </div>
     </div>
 
@@ -2085,6 +2082,25 @@ html, body {
     window.selectCalendarDate = function(dateStr) {
       window.appState.selectedCalendarDate = dateStr;
       window.renderCalendarView();
+      // mobile: bring the day-inspector card into view (it stacks below the grid)
+      const panel = document.querySelector('#view-calendar .lg\\:col-span-4');
+      if (!panel) return;
+      const r = panel.getBoundingClientRect();
+      if (r.top < 0 || r.top > window.innerHeight - 80) {
+        let scroller = null, node = panel.parentElement;
+        while (node && node !== document.documentElement) {
+          const oy = getComputedStyle(node).overflowY;
+          if ((oy === 'auto' || oy === 'scroll') && node.scrollHeight > node.clientHeight + 10) { scroller = node; break; }
+          node = node.parentElement;
+        }
+        if (scroller) {
+          const delta = r.top - scroller.getBoundingClientRect().top - 8;
+          try { scroller.scrollTo({ top: Math.max(0, scroller.scrollTop + delta), behavior: 'smooth' }); }
+          catch (e) { scroller.scrollTop = Math.max(0, scroller.scrollTop + delta); }
+        } else {
+          panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }
     };
 
     window.handleCalendarSearch = function(val) {
@@ -2358,13 +2374,13 @@ html, body {
       });
 
       (window.appState.tasks || []).forEach(t => {
-        if (t.dueDate && !t.completed) tasksByDate[t.dueDate] = true;
+        if (t.dueDate && !t.completed) tasksByDate[t.dueDate] = (tasksByDate[t.dueDate] || 0) + 1;
       });
 
       (window.appState.transactions || []).forEach(tr => {
         if (tr.date) {
-          if (tr.type === 'expense') expByDate[tr.date] = true;
-          if (tr.type === 'income') incByDate[tr.date] = true;
+          if (tr.type === 'expense') expByDate[tr.date] = (expByDate[tr.date] || 0) + 1;
+          if (tr.type === 'income') incByDate[tr.date] = (incByDate[tr.date] || 0) + 1;
         }
       });
 
@@ -2388,11 +2404,11 @@ html, body {
         const isToday = (dateStr === todayStr);
         const isSelected = (dateStr === selectedStr);
 
-        const hasEv = !!eventsByDate[dateStr];
-        const hasTsk = !!tasksByDate[dateStr];
-        const hasExp = !!expByDate[dateStr];
-        const hasInc = !!incByDate[dateStr];
-        const hasNt = !!notesByDate[dateStr];
+        const evCount = (eventsByDate[dateStr] || []).length;
+        const tskCount = tasksByDate[dateStr] || 0;
+        const expCount = expByDate[dateStr] || 0;
+        const incCount = incByDate[dateStr] || 0;
+        const ntCount = notesByDate[dateStr] ? 1 : 0;
 
         const cell = document.createElement('div');
         cell.onclick = () => window.selectCalendarDate(dateStr);
@@ -2404,20 +2420,21 @@ html, body {
               : 'border-slate-800 bg-slate-950 hover:border-slate-700 hover:bg-slate-900/50'
         }`;
 
-        let dotsHtml = '<div class="flex items-center gap-1 justify-end flex-wrap">';
-        if (hasEv) dotsHtml += '<span class="w-1.5 h-1.5 rounded-full bg-pink-400 shrink-0"></span>';
-        if (hasTsk) dotsHtml += '<span class="w-1.5 h-1.5 rounded-full bg-purple-400 shrink-0"></span>';
-        if (hasExp) dotsHtml += '<span class="w-1.5 h-1.5 rounded-full bg-rose-400 shrink-0"></span>';
-        if (hasInc) dotsHtml += '<span class="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0"></span>';
-        if (hasNt) dotsHtml += '<span class="w-1.5 h-1.5 rounded-full bg-amber-400 shrink-0"></span>';
-        dotsHtml += '</div>';
+        // scannable count chips (tiny colored numbers; legend maps the colors)
+        let chipsHtml = '<div class="flex items-center gap-0.5 justify-end flex-wrap overflow-hidden">';
+        if (evCount) chipsHtml += `<span title="${evCount} Events / Birthdays" class="text-[8px] leading-none px-1 py-0.5 rounded bg-pink-500/20 text-pink-300 font-mono font-bold shrink-0">${evCount}</span>`;
+        if (tskCount) chipsHtml += `<span title="${tskCount} Tasks due" class="text-[8px] leading-none px-1 py-0.5 rounded bg-purple-500/15 text-purple-300 font-mono font-bold shrink-0">${tskCount}</span>`;
+        if (expCount) chipsHtml += `<span title="${expCount} Expenses" class="text-[8px] leading-none px-1 py-0.5 rounded bg-rose-500/20 text-rose-300 font-mono font-bold shrink-0">${expCount}</span>`;
+        if (incCount) chipsHtml += `<span title="${incCount} Income" class="text-[8px] leading-none px-1 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-mono font-bold shrink-0">${incCount}</span>`;
+        if (ntCount) chipsHtml += `<span title="Notes created" class="text-[8px] leading-none px-1 py-0.5 rounded bg-amber-500/20 text-amber-300 font-mono font-bold shrink-0">N</span>`;
+        chipsHtml += '</div>';
 
         cell.innerHTML = `
           <div class="flex justify-between items-center">
             <span class="font-bold text-[11px] sm:text-xs ${isToday ? 'text-pink-400 font-mono' : isSelected ? 'text-white' : 'text-slate-300'}">${day}</span>
             ${isToday ? '<span class="hidden sm:inline text-[9px] bg-pink-500/20 text-pink-300 px-1 rounded font-mono">Today</span>' : ''}
           </div>
-          ${dotsHtml}
+          ${chipsHtml}
         `;
 
         fragment.appendChild(cell);
