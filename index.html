@@ -2392,7 +2392,7 @@ html, body {
 
       for (let i = 0; i < firstDayIndex; i++) {
         const blankCell = document.createElement('div');
-        blankCell.className = 'h-11 sm:h-14 p-1 rounded-xl border border-slate-900 bg-slate-950/30 opacity-20 pointer-events-none';
+        blankCell.className = 'h-12 sm:h-14 p-1 rounded-xl border border-slate-900 bg-slate-950/30 opacity-20 pointer-events-none';
         fragment.appendChild(blankCell);
       }
 
@@ -2412,7 +2412,7 @@ html, body {
 
         const cell = document.createElement('div');
         cell.onclick = () => window.selectCalendarDate(dateStr);
-        cell.className = `h-11 sm:h-14 p-1 sm:p-1.5 rounded-xl border transition flex flex-col justify-between cursor-pointer select-none ${
+        cell.className = `h-12 sm:h-14 p-1 sm:p-1.5 rounded-xl border transition flex flex-col justify-between cursor-pointer select-none overflow-hidden ${
           isSelected 
             ? 'border-cyan-400 bg-cyan-500/15 shadow-md shadow-cyan-500/10 ring-1 ring-cyan-400' 
             : isToday 
@@ -2420,20 +2420,25 @@ html, body {
               : 'border-slate-800 bg-slate-950 hover:border-slate-700 hover:bg-slate-900/50'
         }`;
 
-        // scannable count chips: single tight row, max 3 shown (+n for the rest)
+        // scannable count chips: 2 fit on mobile cells, 3 on wider screens; extras become "+n"
         const chipDefs = [];
         if (evCount) chipDefs.push([evCount, 'bg-pink-500/20 text-pink-300', 'Events / Birthdays']);
         if (tskCount) chipDefs.push([tskCount, 'bg-purple-500/15 text-purple-300', 'Tasks due']);
         if (expCount) chipDefs.push([expCount, 'bg-rose-500/20 text-rose-300', 'Expenses']);
         if (incCount) chipDefs.push([incCount, 'bg-emerald-500/20 text-emerald-300', 'Income']);
         if (ntCount) chipDefs.push(['N', 'bg-amber-500/20 text-amber-300', 'Notes created']);
-        let chipsHtml = '<div class="flex items-center gap-0.5 justify-end whitespace-nowrap">';
-        const shownDefs = chipDefs.slice(0, 3);
-        const hiddenN = chipDefs.length - shownDefs.length;
-        shownDefs.forEach(([n, cls, label]) => {
-          chipsHtml += `<span title="${n} ${label}" class="text-[7px] leading-none px-0.5 py-0.5 rounded font-mono font-bold shrink-0 min-w-[9px] text-center ${cls}">${n}</span>`;
+        const chipCls = 'text-[7px] leading-none px-0.5 py-0.5 rounded font-mono font-bold shrink-0 min-w-[9px] text-center inline-flex items-center justify-center';
+        let chipsHtml = '<div class="flex items-center gap-0.5 justify-end whitespace-nowrap overflow-hidden">';
+        chipDefs.forEach(([n, cls, label], idx) => {
+          // first 2 chips always visible; 3rd only on wider cells
+          const visCls = idx < 2 ? '' : ' hidden sm:inline-flex';
+          chipsHtml += `<span title="${n} ${label}" class="${chipCls}${visCls} ${cls}">${n}</span>`;
         });
-        if (hiddenN > 0) chipsHtml += `<span title="${hiddenN} more types" class="text-[7px] leading-none px-0.5 py-0.5 rounded bg-slate-800 text-slate-400 font-mono font-bold shrink-0 min-w-[9px] text-center">+${hiddenN}</span>`;
+        if (chipDefs.length > 2) {
+          // mobile: after 2 shown, rest (incl. the 3rd) collapse into +n
+          if (chipDefs.length > 2) chipsHtml += `<span title="${chipDefs.length - 2} more types" class="text-[7px] leading-none px-0.5 py-0.5 rounded bg-slate-800 text-slate-400 font-mono font-bold shrink-0 min-w-[9px] text-center inline-flex items-center justify-center sm:hidden">+${chipDefs.length - 2}</span>`;
+          if (chipDefs.length > 3) chipsHtml += `<span title="${chipDefs.length - 3} more types" class="text-[7px] leading-none px-0.5 py-0.5 rounded bg-slate-800 text-slate-400 font-mono font-bold shrink-0 min-w-[9px] text-center hidden sm:inline-flex items-center justify-center">+${chipDefs.length - 3}</span>`;
+        }
         chipsHtml += '</div>';
 
         cell.innerHTML = `
