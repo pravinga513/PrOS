@@ -1898,7 +1898,7 @@ html, body {
       <!-- Search Input -->
       <div class="relative flex-1 sm:w-48 min-w-[140px]">
         <i data-lucide="search" class="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-500"></i>
-        <input id="cal-search-input" type="text" onkeyup="handleCalendarSearch(this.value)" placeholder="Search schedule..." class="w-full bg-slate-950 border border-slate-800 rounded-xl pl-8 pr-3 py-2 text-xs text-slate-200 outline-none focus:border-cyan-500 transition" />
+        <input id="cal-search-input" type="text" onkeyup="handleCalendarSearch(this.value)" onkeydown="handleCalendarSearchKey(event)" onsearch="handleCalendarSearchKey({key:'Enter', preventDefault(){}, target: this})" placeholder="Search schedule..." class="w-full bg-slate-950 border border-slate-800 rounded-xl pl-8 pr-3 py-2 text-xs text-slate-200 outline-none focus:border-cyan-500 transition" />
       </div>
 
       <!-- Month & Year Jump Navigation -->
@@ -1981,7 +1981,7 @@ html, body {
         <span class="flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-purple-400 shrink-0"></span> Tasks</span>
         <span class="flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0"></span> Income</span>
         <span class="flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-rose-400 shrink-0"></span> Expense</span>
-        <span class="flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-amber-400 shrink-0"></span> Notes</span>
+        <span class="flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-amber-400 shrink-0"></span> Daily Logs</span>
       </div>
     </div>
 
@@ -2079,33 +2079,45 @@ html, body {
       window.renderCalendarView();
     };
 
-    window.selectCalendarDate = function(dateStr) {
-      window.appState.selectedCalendarDate = dateStr;
-      window.renderCalendarView();
-      // mobile (stacked layout): always bring the day-inspector card to the top of the viewport
+    /* Mobile helper: bring the day-inspector (results) panel into view */
+    window.scrollToCalInspector = function() {
       const panel = document.querySelector('#view-calendar .lg\\:col-span-4');
       if (!panel || window.innerWidth >= 1024) return;
       const r = panel.getBoundingClientRect();
-      {
-        let scroller = null, node = panel.parentElement;
-        while (node && node !== document.documentElement) {
-          const oy = getComputedStyle(node).overflowY;
-          if ((oy === 'auto' || oy === 'scroll') && node.scrollHeight > node.clientHeight + 10) { scroller = node; break; }
-          node = node.parentElement;
-        }
-        if (scroller) {
-          const delta = r.top - scroller.getBoundingClientRect().top - 8;
-          try { scroller.scrollTo({ top: Math.max(0, scroller.scrollTop + delta), behavior: 'smooth' }); }
-          catch (e) { scroller.scrollTop = Math.max(0, scroller.scrollTop + delta); }
-        } else {
-          panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
+      let scroller = null, node = panel.parentElement;
+      while (node && node !== document.documentElement) {
+        const oy = getComputedStyle(node).overflowY;
+        if ((oy === 'auto' || oy === 'scroll') && node.scrollHeight > node.clientHeight + 10) { scroller = node; break; }
+        node = node.parentElement;
       }
+      if (scroller) {
+        const delta = r.top - scroller.getBoundingClientRect().top - 8;
+        try { scroller.scrollTo({ top: Math.max(0, scroller.scrollTop + delta), behavior: 'smooth' }); }
+        catch (e) { scroller.scrollTop = Math.max(0, scroller.scrollTop + delta); }
+      } else {
+        panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    };
+
+    window.selectCalendarDate = function(dateStr) {
+      window.appState.selectedCalendarDate = dateStr;
+      window.renderCalendarView();
+      window.scrollToCalInspector();
     };
 
     window.handleCalendarSearch = function(val) {
       searchQuery = (val || '').toLowerCase().trim();
       window.renderCalendarView();
+    };
+
+    /* Enter (mobile search key) -> jump to the results panel so the change is visible */
+    window.handleCalendarSearchKey = function(e) {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        try { e.target.blur(); } catch (err) {}
+        window.scrollToCalInspector();
+        if (window.showToast) window.showToast('Results shown in the day panel below', 'info');
+      }
     };
 
     window.setCalInspectorFilter = function(filter) {
@@ -2384,15 +2396,15 @@ html, body {
         }
       });
 
-      (window.appState.notes || []).forEach(n => {
-        if (n.createdAt) notesByDate[n.createdAt.split('T')[0]] = true;
+      (window.appState.diaryEntries || []).forEach(n => {
+        if (n.date) notesByDate[n.date] = true;
       });
 
       const fragment = document.createDocumentFragment();
 
       for (let i = 0; i < firstDayIndex; i++) {
         const blankCell = document.createElement('div');
-        blankCell.className = 'h-12 sm:h-14 p-1 rounded-xl border border-slate-900 bg-slate-950/30 opacity-20 pointer-events-none';
+        blankCell.className = 'h-11 sm:h-14 p-1 rounded-xl border border-slate-900 bg-slate-950/30 opacity-20 pointer-events-none';
         fragment.appendChild(blankCell);
       }
 
@@ -2412,7 +2424,7 @@ html, body {
 
         const cell = document.createElement('div');
         cell.onclick = () => window.selectCalendarDate(dateStr);
-        cell.className = `h-12 sm:h-14 p-1 sm:p-1.5 rounded-xl border transition flex flex-col justify-between cursor-pointer select-none overflow-hidden ${
+        cell.className = `h-11 sm:h-14 p-1 sm:p-1.5 rounded-xl border transition flex flex-col justify-between cursor-pointer select-none overflow-hidden ${
           isSelected 
             ? 'border-cyan-400 bg-cyan-500/15 shadow-md shadow-cyan-500/10 ring-1 ring-cyan-400' 
             : isToday 
@@ -2420,33 +2432,21 @@ html, body {
               : 'border-slate-800 bg-slate-950 hover:border-slate-700 hover:bg-slate-900/50'
         }`;
 
-        // scannable count chips: 2 fit on mobile cells, 3 on wider screens; extras become "+n"
-        const chipDefs = [];
-        if (evCount) chipDefs.push([evCount, 'bg-pink-500/20 text-pink-300', 'Events / Birthdays']);
-        if (tskCount) chipDefs.push([tskCount, 'bg-purple-500/15 text-purple-300', 'Tasks due']);
-        if (expCount) chipDefs.push([expCount, 'bg-rose-500/20 text-rose-300', 'Expenses']);
-        if (incCount) chipDefs.push([incCount, 'bg-emerald-500/20 text-emerald-300', 'Income']);
-        if (ntCount) chipDefs.push(['N', 'bg-amber-500/20 text-amber-300', 'Notes created']);
-        const chipCls = 'text-[7px] leading-none px-0.5 py-0.5 rounded font-mono font-bold shrink-0 min-w-[9px] text-center inline-flex items-center justify-center';
-        let chipsHtml = '<div class="flex items-center gap-0.5 justify-end whitespace-nowrap overflow-hidden">';
-        chipDefs.forEach(([n, cls, label], idx) => {
-          // first 2 chips always visible; 3rd only on wider cells
-          const visCls = idx < 2 ? '' : ' hidden sm:inline-flex';
-          chipsHtml += `<span title="${n} ${label}" class="${chipCls}${visCls} ${cls}">${n}</span>`;
-        });
-        if (chipDefs.length > 2) {
-          // mobile: after 2 shown, rest (incl. the 3rd) collapse into +n
-          if (chipDefs.length > 2) chipsHtml += `<span title="${chipDefs.length - 2} more types" class="text-[7px] leading-none px-0.5 py-0.5 rounded bg-slate-800 text-slate-400 font-mono font-bold shrink-0 min-w-[9px] text-center inline-flex items-center justify-center sm:hidden">+${chipDefs.length - 2}</span>`;
-          if (chipDefs.length > 3) chipsHtml += `<span title="${chipDefs.length - 3} more types" class="text-[7px] leading-none px-0.5 py-0.5 rounded bg-slate-800 text-slate-400 font-mono font-bold shrink-0 min-w-[9px] text-center hidden sm:inline-flex items-center justify-center">+${chipDefs.length - 3}</span>`;
-        }
-        chipsHtml += '</div>';
+        // simple colored dots (kept minimal per user preference)
+        let dotsHtml = '<div class="flex items-center gap-1 justify-end flex-wrap overflow-hidden">';
+        if (evCount) dotsHtml += '<span class="w-1.5 h-1.5 rounded-full bg-pink-400 shrink-0"></span>';
+        if (tskCount) dotsHtml += '<span class="w-1.5 h-1.5 rounded-full bg-purple-400 shrink-0"></span>';
+        if (expCount) dotsHtml += '<span class="w-1.5 h-1.5 rounded-full bg-rose-400 shrink-0"></span>';
+        if (incCount) dotsHtml += '<span class="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0"></span>';
+        if (ntCount) dotsHtml += '<span class="w-1.5 h-1.5 rounded-full bg-amber-400 shrink-0"></span>';
+        dotsHtml += '</div>';
 
         cell.innerHTML = `
           <div class="flex justify-between items-center">
             <span class="font-bold text-[11px] sm:text-xs ${isToday ? 'text-pink-400 font-mono' : isSelected ? 'text-white' : 'text-slate-300'}">${day}</span>
             ${isToday ? '<span class="hidden sm:inline text-[9px] bg-pink-500/20 text-pink-300 px-1 rounded font-mono">Today</span>' : ''}
           </div>
-          ${chipsHtml}
+          ${dotsHtml}
         `;
 
         fragment.appendChild(cell);
@@ -2479,13 +2479,13 @@ html, body {
       let dayEvents = (window.appState.calendarEvents || []).filter(ev => eventMatchesDate(ev, selectedDate));
       let dayTasks = (window.appState.tasks || []).filter(t => t.dueDate === selectedDate);
       let dayTrans = (window.appState.transactions || []).filter(t => t.date === selectedDate);
-      let dayNotes = (window.appState.notes || []).filter(n => n.createdAt && n.createdAt.startsWith(selectedDate));
+      let dayDiary = (window.appState.diaryEntries || []).filter(n => n.date === selectedDate);
 
       if (searchQuery) {
         dayEvents = dayEvents.filter(ev => (ev.title && ev.title.toLowerCase().includes(searchQuery)));
         dayTasks = dayTasks.filter(t => t.title && t.title.toLowerCase().includes(searchQuery));
         dayTrans = dayTrans.filter(t => t.title && t.title.toLowerCase().includes(searchQuery));
-        dayNotes = dayNotes.filter(n => n.title && n.title.toLowerCase().includes(searchQuery));
+        dayDiary = dayDiary.filter(n => (n.text && n.text.toLowerCase().includes(searchQuery)) || (n.tags && n.tags.toLowerCase().includes(searchQuery)));
       }
 
       let totalLogs = 0;
@@ -2571,22 +2571,25 @@ html, body {
         });
       }
 
-      // Notes
+      // Daily Logs (Diary & Logbook entries for this date)
       if (inspectorFilter === 'ALL') {
-        dayNotes.forEach(n => {
+        dayDiary.forEach(n => {
           totalLogs++;
           const el = document.createElement('div');
           el.className = 'p-2 bg-slate-950 border border-amber-500/30 rounded-xl text-xs space-y-1 bg-amber-500/5 cursor-pointer hover:border-amber-400 transition';
           el.onclick = () => {
-            if (window.PrOSLinker) window.PrOSLinker.jumpTo('note', { noteId: n.id, folderId: n.folderId });
-            else window.switchTab('notes');
+            if (window.PrOSLinker) window.PrOSLinker.jumpTo('logbook');
+            else window.switchTab('logbook');
           };
 
+          const preview = (n.text || '').replace(/\s+/g, ' ').trim().slice(0, 90);
           el.innerHTML = `
             <div class="flex items-center justify-between">
-              <span class="text-[10px] font-bold uppercase text-amber-300">Note Created</span>
+              <span class="text-[10px] font-bold uppercase text-amber-300">Daily Log${n.time ? ' &middot; ' + escapeHtml(n.time) : ''}</span>
+              ${n.mood ? `<span class="text-[10px] font-mono text-slate-400">${escapeHtml(n.mood)}</span>` : ''}
             </div>
-            <p class="font-semibold text-slate-200">${escapeHtml(n.title)}</p>
+            <p class="font-semibold text-slate-200">${escapeHtml(preview)}${(n.text || '').length > 90 ? '&hellip;' : ''}</p>
+            ${n.tags ? `<span class="text-[9px] text-amber-300/80 font-mono">${escapeHtml(n.tags)}</span>` : ''}
           `;
           fragment.appendChild(el);
         });
