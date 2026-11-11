@@ -2057,45 +2057,78 @@ html, body {
         opts = opts || {};
         if (!window.switchAppView) return;
 
-        /* Tasks: open the task's list, then scroll to and flash the exact card */
+        /* ---------- Tasks: switch kanban->list, open folder, scroll+highlight ---------- */
         if (where === 'taskList') {
           if (opts.listId) window.appState.activeListId = opts.listId;
+          if (window.appState.taskViewMode === 'kanban' && typeof window.setTaskViewMode === 'function') {
+            window.setTaskViewMode('list');
+          }
           window.switchAppView('tasks');
           if (opts.taskId) {
             setTimeout(() => {
               const el = document.querySelector('[data-task-id="' + escapeHtmlAttr(opts.taskId) + '"]');
               if (el) { window.scrollToElement(el); flashTarget(el, 'ring-purple-400'); }
-            }, 350);
+            }, 500);
           }
           return;
         }
 
-        /* Finance: show-all period, filter to the transaction's category, then flash the exact row */
+        /* ---------- Finance: keep ALL entries, switch month if needed, scroll+highlight ---------- */
         if (where === 'financeCategory') {
+          window.switchAppView('finance');
+          // clear category / method / type / search filters so ALL entries stay visible
+          const catSel = document.getElementById('fin-filter-category');
+          if (catSel) catSel.value = 'ALL';
+          const methSel = document.getElementById('fin-filter-method');
+          if (methSel) methSel.value = 'ALL';
+          const typeSel = document.getElementById('fin-filter-type');
+          if (typeSel) typeSel.value = 'ALL';
+          const searchInp = document.getElementById('fin-filter-search');
+          if (searchInp) searchInp.value = '';
           window.appState.financePeriod = 'all';
           document.querySelectorAll('.fin-p-btn').forEach(b => { b.className = 'fin-p-btn text-slate-400 hover:text-white px-2.5 py-1 rounded-lg transition touch-manipulation'; });
           const allBtn = document.getElementById('fin-p-all');
           if (allBtn) allBtn.className = 'fin-p-btn bg-emerald-600 text-white font-bold px-2.5 py-1 rounded-lg transition touch-manipulation';
-          const sel = document.getElementById('fin-filter-category');
-          if (sel) sel.value = opts.category || 'ALL';
-          window.switchAppView('finance');
+          // if the entry is from a different month than currently viewed, switch to that month
+          if (opts.date) {
+            const entryYm = String(opts.date).slice(0, 7);
+            if (entryYm !== currentFinanceViewMonth()) {
+              const me = monthRange(opts.date);
+              const sInp = document.getElementById('fin-date-start');
+              const eInp = document.getElementById('fin-date-end');
+              if (sInp) sInp.value = me.start;
+              if (eInp) eInp.value = me.end;
+            }
+          }
+          window.renderFinanceList();
           if (opts.id) {
             setTimeout(() => {
               const el = document.querySelector('[data-trans-id="' + escapeHtmlAttr(opts.id) + '"]');
               if (el) { window.scrollToElement(el); flashTarget(el, 'ring-teal-400'); }
-            }, 350);
+            }, 500);
           }
           return;
         }
 
-        /* Logbook: open the logbook and scroll to / flash the exact entry card */
+        /* ---------- Logbook: show related week, scroll+highlight ---------- */
         if (where === 'logbook') {
           window.switchAppView('logbook');
-          if (opts.entryId) {
+          if (opts.entryId && opts.date) {
+            const wk = weekRange(opts.date);
+            window.logbookActiveTimeFilter = 'WEEK_SPECIFIC';
+            window.logbookActiveWeekStart = wk.start;
+            window.logbookActiveWeekEnd = wk.end;
+            window.logbookActiveMonthFilter = '';
+            window.renderLogbookTimeline(true);
             setTimeout(() => {
               const el = document.querySelector('[data-entry-id="' + escapeHtmlAttr(opts.entryId) + '"]');
               if (el) { window.scrollToElement(el); flashTarget(el, 'ring-amber-400'); }
-            }, 400);
+            }, 500);
+          } else if (opts.entryId) {
+            setTimeout(() => {
+              const el = document.querySelector('[data-entry-id="' + escapeHtmlAttr(opts.entryId) + '"]');
+              if (el) { window.scrollToElement(el); flashTarget(el, 'ring-amber-400'); }
+            }, 500);
           }
           return;
         }
@@ -2104,6 +2137,41 @@ html, body {
         if (typeof where === 'string') window.switchAppView(where);
       }
     };
+
+    /* current month (YYYY-MM) being viewed in finance */
+    function currentFinanceViewMonth() {
+      const s = document.getElementById('fin-date-start')?.value || '';
+      const e = document.getElementById('fin-date-end')?.value || '';
+      if (s) return s.slice(0, 7);
+      if (e) return e.slice(0, 7);
+      if (window.appState?.financePeriod === 'year') return String(new Date().getFullYear());
+      if (window.appState?.financePeriod === 'month') {
+        const d = new Date();
+        return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0');
+      }
+      const d = new Date();
+      return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0');
+    }
+
+    /* {start, end} ISO dates for the month containing dateStr */
+    function monthRange(dateStr) {
+      const d = new Date(dateStr + 'T00:00:00');
+      const y = d.getFullYear(), m = d.getMonth();
+      const start = y + '-' + String(m + 1).padStart(2, '0') + '-01';
+      const last = new Date(y, m + 1, 0).getDate();
+      const end = y + '-' + String(m + 1).padStart(2, '0') + '-' + String(last).padStart(2, '0');
+      return { start, end };
+    }
+
+    /* {start, end} ISO dates for the Mon-Sun week containing dateStr */
+    function weekRange(dateStr) {
+      const d = new Date(dateStr + 'T00:00:00');
+      const day = d.getDay(); // 0 = Sun
+      const monday = new Date(d); monday.setDate(d.getDate() - (day === 0 ? 6 : day - 1));
+      const sunday = new Date(monday); sunday.setDate(monday.getDate() + 6);
+      const iso = x => x.getFullYear() + '-' + String(x.getMonth() + 1).padStart(2, '0') + '-' + String(x.getDate()).padStart(2, '0');
+      return { start: iso(monday), end: iso(sunday) };
+    }
 
     /* Scroll any element into view within its scrollable ancestor */
     window.scrollToElement = function(el) {
@@ -2130,7 +2198,7 @@ html, body {
 
     function escapeHtmlAttr(str) { return String(str || '').replace(/"/g, '&quot;'); }
 
-    /* Flash a target element with a colored ring for one second, then fade */
+    /* Flash a target element with a colored ring for one second, then fade (temporary) */
     function flashTarget(el, ringCls) {
       if (!el) return;
       el.classList.add(ringCls);
@@ -2606,12 +2674,12 @@ html, body {
             return;
           }
           if (r.kind === 'finance') {
-            if (window.PrOSLinker) window.PrOSLinker.jumpTo('financeCategory', { category: r.category, id: r.id });
+            if (window.PrOSLinker) window.PrOSLinker.jumpTo('financeCategory', { category: r.category, id: r.id, date: r.date });
             else window.switchTab('finance');
             return;
           }
           if (r.kind === 'logbook') {
-            if (window.PrOSLinker) window.PrOSLinker.jumpTo('logbook', { entryId: r.id });
+            if (window.PrOSLinker) window.PrOSLinker.jumpTo('logbook', { entryId: r.id, date: r.date });
             else window.switchTab('logbook');
           }
         };
@@ -20827,6 +20895,11 @@ html, body {
         entries = entries.filter(e => e.date === logbookActiveMonthFilter);
       } else if (logbookActiveTimeFilter === 'MONTH_SPECIFIC' && logbookActiveMonthFilter) {
         entries = entries.filter(e => (e.date || '').startsWith(logbookActiveMonthFilter));
+      } else if (logbookActiveTimeFilter === 'WEEK_SPECIFIC' && logbookActiveWeekStart && logbookActiveWeekEnd) {
+        entries = entries.filter(e => {
+          const ed = e.date || e.createdAt || '';
+          return ed >= logbookActiveWeekStart && ed <= logbookActiveWeekEnd;
+        });
       }
 
       if (typeFilter !== 'ALL') {
