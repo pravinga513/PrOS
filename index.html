@@ -2420,13 +2420,20 @@ html, body {
               : 'border-slate-800 bg-slate-950 hover:border-slate-700 hover:bg-slate-900/50'
         }`;
 
-        // scannable count chips (tiny colored numbers; legend maps the colors)
-        let chipsHtml = '<div class="flex items-center gap-0.5 justify-end flex-wrap overflow-hidden">';
-        if (evCount) chipsHtml += `<span title="${evCount} Events / Birthdays" class="text-[8px] leading-none px-1 py-0.5 rounded bg-pink-500/20 text-pink-300 font-mono font-bold shrink-0">${evCount}</span>`;
-        if (tskCount) chipsHtml += `<span title="${tskCount} Tasks due" class="text-[8px] leading-none px-1 py-0.5 rounded bg-purple-500/15 text-purple-300 font-mono font-bold shrink-0">${tskCount}</span>`;
-        if (expCount) chipsHtml += `<span title="${expCount} Expenses" class="text-[8px] leading-none px-1 py-0.5 rounded bg-rose-500/20 text-rose-300 font-mono font-bold shrink-0">${expCount}</span>`;
-        if (incCount) chipsHtml += `<span title="${incCount} Income" class="text-[8px] leading-none px-1 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-mono font-bold shrink-0">${incCount}</span>`;
-        if (ntCount) chipsHtml += `<span title="Notes created" class="text-[8px] leading-none px-1 py-0.5 rounded bg-amber-500/20 text-amber-300 font-mono font-bold shrink-0">N</span>`;
+        // scannable count chips: single tight row, max 3 shown (+n for the rest)
+        const chipDefs = [];
+        if (evCount) chipDefs.push([evCount, 'bg-pink-500/20 text-pink-300', 'Events / Birthdays']);
+        if (tskCount) chipDefs.push([tskCount, 'bg-purple-500/15 text-purple-300', 'Tasks due']);
+        if (expCount) chipDefs.push([expCount, 'bg-rose-500/20 text-rose-300', 'Expenses']);
+        if (incCount) chipDefs.push([incCount, 'bg-emerald-500/20 text-emerald-300', 'Income']);
+        if (ntCount) chipDefs.push(['N', 'bg-amber-500/20 text-amber-300', 'Notes created']);
+        let chipsHtml = '<div class="flex items-center gap-0.5 justify-end whitespace-nowrap">';
+        const shownDefs = chipDefs.slice(0, 3);
+        const hiddenN = chipDefs.length - shownDefs.length;
+        shownDefs.forEach(([n, cls, label]) => {
+          chipsHtml += `<span title="${n} ${label}" class="text-[7px] leading-none px-0.5 py-0.5 rounded font-mono font-bold shrink-0 min-w-[9px] text-center ${cls}">${n}</span>`;
+        });
+        if (hiddenN > 0) chipsHtml += `<span title="${hiddenN} more types" class="text-[7px] leading-none px-0.5 py-0.5 rounded bg-slate-800 text-slate-400 font-mono font-bold shrink-0 min-w-[9px] text-center">+${hiddenN}</span>`;
         chipsHtml += '</div>';
 
         cell.innerHTML = `
