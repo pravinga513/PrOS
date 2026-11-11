@@ -620,8 +620,9 @@ html, body {
             <span id="clock-text">00:00:00 AM</span>
           </div>
 
-          <button onclick="openCommandPalette()" class="p-2 bg-slate-900 hover:bg-slate-800 border border-slate-800 rounded-xl text-slate-300 transition" title="Command Palette">
-            <i data-lucide="command" class="w-4 h-4 text-sky-400"></i>
+          <button onclick="switchAppView('calendar'); try { document.getElementById('calGoToday') && calGoToday(); } catch (e) {}" class="p-2 bg-slate-900 hover:bg-slate-800 border border-slate-800 rounded-xl text-slate-300 transition relative" title="Calendar — jump from any module">
+            <i data-lucide="calendar" class="w-4 h-4 text-cyan-400"></i>
+            <span id="header-cal-dot" class="hidden absolute top-1 right-1 w-1.5 h-1.5 rounded-full bg-pink-400"></span>
           </button>
         </div>
       </header>
@@ -2290,9 +2291,24 @@ html, body {
     };
 
     /* HIGH-PERFORMANCE PRE-INDEXED CALENDAR RENDER ENGINE */
+    /* Header calendar dot: pink when today has anything scheduled */
+    function updateHeaderCalDot() {
+      const dot = document.getElementById('header-cal-dot');
+      if (!dot) return;
+      const todayStr = getTodayDateStr();
+      const hasEv = (window.appState.calendarEvents || []).some(ev => eventMatchesDate(ev, todayStr));
+      const hasTask = (window.appState.tasks || []).some(t => t.dueDate === todayStr && !t.completed);
+      const hasFin = (window.appState.transactions || []).some(tr => tr.date === todayStr);
+      dot.classList.toggle('hidden', !(hasEv || hasTask || hasFin));
+    }
+    // dot at boot (after cache load) + whenever renderCalendarView runs
+    setTimeout(updateHeaderCalDot, 2000);
+    setTimeout(updateHeaderCalDot, 4000);
+
     window.renderCalendarView = function() {
       ensureCalendarEventsInitialized();
       window.renderUpcomingCelebrations();
+      updateHeaderCalDot();
 
       const grid = document.getElementById('calendar-days-grid');
       const quickMonthSelect = document.getElementById('cal-quick-month-select');
