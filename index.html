@@ -861,7 +861,7 @@ html, body {
             <option value="Evening">🌙 Night</option>
             <option value="Anytime">⚡ Anytime</option>
           </select>
-          <button type="button" onclick="window.switchTab('habits')" class="text-[11px] text-red-400 hover:underline font-bold">Matrix &rarr;</button>
+          <button type="button" onclick="window.switchTab('habits')" class="inline-flex items-center min-h-[28px] px-1 text-[11px] text-red-400 hover:underline font-bold">Matrix &rarr;</button>
         </div>
       </div>
 
@@ -902,11 +902,11 @@ html, body {
     <!-- Quick Guided Prompt Starters -->
     <div class="flex items-center gap-1.5 overflow-x-auto pb-0.5 text-[11px] scrollbar-none">
       <span class="text-slate-500 font-bold uppercase text-[9px] shrink-0 mr-0.5">Inspire:</span>
-      <button type="button" onclick="injectPromptTemplate('🏆 Biggest Win:')" class="px-2.5 py-1 rounded-xl bg-slate-950 hover:bg-slate-900 border border-slate-800 hover:border-emerald-500/40 text-slate-300 hover:text-emerald-300 transition shrink-0 active:scale-95">🏆 Biggest Win</button>
-      <button type="button" onclick="injectPromptTemplate('💡 Key Learning:')" class="px-2.5 py-1 rounded-xl bg-slate-950 hover:bg-slate-900 border border-slate-800 hover:border-emerald-500/40 text-slate-300 hover:text-emerald-300 transition shrink-0 active:scale-95">💡 Key Learning</button>
-      <button type="button" onclick="injectPromptTemplate('⚡ Challenge & Fix:')" class="px-2.5 py-1 rounded-xl bg-slate-950 hover:bg-slate-900 border border-slate-800 hover:border-emerald-500/40 text-slate-300 hover:text-emerald-300 transition shrink-0 active:scale-95">⚡ Challenge &amp; Fix</button>
-      <button type="button" onclick="injectPromptTemplate('✨ Grateful For:')" class="px-2.5 py-1 rounded-xl bg-slate-950 hover:bg-slate-900 border border-slate-800 hover:border-emerald-500/40 text-slate-300 hover:text-emerald-300 transition shrink-0 active:scale-95">✨ Gratitude</button>
-      <button type="button" onclick="injectPromptTemplate('🌙 Night Reflection:')" class="px-2.5 py-1 rounded-xl bg-slate-950 hover:bg-slate-900 border border-slate-800 hover:border-emerald-500/40 text-slate-300 hover:text-emerald-300 transition shrink-0 active:scale-95">🌙 Night Reflection</button>
+      <button type="button" onclick="injectPromptTemplate('🏆 Biggest Win:')" class="px-2.5 py-1.5 min-h-[30px] rounded-xl bg-slate-950 hover:bg-slate-900 border border-slate-800 hover:border-emerald-500/40 text-slate-300 hover:text-emerald-300 transition shrink-0 active:scale-95">🏆 Biggest Win</button>
+      <button type="button" onclick="injectPromptTemplate('💡 Key Learning:')" class="px-2.5 py-1.5 min-h-[30px] rounded-xl bg-slate-950 hover:bg-slate-900 border border-slate-800 hover:border-emerald-500/40 text-slate-300 hover:text-emerald-300 transition shrink-0 active:scale-95">💡 Key Learning</button>
+      <button type="button" onclick="injectPromptTemplate('⚡ Challenge & Fix:')" class="px-2.5 py-1.5 min-h-[30px] rounded-xl bg-slate-950 hover:bg-slate-900 border border-slate-800 hover:border-emerald-500/40 text-slate-300 hover:text-emerald-300 transition shrink-0 active:scale-95">⚡ Challenge &amp; Fix</button>
+      <button type="button" onclick="injectPromptTemplate('✨ Grateful For:')" class="px-2.5 py-1.5 min-h-[30px] rounded-xl bg-slate-950 hover:bg-slate-900 border border-slate-800 hover:border-emerald-500/40 text-slate-300 hover:text-emerald-300 transition shrink-0 active:scale-95">✨ Gratitude</button>
+      <button type="button" onclick="injectPromptTemplate('🌙 Night Reflection:')" class="px-2.5 py-1.5 min-h-[30px] rounded-xl bg-slate-950 hover:bg-slate-900 border border-slate-800 hover:border-emerald-500/40 text-slate-300 hover:text-emerald-300 transition shrink-0 active:scale-95">🌙 Night Reflection</button>
     </div>
 
     <!-- Capture Box Core -->
@@ -944,11 +944,11 @@ html, body {
         <div class="md:col-span-3 flex items-center gap-1.5 justify-start md:justify-center">
           <span class="text-slate-400 font-semibold text-xs shrink-0">Energy:</span>
           <div class="flex gap-1 items-center" id="dash-energy-rating-group">
-            <button type="button" onclick="selectEnergyLevel(1)" id="energy-star-1" class="text-base text-amber-400 opacity-100 transition transform hover:scale-125 active:scale-95 drop-shadow-[0_0_6px_rgba(251,191,36,0.5)]" title="1/5 Low Energy">⚡</button>
-            <button type="button" onclick="selectEnergyLevel(2)" id="energy-star-2" class="text-base text-amber-400 opacity-100 transition transform hover:scale-125 active:scale-95 drop-shadow-[0_0_6px_rgba(251,191,36,0.5)]" title="2/5 Moderate">⚡</button>
-            <button type="button" onclick="selectEnergyLevel(3)" id="energy-star-3" class="text-base text-amber-400 opacity-100 transition transform hover:scale-125 active:scale-95 drop-shadow-[0_0_6px_rgba(251,191,36,0.5)]" title="3/5 Normal">⚡</button>
-            <button type="button" onclick="selectEnergyLevel(4)" id="energy-star-4" class="text-base text-amber-400 opacity-100 transition transform hover:scale-125 active:scale-95 drop-shadow-[0_0_6px_rgba(251,191,36,0.5)]" title="4/5 High">⚡</button>
-            <button type="button" onclick="selectEnergyLevel(5)" id="energy-star-5" class="text-base text-slate-700 opacity-40 hover:opacity-80 transition transform hover:scale-125 active:scale-95" title="5/5 Peak State">⚡</button>
+            <button type="button" onclick="selectEnergyLevel(1)" id="energy-star-1" class="w-8 h-8 flex items-center justify-center text-base text-amber-400 opacity-100 transition transform hover:scale-125 active:scale-95 drop-shadow-[0_0_6px_rgba(251,191,36,0.5)]" title="1/5 Low Energy">⚡</button>
+            <button type="button" onclick="selectEnergyLevel(2)" id="energy-star-2" class="w-8 h-8 flex items-center justify-center text-base text-amber-400 opacity-100 transition transform hover:scale-125 active:scale-95 drop-shadow-[0_0_6px_rgba(251,191,36,0.5)]" title="2/5 Moderate">⚡</button>
+            <button type="button" onclick="selectEnergyLevel(3)" id="energy-star-3" class="w-8 h-8 flex items-center justify-center text-base text-amber-400 opacity-100 transition transform hover:scale-125 active:scale-95 drop-shadow-[0_0_6px_rgba(251,191,36,0.5)]" title="3/5 Normal">⚡</button>
+            <button type="button" onclick="selectEnergyLevel(4)" id="energy-star-4" class="w-8 h-8 flex items-center justify-center text-base text-amber-400 opacity-100 transition transform hover:scale-125 active:scale-95 drop-shadow-[0_0_6px_rgba(251,191,36,0.5)]" title="4/5 High">⚡</button>
+            <button type="button" onclick="selectEnergyLevel(5)" id="energy-star-5" class="w-8 h-8 flex items-center justify-center text-base text-slate-700 opacity-40 hover:opacity-80 transition transform hover:scale-125 active:scale-95" title="5/5 Peak State">⚡</button>
           </div>
         </div>
 
@@ -964,11 +964,11 @@ html, body {
 
       <!-- Main Diary Capture Area with Live Counter & Voice-to-Text -->
       <div class="relative">
-        <textarea id="dash-gratitude-input" oninput="updateDiaryLiveTelemetry()" rows="3" placeholder="What's happening right now? Document reflections, realizations, priority achievements, or thoughts in detail..." onkeypress="if(event.key==='Enter' && !event.shiftKey){event.preventDefault();saveDailyDiaryEntry();}" class="w-full bg-slate-900 border border-slate-800 rounded-xl p-3 pr-10 text-xs text-slate-100 outline-none focus:border-emerald-500 resize-none transition leading-relaxed placeholder:text-slate-500"></textarea>
+        <textarea id="dash-gratitude-input" oninput="updateDiaryLiveTelemetry()" rows="3" placeholder="What's happening right now? Document reflections, realizations, priority achievements, or thoughts in detail..." onkeypress="dashDiaryKeypress(event)" class="w-full bg-slate-900 border border-slate-800 rounded-xl p-3 pr-10 text-xs text-slate-100 outline-none focus:border-emerald-500 resize-none transition leading-relaxed placeholder:text-slate-500"></textarea>
         
         <!-- Voice Dictation Trigger -->
-        <button type="button" id="btn-voice-dictate-diary" onclick="toggleDiaryVoiceDictation()" class="absolute top-2.5 right-2.5 p-1.5 bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-emerald-400 rounded-lg transition active:scale-90" title="Speech to text">
-          <i data-lucide="mic" class="w-3.5 h-3.5"></i>
+        <button type="button" id="btn-voice-dictate-diary" onclick="toggleDiaryVoiceDictation()" class="absolute top-2 right-2 w-8 h-8 flex items-center justify-center bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-emerald-400 rounded-lg transition active:scale-90" title="Speech to text">
+          <i data-lucide="mic" class="w-4 h-4"></i>
         </button>
 
         <!-- Live Word/Character Telemetry Badge -->
@@ -1037,7 +1037,7 @@ html, body {
             <option value="TODAY">📅 Due Today</option>
             <option value="OVERDUE">⚠️ Overdue</option>
           </select>
-          <button type="button" onclick="window.switchTab('tasks')" class="text-xs text-purple-400 hover:underline font-bold">All Tasks &rarr;</button>
+          <button type="button" onclick="window.switchTab('tasks')" class="inline-flex items-center min-h-[28px] px-1 text-xs text-purple-400 hover:underline font-bold">All Tasks &rarr;</button>
         </div>
       </div>
 
@@ -1264,9 +1264,9 @@ html, body {
         const btn = document.getElementById(`energy-star-${i}`);
         if (btn) {
           if (i <= selectedEnergyLevel) {
-            btn.className = 'text-base text-amber-400 opacity-100 transition transform hover:scale-125 active:scale-95 drop-shadow-[0_0_6px_rgba(251,191,36,0.5)]';
+            btn.className = 'w-8 h-8 flex items-center justify-center text-base text-amber-400 opacity-100 transition transform hover:scale-125 active:scale-95 drop-shadow-[0_0_6px_rgba(251,191,36,0.5)]';
           } else {
-            btn.className = 'text-base text-slate-700 opacity-40 hover:opacity-80 transition transform hover:scale-125 active:scale-95';
+            btn.className = 'w-8 h-8 flex items-center justify-center text-base text-slate-700 opacity-40 hover:opacity-80 transition transform hover:scale-125 active:scale-95';
           }
         }
       }
@@ -1353,6 +1353,17 @@ html, body {
     };
 
     /* Save Diary Entry Locally and to Cloud */
+    /* Enter saves the entry on desktop; on touch devices Enter inserts a
+       newline (phone keyboards have no Shift key) */
+    window.dashDiaryKeypress = function(e) {
+      if (!e || e.key !== 'Enter' || e.shiftKey) return;
+      try {
+        if (window.matchMedia && window.matchMedia('(pointer: coarse)').matches) return;
+      } catch (err) { /* matchMedia unsupported - treat as desktop */ }
+      e.preventDefault();
+      window.saveDailyDiaryEntry();
+    };
+
     window.saveDailyDiaryEntry = function() {
       ensureLogbookInitialized();
 
@@ -1725,7 +1736,7 @@ html, body {
                 <span class="text-[9px] text-slate-500 font-mono">${escapeHtml(h.category || 'General')}</span>
               </div>
             </div>
-            <button type="button" onclick="toggleDashHabitToday('${h.id}')" class="px-3 py-1 rounded-lg text-[10px] font-bold transition shrink-0 active:scale-95 ${isDone ? 'bg-red-500 text-white shadow-sm' : 'bg-slate-900 border border-slate-800 text-slate-400 hover:text-white'}">
+            <button type="button" onclick="toggleDashHabitToday('${h.id}')" class="px-3 py-1.5 min-h-[32px] text-[11px] font-bold transition shrink-0 active:scale-95 ${isDone ? 'bg-red-500 text-white shadow-sm' : 'bg-slate-900 border border-slate-800 text-slate-400 hover:text-white'}">
               ${isDone ? '✓ Done' : 'Check-In'}
             </button>
           </div>`;
