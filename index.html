@@ -10229,26 +10229,36 @@ html, body {
 <section id="view-notes" class="app-view hidden space-y-3 sm:space-y-4 md:space-y-6 max-w-7xl mx-auto w-full pb-36 px-1 sm:px-0">
   
   <!-- Top Responsive Header Toolbar (z-10 layer stack) -->
-  <div class="glass-card rounded-2xl p-3 sm:p-4 md:p-5 border border-slate-800 flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3 relative z-10">
-    <div class="flex items-center justify-between w-full sm:w-auto min-w-0">
-      <div class="min-w-0">
-        <h2 class="text-base sm:text-lg md:text-xl font-extrabold text-white tracking-tight flex items-center gap-2 truncate">
-          <i data-lucide="book-open" class="w-5 h-5 app-accent-text shrink-0"></i>
-          <span class="truncate">Knowledge Base &amp; Wiki Network</span>
-        </h2>
-      </div>
+  <div class="glass-card rounded-2xl p-3 sm:p-4 md:p-5 border border-slate-800 flex flex-col lg:flex-row lg:justify-between lg:items-center gap-2.5 relative z-10">
 
-      <!-- Mobile View Switcher Toggle Button (List vs Editor) -->
-      <button type="button" onclick="toggleMobileNotesSidebar()" id="mobile-notes-toggle-btn" class="lg:hidden px-3 py-1.5 bg-slate-900 border border-slate-800 hover:border-slate-700 text-amber-400 font-bold text-xs rounded-xl flex items-center gap-1.5 shrink-0 transition touch-manipulation">
-        <i data-lucide="menu" class="w-4 h-4 shrink-0"></i>
-        <span id="mobile-toggle-btn-text">List View</span>
-      </button>
+    <!-- Identity row: title + view switcher + primary action -->
+    <div class="flex items-center justify-between gap-2 w-full lg:w-auto min-w-0">
+      <h2 class="text-sm sm:text-lg md:text-xl font-extrabold text-white tracking-tight flex items-center gap-2 min-w-0">
+        <i data-lucide="book-open" class="w-5 h-5 app-accent-text shrink-0"></i>
+        <span class="truncate sm:hidden">Knowledge Base</span>
+        <span class="hidden sm:inline truncate">Knowledge Base &amp; Wiki Network</span>
+      </h2>
+
+      <div class="flex items-center gap-2 shrink-0">
+        <!-- Mobile View Switcher Toggle Button (List vs Editor) -->
+        <button type="button" onclick="toggleMobileNotesSidebar()" id="mobile-notes-toggle-btn" title="Switch between Notes List and Editor" class="lg:hidden p-2 sm:px-3 sm:py-1.5 bg-slate-900 border border-slate-800 hover:border-slate-700 text-amber-400 font-bold text-xs rounded-xl flex items-center gap-1.5 shrink-0 transition touch-manipulation">
+          <i data-lucide="pencil-line" class="w-4 h-4 shrink-0"></i>
+          <span id="mobile-toggle-btn-text" class="hidden sm:inline">Note Editor</span>
+        </button>
+
+        <!-- Primary action (mobile placement) -->
+        <button type="button" onclick="createNewNote()" class="sm:hidden px-3 py-1.5 app-accent-bg text-slate-950 font-bold text-xs rounded-xl transition flex items-center gap-1.5 shadow-lg active:scale-95 touch-manipulation shrink-0">
+          <i data-lucide="plus" class="w-4 h-4 shrink-0"></i>
+          <span>New Note</span>
+        </button>
+      </div>
     </div>
 
-    <!-- Toolbar Action Buttons Grid -->
-    <div class="flex flex-wrap items-center gap-2 w-full sm:w-auto justify-stretch sm:justify-end text-xs">
+    <!-- Toolbar Action Strip: single scrollable row instead of wrapping -->
+    <div class="relative w-full lg:w-auto">
+      <div class="flex items-center gap-2 w-full lg:w-auto lg:justify-end text-xs overflow-x-auto pb-0.5">
       <!-- Insert Template Dropdown -->
-      <select id="note-template-select" onchange="applyNoteTemplate(this.value)" class="bg-slate-950 border border-slate-800 text-slate-300 rounded-xl px-3 py-2 text-xs outline-none focus:border-amber-500 transition font-medium flex-1 sm:flex-none">
+      <select id="note-template-select" onchange="applyNoteTemplate(this.value)" class="bg-slate-950 border border-slate-800 text-slate-300 rounded-xl px-3 py-2 text-xs outline-none focus:border-amber-500 transition font-medium shrink-0 w-[150px] sm:w-auto">
         <option value="">+ Insert Template...</option>
         <option value="vehicle">🚗 Vehicle Maintenance Log</option>
         <option value="meeting">📅 Meeting Notes &amp; Action Items</option>
@@ -10259,25 +10269,25 @@ html, body {
       </select>
 
       <!-- Interactive Table Builder -->
-      <button type="button" onclick="openInsertTableModal()" class="px-3 py-2 bg-slate-900 border border-slate-800 hover:border-slate-700 text-slate-300 font-semibold text-xs rounded-xl transition flex items-center gap-1.5 shadow-sm active:scale-95 touch-manipulation" title="Insert Interactive Table">
-        <i data-lucide="table" class="w-3.5 h-3.5 text-emerald-400 shrink-0"></i> <span class="hidden sm:inline">Table</span>
+      <button type="button" onclick="openInsertTableModal()" class="px-3 py-2 bg-slate-900 border border-slate-800 hover:border-slate-700 text-slate-300 font-semibold text-xs rounded-xl transition flex items-center gap-1.5 shadow-sm active:scale-95 touch-manipulation shrink-0" title="Insert Interactive Table">
+        <i data-lucide="table" class="w-3.5 h-3.5 text-emerald-400 shrink-0"></i> <span>Table</span>
       </button>
 
       <!-- Image Upload via ImgBB -->
-      <button type="button" onclick="openInsertImageModal()" class="px-3 py-2 bg-slate-900 border border-slate-800 hover:border-slate-700 text-slate-300 font-semibold text-xs rounded-xl transition flex items-center gap-1.5 shadow-sm active:scale-95 touch-manipulation" title="Upload / Attach Image (Fast ImgBB)">
-        <i data-lucide="image" class="w-3.5 h-3.5 text-amber-400 shrink-0"></i> <span class="hidden sm:inline">Image</span>
+      <button type="button" onclick="openInsertImageModal()" class="px-3 py-2 bg-slate-900 border border-slate-800 hover:border-slate-700 text-slate-300 font-semibold text-xs rounded-xl transition flex items-center gap-1.5 shadow-sm active:scale-95 touch-manipulation shrink-0" title="Upload / Attach Image (Fast ImgBB)">
+        <i data-lucide="image" class="w-3.5 h-3.5 text-amber-400 shrink-0"></i> <span>Image</span>
       </button>
 
       <!-- Zen Fullscreen Focus Mode -->
-      <button type="button" onclick="toggleZenFocusMode()" class="px-3 py-2 bg-slate-900 border border-slate-800 hover:border-slate-700 text-purple-400 font-semibold text-xs rounded-xl transition flex items-center gap-1.5 shadow-sm active:scale-95 touch-manipulation" title="Distraction-Free Zen Mode">
-        <i data-lucide="maximize-2" class="w-3.5 h-3.5 shrink-0"></i> <span class="hidden sm:inline">Zen Mode</span>
+      <button type="button" onclick="toggleZenFocusMode()" class="px-3 py-2 bg-slate-900 border border-slate-800 hover:border-slate-700 text-purple-400 font-semibold text-xs rounded-xl transition flex items-center gap-1.5 shadow-sm active:scale-95 touch-manipulation shrink-0" title="Distraction-Free Zen Mode">
+        <i data-lucide="maximize-2" class="w-3.5 h-3.5 shrink-0"></i> <span class="sm:hidden">Zen</span><span class="hidden sm:inline">Zen Mode</span>
       </button>
 
       <!-- Export & Actions Dropdown Menu -->
       <div class="relative inline-block text-left shrink-0" id="note-action-dropdown-wrapper">
         <button type="button" onclick="toggleNoteActionMenu(event)" class="px-3 py-2 bg-slate-900 border border-slate-800 hover:border-slate-700 text-slate-300 font-semibold rounded-xl transition flex items-center gap-1.5 shadow-sm active:scale-95 touch-manipulation">
           <i data-lucide="download" class="w-3.5 h-3.5 text-sky-400 shrink-0"></i>
-          <span class="hidden sm:inline">Export</span>
+          <span>Export</span>
           <i data-lucide="chevron-down" class="w-3 h-3 text-slate-500 shrink-0"></i>
         </button>
         <div id="note-action-dropdown" class="hidden absolute right-0 mt-2 w-52 bg-slate-900/95 border border-slate-800 rounded-xl shadow-2xl py-1.5 z-50 text-xs backdrop-blur-xl divide-y divide-slate-800/60">
@@ -10296,15 +10306,15 @@ html, body {
         </div>
       </div>
 
-      <button type="button" onclick="openCreateFolderModal()" class="px-3 py-2 bg-slate-900 border border-slate-800 hover:border-slate-700 text-amber-400 font-semibold text-xs rounded-xl transition flex items-center gap-1.5 shadow-sm active:scale-95 touch-manipulation shrink-0">
-        <i data-lucide="folder-plus" class="w-3.5 h-3.5 shrink-0"></i>
-        <span>Folder</span>
-      </button>
-
-      <button type="button" onclick="createNewNote()" class="px-4 py-2 app-accent-bg text-slate-950 font-bold text-xs rounded-xl transition flex items-center gap-1.5 shadow-lg active:scale-95 touch-manipulation shrink-0">
+      <!-- Primary action (desktop placement) -->
+      <button type="button" onclick="createNewNote()" class="hidden sm:flex px-4 py-2 app-accent-bg text-slate-950 font-bold text-xs rounded-xl transition items-center gap-1.5 shadow-lg active:scale-95 touch-manipulation shrink-0">
         <i data-lucide="plus" class="w-4 h-4 shrink-0"></i>
         <span>New Note</span>
       </button>
+      </div>
+
+      <!-- Scroll affordance for the action strip on narrow screens -->
+      <div class="pointer-events-none absolute inset-y-0 right-0 w-8 bg-gradient-to-l from-slate-950/95 to-transparent lg:hidden"></div>
     </div>
   </div>
 
@@ -10355,7 +10365,12 @@ html, body {
         <div class="space-y-1">
           <div class="flex justify-between items-center px-1">
             <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Note Folders</span>
-            <span id="note-folders-count" class="text-[10px] font-mono text-slate-500">0 folders</span>
+            <div class="flex items-center gap-1.5">
+              <span id="note-folders-count" class="text-[10px] font-mono text-slate-500">0 folders</span>
+              <button type="button" onclick="openCreateFolderModal()" class="p-1 rounded-lg bg-slate-950 border border-slate-800 hover:border-amber-500/40 text-amber-400 transition" title="New Note Folder">
+                <i data-lucide="folder-plus" class="w-3.5 h-3.5"></i>
+              </button>
+            </div>
           </div>
           <div id="note-folders-nav" class="space-y-1 max-h-36 overflow-y-auto pr-1">
             <!-- Folders rendered dynamically -->
@@ -10700,6 +10715,7 @@ html, body {
     let isZenModeActive = false;
     let voiceRecognitionInstance = null;
     let isVoiceDictating = false;
+    let hasInitMobileNotesLayout = false;
 
     const DEFAULT_IMGBB_API_KEY = "0abf983309932d2a2eeb289d53d7c55c";
 
@@ -10853,10 +10869,36 @@ html, body {
       window.renderNotesList();
     };
 
+    /* On phones the sidebar + editor stack into one very long page.
+       Open on the Notes List instead; the header toggle switches to the editor. */
+    window.initMobileNotesLayout = function() {
+      if (hasInitMobileNotesLayout) return;
+      if (window.innerWidth >= 1024) return;
+      const sidebar = document.getElementById('notes-sidebar-panel');
+      const editor = document.getElementById('notes-editor-panel');
+      if (!sidebar || !editor) return;
+      hasInitMobileNotesLayout = true;
+      sidebar.classList.remove('hidden');
+      editor.classList.add('hidden');
+      updateMobileNotesToggle(false);
+    };
+
+    function updateMobileNotesToggle(editorVisible) {
+      const btnText = document.getElementById('mobile-toggle-btn-text');
+      if (btnText) btnText.textContent = editorVisible ? 'Notes List' : 'Note Editor';
+      const btn = document.getElementById('mobile-notes-toggle-btn');
+      if (btn) {
+        const iconEl = btn.querySelector('[data-lucide]');
+        if (iconEl) {
+          iconEl.setAttribute('data-lucide', editorVisible ? 'list' : 'pencil-line');
+          refreshIconsScoped(btn);
+        }
+      }
+    }
+
     window.toggleMobileNotesSidebar = function() {
       const sidebar = document.getElementById('notes-sidebar-panel');
       const editor = document.getElementById('notes-editor-panel');
-      const btnText = document.getElementById('mobile-toggle-btn-text');
 
       if (!sidebar || !editor) return;
 
@@ -10864,11 +10906,11 @@ html, body {
       if (isSidebarHidden) {
         sidebar.classList.remove('hidden');
         editor.classList.add('hidden');
-        if (btnText) btnText.textContent = 'Note Editor';
+        updateMobileNotesToggle(false);
       } else {
         sidebar.classList.add('hidden');
         editor.classList.remove('hidden');
-        if (btnText) btnText.textContent = 'Notes List';
+        updateMobileNotesToggle(true);
       }
     };
 
@@ -11609,11 +11651,10 @@ html, body {
           if (window.innerWidth < 1024) {
             const sidebar = document.getElementById('notes-sidebar-panel');
             const editor = document.getElementById('notes-editor-panel');
-            const btnText = document.getElementById('mobile-toggle-btn-text');
             if (sidebar && editor) {
               sidebar.classList.add('hidden');
               editor.classList.remove('hidden');
-              if (btnText) btnText.textContent = 'Notes List';
+              updateMobileNotesToggle(true);
             }
           }
         };
@@ -11655,11 +11696,10 @@ html, body {
         if (window.innerWidth < 1024) {
           const sidebarPanel = document.getElementById('notes-sidebar-panel');
           const editorPanel = document.getElementById('notes-editor-panel');
-          const toggleText = document.getElementById('mobile-toggle-btn-text');
           if (sidebarPanel && editorPanel) {
             sidebarPanel.classList.add('hidden');
             editorPanel.classList.remove('hidden');
-            if (toggleText) toggleText.textContent = 'Notes List';
+            updateMobileNotesToggle(true);
           }
         }
 
@@ -19760,7 +19800,7 @@ html, body {
           case 'calendar': window.renderCalendarView?.(); break;
           case 'time': window.renderTimeTrackerView?.(); break;
           case 'logbook': window.renderLogbookTimeline?.(true); break;
-          case 'notes': window.renderNoteFoldersNav?.(); window.renderNotesList?.(); break;
+          case 'notes': window.initMobileNotesLayout?.(); window.renderNoteFoldersNav?.(); window.renderNotesList?.(); break;
           case 'habits':
             if (typeof window.renderHabitsView === 'function') window.renderHabitsView();
             else window.renderHabitsMatrix?.();
