@@ -6945,18 +6945,6 @@ html, body {
         <button type="button" onclick="setGoalStatusFilter('ARCHIVED')" id="goal-filter-archived" class="goal-pill-btn text-slate-400 hover:text-white px-2.5 py-1 rounded-lg transition touch-manipulation">Archive</button>
       </div>
 
-      <!-- Manage Custom Categories Modal Trigger -->
-      <button type="button" onclick="openManageGoalCategoriesModal()" class="px-3 py-2 bg-slate-900 border border-slate-800 hover:border-rose-500/40 text-rose-300 font-semibold rounded-xl transition flex items-center gap-1.5 shadow-sm active:scale-95 touch-manipulation shrink-0">
-        <i data-lucide="tag" class="w-3.5 h-3.5 text-rose-400 shrink-0"></i>
-        <span>Categories</span>
-      </button>
-
-      <!-- New Collection Button -->
-      <button type="button" onclick="openCreateGoalFolderModal()" class="px-3 py-2 bg-slate-900 border border-slate-800 hover:border-rose-500/40 text-slate-300 font-semibold rounded-xl transition flex items-center gap-1.5 shadow-sm active:scale-95 touch-manipulation shrink-0">
-        <i data-lucide="folder-plus" class="w-3.5 h-3.5 text-rose-400 shrink-0"></i>
-        <span>Folder</span>
-      </button>
-
       <!-- Desktop Create Goal Button -->
       <button type="button" onclick="openCreateGoalModal()" class="hidden sm:flex px-3.5 py-2 bg-rose-600 hover:bg-rose-500 font-bold text-xs text-white rounded-xl shadow-lg shadow-rose-600/20 transition items-center gap-1.5 active:scale-95 touch-manipulation shrink-0">
         <i data-lucide="plus-circle" class="w-4 h-4 shrink-0"></i>
@@ -6967,7 +6955,7 @@ html, body {
 
   <!-- KPI Overview Metrics -->
   <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3 md:gap-4">
-    <div class="glass-card p-3 sm:p-4 rounded-2xl border border-rose-500/20 bg-rose-500/[0.03] space-y-1 hover:border-rose-500/40 transition">
+    <div onclick="goalKpiJump('ALL')" class="glass-card p-3 sm:p-4 rounded-2xl border border-rose-500/20 bg-rose-500/[0.03] space-y-1 hover:border-rose-500/40 transition cursor-pointer active:scale-[0.98]">
       <div class="flex justify-between items-center text-xs font-bold text-slate-400">
         <span class="uppercase tracking-wider text-[9px]">Active Targets</span>
         <div class="p-1 bg-rose-500/10 text-rose-400 rounded-lg shrink-0">
@@ -6978,7 +6966,7 @@ html, body {
       <p id="goal-stat-total-sub" class="text-[10px] text-slate-500 font-mono">0 Collections active</p>
     </div>
 
-    <div class="glass-card p-3 sm:p-4 rounded-2xl border border-rose-500/20 bg-rose-500/[0.03] space-y-1 hover:border-rose-500/40 transition">
+    <div onclick="scrollToGoalsCards()" class="glass-card p-3 sm:p-4 rounded-2xl border border-rose-500/20 bg-rose-500/[0.03] space-y-1 hover:border-rose-500/40 transition cursor-pointer active:scale-[0.98]">
       <div class="flex justify-between items-center text-xs font-bold text-slate-400">
         <span class="uppercase tracking-wider text-[9px]">Avg OKR Velocity</span>
         <div class="p-1 bg-rose-500/10 text-rose-300 rounded-lg shrink-0">
@@ -6989,7 +6977,7 @@ html, body {
       <p class="text-[10px] text-slate-500 font-mono">Overall OKR progress</p>
     </div>
 
-    <div class="glass-card p-3 sm:p-4 rounded-2xl border border-rose-500/20 bg-rose-500/[0.03] space-y-1 hover:border-rose-500/40 transition">
+    <div onclick="goalKpiJump('COMPLETED')" class="glass-card p-3 sm:p-4 rounded-2xl border border-rose-500/20 bg-rose-500/[0.03] space-y-1 hover:border-rose-500/40 transition cursor-pointer active:scale-[0.98]">
       <div class="flex justify-between items-center text-xs font-bold text-slate-400">
         <span class="uppercase tracking-wider text-[9px]">Completed</span>
         <div class="p-1 bg-rose-500/10 text-rose-400 rounded-lg shrink-0">
@@ -7000,7 +6988,7 @@ html, body {
       <p class="text-[10px] text-slate-500 font-mono">Targets achieved</p>
     </div>
 
-    <div class="glass-card p-3 sm:p-4 rounded-2xl border border-rose-500/20 bg-rose-500/[0.03] space-y-1 hover:border-amber-500/40 transition">
+    <div onclick="goalKpiJump('URGENT')" class="glass-card p-3 sm:p-4 rounded-2xl border border-rose-500/20 bg-rose-500/[0.03] space-y-1 hover:border-amber-500/40 transition cursor-pointer active:scale-[0.98]">
       <div class="flex justify-between items-center text-xs font-bold text-slate-400">
         <span class="uppercase tracking-wider text-[9px]">Near Deadline</span>
         <div class="p-1 bg-amber-500/10 text-amber-400 rounded-lg shrink-0">
@@ -7028,9 +7016,6 @@ html, body {
         <button type="button" onclick="openRadarFilterModal()" class="text-[11px] text-rose-300 hover:underline font-bold flex items-center gap-1">
           <i data-lucide="sliders-horizontal" class="w-3.5 h-3.5 text-rose-400"></i> Select Cards (<span id="radar-pinned-count">0</span>)
         </button>
-        <button type="button" onclick="openManageGoalCategoriesModal()" class="text-[11px] text-rose-400 hover:underline font-bold">
-          + Categories
-        </button>
       </div>
     </div>
 
@@ -7052,14 +7037,14 @@ html, body {
       <div class="grid grid-cols-2 gap-2 text-xs">
         <div>
           <label class="text-[10px] text-slate-400 font-semibold block mb-1">Filter Category</label>
-          <select id="goal-category-filter" onchange="renderGoalsView()" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2 text-[11px] text-slate-200 outline-none focus:border-rose-400 transition font-medium truncate">
+          <select id="goal-category-filter" onchange="onGoalSidebarChange()" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2 text-[11px] text-slate-200 outline-none focus:border-rose-400 transition font-medium truncate">
             <!-- Dynamically populated from custom categories -->
           </select>
         </div>
 
         <div>
           <label class="text-[10px] text-slate-400 font-semibold block mb-1">Sort By</label>
-          <select id="goal-sort-by" onchange="renderGoalsView()" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2 text-[11px] text-slate-200 outline-none focus:border-rose-400 transition font-medium truncate">
+          <select id="goal-sort-by" onchange="onGoalSidebarChange()" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2 text-[11px] text-slate-200 outline-none focus:border-rose-400 transition font-medium truncate">
             <option value="DATE">Target Date</option>
             <option value="PROGRESS_DESC">Highest Progress</option>
             <option value="PROGRESS_ASC">Lowest Progress</option>
@@ -7072,7 +7057,12 @@ html, body {
       <div class="space-y-1.5 border-t border-slate-800/80 pt-3">
         <div class="flex justify-between items-center px-1">
           <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Goal Collections</span>
-          <span id="goal-folders-count" class="text-[10px] font-mono text-slate-500">0 active</span>
+          <div class="flex items-center gap-1.5">
+            <span id="goal-folders-count" class="text-[10px] font-mono text-slate-500">0 active</span>
+            <button type="button" onclick="openCreateGoalFolderModal()" class="p-1 rounded-lg bg-slate-900 border border-slate-800 hover:border-rose-500/40 text-rose-400 hover:text-rose-300 transition" title="New Collection">
+              <i data-lucide="folder-plus" class="w-3.5 h-3.5"></i>
+            </button>
+          </div>
         </div>
         <div id="goal-folders-nav" class="space-y-1 max-h-64 lg:max-h-[500px] overflow-y-auto pr-0.5">
           <!-- Dynamic goal folders -->
@@ -7280,6 +7270,12 @@ html, body {
         <div class="flex gap-2 pt-2 border-t border-slate-800">
           <button type="button" onclick="selectAllRadarCategories(true)" class="flex-1 py-1.5 bg-slate-800 text-slate-300 rounded-xl text-[11px] font-semibold hover:bg-slate-700 transition">Select All</button>
           <button type="button" onclick="selectAllRadarCategories(false)" class="flex-1 py-1.5 bg-slate-800 text-slate-300 rounded-xl text-[11px] font-semibold hover:bg-slate-700 transition">Clear All</button>
+        </div>
+
+        <div class="pt-1 text-center">
+          <button type="button" onclick="openManageGoalCategoriesModal()" class="text-[11px] text-rose-400 hover:underline font-bold">
+            + New Category
+          </button>
         </div>
       </div>
     </div>
@@ -7975,6 +7971,46 @@ html, body {
     };
 
     /* Filter Controls */
+    window.scrollToGoalsCards = function() {
+      const el = document.getElementById('goals-main-workspace');
+      if (!el) return;
+      let node = el.parentElement;
+      while (node) {
+        const style = window.getComputedStyle(node);
+        const canScroll = /(auto|scroll)/.test(style.overflowY) && node.scrollHeight > node.clientHeight;
+        if (canScroll) {
+          const top = Math.max(0, el.getBoundingClientRect().top - node.getBoundingClientRect().top + node.scrollTop - 70);
+          const startTop = node.scrollTop;
+          node.scrollTo({ top, behavior: 'smooth' });
+          setTimeout(() => {
+            if (Math.abs(node.scrollTop - top) > 4 && Math.abs(node.scrollTop - startTop) < 2) {
+              node.scrollTop = top;
+            }
+          }, 350);
+          return;
+        }
+        node = node.parentElement;
+      }
+      const winTop = Math.max(0, el.getBoundingClientRect().top + window.scrollY - 70);
+      const winStart = window.scrollY;
+      window.scrollTo({ top: winTop, behavior: 'smooth' });
+      setTimeout(() => {
+        if (Math.abs(window.scrollY - winTop) > 4 && Math.abs(window.scrollY - winStart) < 2) {
+          window.scrollY = winTop;
+        }
+      }, 350);
+    };
+
+    window.goalKpiJump = function(filterKey) {
+      if (filterKey) window.setGoalStatusFilter(filterKey);
+      else window.renderGoalsView();
+    };
+
+    window.onGoalSidebarChange = function() {
+      window.renderGoalsView();
+      window.scrollToGoalsCards();
+    };
+
     window.setGoalStatusFilter = function(filterKey) {
       triggerHaptic();
       if (!window.appState) window.appState = {};
@@ -7990,6 +8026,7 @@ html, body {
       }
 
       window.renderGoalsView();
+      window.scrollToGoalsCards();
     };
 
     window.searchGoals = function(query) {
@@ -8000,6 +8037,7 @@ html, body {
         else clearBtn.classList.add('hidden');
       }
       window.renderGoalsView();
+      if (goalSearchQuery) window.scrollToGoalsCards();
     };
 
     window.clearGoalSearchQuery = function() {
@@ -8162,6 +8200,8 @@ html, body {
 
       if (statusFilter === 'ARCHIVED') {
         goals = goals.filter(g => !!g.isArchived);
+      } else if (statusFilter === 'COMPLETED') {
+        goals = goals.filter(g => !g.isArchived && (g.progress || 0) >= 100);
       } else {
         goals = goals.filter(g => !g.isArchived);
         if (statusFilter === 'ACTIVE') {
