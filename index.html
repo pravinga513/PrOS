@@ -666,22 +666,24 @@ html, body {
 <section id="view-dashboard" class="app-view space-y-4 md:space-y-6 max-w-7xl mx-auto w-full pb-36 px-1 sm:px-0">
 
   <!-- Header Banner & Period Switcher -->
-  <div class="glass-card rounded-2xl p-4 md:p-5 border border-slate-800 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 bg-slate-900/60 backdrop-blur-xl">
-    <div>
-      <div class="flex items-center gap-2 flex-wrap">
-        <h2 id="dash-greeting-text" class="text-lg md:text-xl font-extrabold text-white tracking-tight">
+  <div class="glass-card rounded-2xl p-4 md:p-5 border border-slate-800 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-3 bg-slate-900/60 backdrop-blur-xl">
+    <div class="min-w-0 flex-1">
+      <div class="flex items-center justify-between gap-3">
+        <h2 id="dash-greeting-text" class="text-lg md:text-xl font-extrabold text-white tracking-tight truncate">
           Good Day, Commander
         </h2>
-        <span class="text-[10px] md:text-xs px-2.5 py-0.5 rounded-full bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 font-semibold font-mono">
-          Executive Hub
-        </span>
-        <span id="dash-live-clock" class="text-[10px] md:text-xs px-2.5 py-0.5 rounded-full bg-slate-950 text-slate-300 border border-slate-800 font-mono font-bold">
+        <span id="dash-live-clock" class="shrink-0 text-xs md:text-sm px-2.5 py-1 rounded-lg bg-slate-950 text-slate-200 border border-slate-800 font-mono font-bold">
           00:00:00
         </span>
       </div>
-      <p id="dash-date-subtitle" class="text-xs text-slate-400 mt-0.5 font-mono">
-        Loading schedule &amp; metrics...
-      </p>
+      <div class="flex items-center gap-2 mt-1.5 flex-wrap">
+        <span class="text-[10px] md:text-xs px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 font-semibold font-mono">
+          Executive Hub
+        </span>
+        <p id="dash-date-subtitle" class="text-[11px] text-slate-400 font-mono truncate">
+          Loading schedule &amp; metrics...
+        </p>
+      </div>
     </div>
 
     <!-- Period Filter Bar & Fast Refresh -->
@@ -821,21 +823,21 @@ html, body {
     <!-- Left: Schedule & Celebrations Radar -->
     <div class="lg:col-span-7 glass-card rounded-2xl p-4 space-y-3 border border-slate-800 flex flex-col justify-between bg-slate-900/40">
       <div class="flex flex-wrap justify-between items-center border-b border-slate-800 pb-2.5 gap-2">
-        <div class="flex items-center gap-2">
-          <h3 class="text-xs font-extrabold text-cyan-300 uppercase tracking-wider flex items-center gap-2">
-            <i data-lucide="calendar" class="w-4 h-4 text-cyan-400"></i> Events &amp; Celebrations Radar
+        <div class="flex items-center gap-2 min-w-0">
+          <h3 class="min-w-0 text-xs font-extrabold text-cyan-300 uppercase tracking-wider flex items-center gap-2 truncate">
+            <i data-lucide="calendar" class="w-4 h-4 text-cyan-400 shrink-0"></i> <span class="truncate">Events &amp; Celebrations</span>
           </h3>
           <span id="dash-radar-count-badge" class="shrink-0 whitespace-nowrap text-[10px] px-2 py-0.5 rounded-full bg-slate-800 text-slate-400 font-mono">0 events</span>
         </div>
-        
-        <div class="flex items-center gap-2">
-          <select id="dash-radar-filter" onchange="renderTodayAgendaRadar()" class="bg-slate-950 border border-slate-800 text-slate-300 rounded-lg px-2 py-1 text-[11px] outline-none focus:border-cyan-400 font-medium">
+
+        <div class="flex items-center gap-2 w-full sm:w-auto">
+          <select id="dash-radar-filter" onchange="renderTodayAgendaRadar()" class="flex-1 sm:flex-none min-w-0 bg-slate-950 border border-slate-800 text-slate-300 rounded-lg px-2 py-1 text-[11px] outline-none focus:border-cyan-400 font-medium">
             <option value="TODAY">📅 Today's Agenda</option>
             <option value="WEEK" selected>⚡ Next 7 Days</option>
             <option value="BIRTHDAYS">🎂 Birthdays &amp; Anniversaries</option>
             <option value="ALL">All Events</option>
           </select>
-          <button type="button" onclick="window.switchTab('calendar')" class="text-[11px] text-cyan-400 hover:underline font-bold">Open Calendar &rarr;</button>
+          <button type="button" onclick="window.switchTab('calendar')" class="inline-flex items-center min-h-[28px] px-1 shrink-0 text-[11px] text-cyan-400 hover:underline font-bold">Open Calendar &rarr;</button>
         </div>
       </div>
 
@@ -847,21 +849,21 @@ html, body {
     <!-- Right: Circadian Habits Check-In with Slot Filters -->
     <div class="lg:col-span-5 glass-card rounded-2xl p-4 space-y-3 border border-slate-800 flex flex-col justify-between bg-slate-900/40">
       <div class="flex flex-wrap justify-between items-center border-b border-slate-800 pb-2.5 gap-2">
-        <div class="flex items-center gap-2">
-          <h3 class="text-xs font-extrabold text-red-300 uppercase tracking-wider flex items-center gap-2">
-            <i data-lucide="flame" class="w-4 h-4 text-red-400"></i> Habits Quick Check-In
+        <div class="flex items-center gap-2 min-w-0">
+          <h3 class="min-w-0 text-xs font-extrabold text-red-300 uppercase tracking-wider flex items-center gap-2 truncate">
+            <i data-lucide="flame" class="w-4 h-4 text-red-400 shrink-0"></i> <span class="truncate">Habits Check-In</span>
           </h3>
         </div>
-        
-        <div class="flex items-center gap-2">
-          <select id="dash-habit-slot-filter" onchange="renderTodayRoutinesStrip()" class="bg-slate-950 border border-slate-800 text-slate-300 rounded-lg px-2 py-1 text-[11px] outline-none focus:border-red-400 font-medium">
+
+        <div class="flex items-center gap-2 w-full sm:w-auto">
+          <select id="dash-habit-slot-filter" onchange="renderTodayRoutinesStrip()" class="flex-1 sm:flex-none min-w-0 bg-slate-950 border border-slate-800 text-slate-300 rounded-lg px-2 py-1 text-[11px] outline-none focus:border-red-400 font-medium">
             <option value="ALL" selected>All Flow</option>
             <option value="Morning">🌅 Morning</option>
             <option value="Afternoon">☀️ Midday</option>
             <option value="Evening">🌙 Night</option>
             <option value="Anytime">⚡ Anytime</option>
           </select>
-          <button type="button" onclick="window.switchTab('habits')" class="inline-flex items-center min-h-[28px] px-1 text-[11px] text-red-400 hover:underline font-bold">Matrix &rarr;</button>
+          <button type="button" onclick="window.switchTab('habits')" class="inline-flex items-center min-h-[28px] px-1 shrink-0 text-[11px] text-red-400 hover:underline font-bold">Matrix &rarr;</button>
         </div>
       </div>
 
@@ -872,100 +874,52 @@ html, body {
   </div>
 
   <!-- PERSISTENT INSTANT EXPERIENCE & DIARY CAPTURE STUDIO -->
-  <div class="glass-card rounded-2xl p-4 sm:p-5 space-y-3.5 border border-emerald-500/20 bg-emerald-500/[0.02]">
-    
-    <div class="flex flex-wrap justify-between items-center border-b border-slate-800/80 pb-3 gap-2">
-      <div class="flex items-center gap-2.5">
-        <div class="p-2 rounded-xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+  <div class="glass-card rounded-2xl p-4 sm:p-5 space-y-3 border border-emerald-500/20 bg-emerald-500/[0.02]">
+
+    <div class="flex flex-wrap justify-between items-center gap-2">
+      <div class="flex items-center gap-2.5 min-w-0">
+        <div class="p-2 rounded-xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 shrink-0">
           <i data-lucide="pen-tool" class="w-4 h-4"></i>
         </div>
-        <div>
-          <h3 class="text-xs font-extrabold text-emerald-300 uppercase tracking-wider flex items-center gap-1.5">
-            <span>Instant Experience &amp; Diary Capture</span>
-            <span class="text-[9px] px-1.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 font-mono font-bold">Memory Engine</span>
+        <div class="min-w-0">
+          <h3 class="text-xs font-extrabold text-emerald-300 uppercase tracking-wider">
+            <span class="sm:hidden">Quick Log</span>
+            <span class="hidden sm:inline">Instant Experience &amp; Diary Capture</span>
           </h3>
-          <p class="text-[10px] text-slate-400 font-mono">Date-wise timeline capture &bull; Local &amp; Online synced</p>
+          <p class="hidden sm:block text-[10px] text-slate-400 font-mono">Date-wise timeline capture &bull; Local &amp; Online synced</p>
         </div>
       </div>
-      
-      <div class="flex items-center gap-2">
-        <span id="dash-today-logged-counter" class="text-[10px] font-mono px-2.5 py-1 rounded-xl bg-slate-950 text-emerald-400 border border-slate-800">
+
+      <div class="flex items-center gap-2 shrink-0">
+        <span id="dash-today-logged-counter" class="text-[10px] font-mono px-2.5 py-1 rounded-xl bg-slate-950 text-emerald-400 border border-slate-800 whitespace-nowrap">
           0 logged today
         </span>
         <button type="button" onclick="navigateToLogbookSection()" class="px-3 py-1.5 bg-emerald-950/40 hover:bg-emerald-600/30 text-emerald-300 text-xs font-bold rounded-xl border border-emerald-500/30 transition flex items-center gap-1.5 active:scale-95 shadow-sm" title="Open Full Timeline &amp; Flashback Section">
           <i data-lucide="book-open" class="w-3.5 h-3.5"></i>
-          <span>Open Logbook &rarr;</span>
+          <span class="hidden sm:inline">Open Logbook &rarr;</span>
         </button>
       </div>
     </div>
 
-    <!-- Quick Guided Prompt Starters -->
-    <div class="flex items-center gap-1.5 overflow-x-auto pb-0.5 text-[11px] scrollbar-none">
-      <span class="text-slate-500 font-bold uppercase text-[9px] shrink-0 mr-0.5">Inspire:</span>
-      <button type="button" onclick="injectPromptTemplate('🏆 Biggest Win:')" class="px-2.5 py-1.5 min-h-[30px] rounded-xl bg-slate-950 hover:bg-slate-900 border border-slate-800 hover:border-emerald-500/40 text-slate-300 hover:text-emerald-300 transition shrink-0 active:scale-95">🏆 Biggest Win</button>
-      <button type="button" onclick="injectPromptTemplate('💡 Key Learning:')" class="px-2.5 py-1.5 min-h-[30px] rounded-xl bg-slate-950 hover:bg-slate-900 border border-slate-800 hover:border-emerald-500/40 text-slate-300 hover:text-emerald-300 transition shrink-0 active:scale-95">💡 Key Learning</button>
-      <button type="button" onclick="injectPromptTemplate('⚡ Challenge & Fix:')" class="px-2.5 py-1.5 min-h-[30px] rounded-xl bg-slate-950 hover:bg-slate-900 border border-slate-800 hover:border-emerald-500/40 text-slate-300 hover:text-emerald-300 transition shrink-0 active:scale-95">⚡ Challenge &amp; Fix</button>
-      <button type="button" onclick="injectPromptTemplate('✨ Grateful For:')" class="px-2.5 py-1.5 min-h-[30px] rounded-xl bg-slate-950 hover:bg-slate-900 border border-slate-800 hover:border-emerald-500/40 text-slate-300 hover:text-emerald-300 transition shrink-0 active:scale-95">✨ Gratitude</button>
-      <button type="button" onclick="injectPromptTemplate('🌙 Night Reflection:')" class="px-2.5 py-1.5 min-h-[30px] rounded-xl bg-slate-950 hover:bg-slate-900 border border-slate-800 hover:border-emerald-500/40 text-slate-300 hover:text-emerald-300 transition shrink-0 active:scale-95">🌙 Night Reflection</button>
-    </div>
-
     <!-- Capture Box Core -->
     <div class="space-y-3 bg-slate-950/90 p-3 sm:p-4 rounded-2xl border border-slate-800/90 shadow-inner">
-      
-      <!-- Top Row Controls -->
-      <div class="grid grid-cols-1 md:grid-cols-12 gap-2.5 items-center text-xs">
-        
-        <!-- Mood Selector (4 Cols) -->
-        <div class="md:col-span-4 flex items-center gap-2">
-          <span class="text-slate-400 font-semibold text-xs shrink-0">State:</span>
-          <div class="flex gap-1" id="dash-mood-buttons-group">
-            <button type="button" onclick="selectActiveMood('😁')" id="mood-btn-great" class="mood-select-btn px-2 py-1 bg-slate-900 hover:bg-slate-800 text-slate-400 rounded-xl text-base transition border border-slate-800 active:scale-95" title="Great / Energized">😁</button>
-            <button type="button" onclick="selectActiveMood('🙂')" id="mood-btn-good" class="mood-select-btn px-2 py-1 bg-emerald-600/30 text-emerald-300 border border-emerald-500/40 font-bold rounded-xl text-base transition scale-105 shadow-sm active:scale-95" title="Good / Calm">🙂</button>
-            <button type="button" onclick="selectActiveMood('😐')" id="mood-btn-neutral" class="mood-select-btn px-2 py-1 bg-slate-900 hover:bg-slate-800 text-slate-400 rounded-xl text-base transition border border-slate-800 active:scale-95" title="Okay / Neutral">😐</button>
-            <button type="button" onclick="selectActiveMood('😔')" id="mood-btn-low" class="mood-select-btn px-2 py-1 bg-slate-900 hover:bg-slate-800 text-slate-400 rounded-xl text-base transition border border-slate-800 active:scale-95" title="Tired / Low">😔</button>
-            <button type="button" onclick="selectActiveMood('😤')" id="mood-btn-intense" class="mood-select-btn px-2 py-1 bg-slate-900 hover:bg-slate-800 text-slate-400 rounded-xl text-base transition border border-slate-800 active:scale-95" title="Intense Focus">😤</button>
-          </div>
-        </div>
 
-        <!-- Experience Category (3 Cols) -->
-        <div class="md:col-span-3 flex items-center gap-1.5">
-          <span class="text-slate-400 font-semibold text-xs shrink-0">Type:</span>
-          <select id="dash-log-type-select" class="w-full bg-slate-900 border border-slate-800 text-slate-200 rounded-xl px-2.5 py-1.5 text-xs outline-none focus:border-emerald-500 font-semibold transition">
-            <option value="Daily Thought">💭 Thought</option>
-            <option value="Milestone / Win">🏆 Win / Milestone</option>
-            <option value="Key Learning">💡 Insight / Learning</option>
-            <option value="Gratitude">✨ Gratitude</option>
-            <option value="Life Experience">📸 Experience</option>
-            <option value="Challenge">⚡ Obstacle / Lesson</option>
-          </select>
+      <!-- Mood row (always visible) -->
+      <div class="flex items-center gap-2 flex-wrap">
+        <span class="text-slate-400 font-semibold text-xs shrink-0">Mood:</span>
+        <div class="flex gap-1" id="dash-mood-buttons-group">
+          <button type="button" onclick="selectActiveMood('😁')" id="mood-btn-great" class="mood-select-btn px-2 py-1 bg-slate-900 hover:bg-slate-800 text-slate-400 rounded-xl text-base transition border border-slate-800 active:scale-95" title="Great / Energized">😁</button>
+          <button type="button" onclick="selectActiveMood('🙂')" id="mood-btn-good" class="mood-select-btn px-2 py-1 bg-emerald-600/30 text-emerald-300 border border-emerald-500/40 font-bold rounded-xl text-base transition scale-105 shadow-sm active:scale-95" title="Good / Calm">🙂</button>
+          <button type="button" onclick="selectActiveMood('😐')" id="mood-btn-neutral" class="mood-select-btn px-2 py-1 bg-slate-900 hover:bg-slate-800 text-slate-400 rounded-xl text-base transition border border-slate-800 active:scale-95" title="Okay / Neutral">😐</button>
+          <button type="button" onclick="selectActiveMood('😔')" id="mood-btn-low" class="mood-select-btn px-2 py-1 bg-slate-900 hover:bg-slate-800 text-slate-400 rounded-xl text-base transition border border-slate-800 active:scale-95" title="Tired / Low">😔</button>
+          <button type="button" onclick="selectActiveMood('😤')" id="mood-btn-intense" class="mood-select-btn px-2 py-1 bg-slate-900 hover:bg-slate-800 text-slate-400 rounded-xl text-base transition border border-slate-800 active:scale-95" title="Intense Focus">😤</button>
         </div>
-
-        <!-- Focus & Energy Level (3 Cols) -->
-        <div class="md:col-span-3 flex items-center gap-1.5 justify-start md:justify-center">
-          <span class="text-slate-400 font-semibold text-xs shrink-0">Energy:</span>
-          <div class="flex gap-1 items-center" id="dash-energy-rating-group">
-            <button type="button" onclick="selectEnergyLevel(1)" id="energy-star-1" class="w-8 h-8 flex items-center justify-center text-base text-amber-400 opacity-100 transition transform hover:scale-125 active:scale-95 drop-shadow-[0_0_6px_rgba(251,191,36,0.5)]" title="1/5 Low Energy">⚡</button>
-            <button type="button" onclick="selectEnergyLevel(2)" id="energy-star-2" class="w-8 h-8 flex items-center justify-center text-base text-amber-400 opacity-100 transition transform hover:scale-125 active:scale-95 drop-shadow-[0_0_6px_rgba(251,191,36,0.5)]" title="2/5 Moderate">⚡</button>
-            <button type="button" onclick="selectEnergyLevel(3)" id="energy-star-3" class="w-8 h-8 flex items-center justify-center text-base text-amber-400 opacity-100 transition transform hover:scale-125 active:scale-95 drop-shadow-[0_0_6px_rgba(251,191,36,0.5)]" title="3/5 Normal">⚡</button>
-            <button type="button" onclick="selectEnergyLevel(4)" id="energy-star-4" class="w-8 h-8 flex items-center justify-center text-base text-amber-400 opacity-100 transition transform hover:scale-125 active:scale-95 drop-shadow-[0_0_6px_rgba(251,191,36,0.5)]" title="4/5 High">⚡</button>
-            <button type="button" onclick="selectEnergyLevel(5)" id="energy-star-5" class="w-8 h-8 flex items-center justify-center text-base text-slate-700 opacity-40 hover:opacity-80 transition transform hover:scale-125 active:scale-95" title="5/5 Peak State">⚡</button>
-          </div>
-        </div>
-
-        <!-- Highlight Pin Switch (2 Cols) -->
-        <div class="md:col-span-2 flex items-center justify-start md:justify-end">
-          <label class="flex items-center gap-1.5 cursor-pointer text-slate-400 hover:text-amber-300 transition select-none">
-            <input type="checkbox" id="dash-log-is-pinned" class="w-3.5 h-3.5 rounded accent-amber-400 cursor-pointer" />
-            <span class="text-xs font-bold font-mono">★ Pin Win</span>
-          </label>
-        </div>
-
       </div>
 
       <!-- Main Diary Capture Area with Live Counter & Voice-to-Text -->
       <div class="relative">
-        <textarea id="dash-gratitude-input" oninput="updateDiaryLiveTelemetry()" rows="3" placeholder="What's happening right now? Document reflections, realizations, priority achievements, or thoughts in detail..." onkeypress="dashDiaryKeypress(event)" class="w-full bg-slate-900 border border-slate-800 rounded-xl p-3 pr-10 text-xs text-slate-100 outline-none focus:border-emerald-500 resize-none transition leading-relaxed placeholder:text-slate-500"></textarea>
-        
+        <textarea id="dash-gratitude-input" oninput="updateDiaryLiveTelemetry()" rows="3" placeholder="What's on your mind? Just type and hit Log..." onkeypress="dashDiaryKeypress(event)" class="w-full bg-slate-900 border border-slate-800 rounded-xl p-3 pr-10 text-xs text-slate-100 outline-none focus:border-emerald-500 resize-none transition leading-relaxed placeholder:text-slate-500"></textarea>
+
         <!-- Voice Dictation Trigger -->
         <button type="button" id="btn-voice-dictate-diary" onclick="toggleDiaryVoiceDictation()" class="absolute top-2 right-2 w-8 h-8 flex items-center justify-center bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-emerald-400 rounded-lg transition active:scale-90" title="Speech to text">
           <i data-lucide="mic" class="w-4 h-4"></i>
@@ -979,11 +933,57 @@ html, body {
         </div>
       </div>
 
-      <!-- Bottom Drawer Controls: Media URL Attachment, Location, Tags, & Submission -->
-      <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5 pt-1">
-        
+      <!-- Advanced options (collapsed by default) -->
+      <div id="dash-advanced-options" class="hidden space-y-3 pt-3 border-t border-slate-800/80">
+
+        <!-- Quick Guided Prompt Starters -->
+        <div class="flex items-center gap-1.5 overflow-x-auto pb-0.5 text-[11px] scrollbar-none">
+          <span class="text-slate-500 font-bold uppercase text-[9px] shrink-0 mr-0.5">Inspire:</span>
+          <button type="button" onclick="injectPromptTemplate('🏆 Biggest Win:')" class="px-2.5 py-1.5 min-h-[30px] rounded-xl bg-slate-950 hover:bg-slate-900 border border-slate-800 hover:border-emerald-500/40 text-slate-300 hover:text-emerald-300 transition shrink-0 active:scale-95">🏆 Biggest Win</button>
+          <button type="button" onclick="injectPromptTemplate('💡 Key Learning:')" class="px-2.5 py-1.5 min-h-[30px] rounded-xl bg-slate-950 hover:bg-slate-900 border border-slate-800 hover:border-emerald-500/40 text-slate-300 hover:text-emerald-300 transition shrink-0 active:scale-95">💡 Key Learning</button>
+          <button type="button" onclick="injectPromptTemplate('⚡ Challenge & Fix:')" class="px-2.5 py-1.5 min-h-[30px] rounded-xl bg-slate-950 hover:bg-slate-900 border border-slate-800 hover:border-emerald-500/40 text-slate-300 hover:text-emerald-300 transition shrink-0 active:scale-95">⚡ Challenge &amp; Fix</button>
+          <button type="button" onclick="injectPromptTemplate('✨ Grateful For:')" class="px-2.5 py-1.5 min-h-[30px] rounded-xl bg-slate-950 hover:bg-slate-900 border border-slate-800 hover:border-emerald-500/40 text-slate-300 hover:text-emerald-300 transition shrink-0 active:scale-95">✨ Gratitude</button>
+          <button type="button" onclick="injectPromptTemplate('🌙 Night Reflection:')" class="px-2.5 py-1.5 min-h-[30px] rounded-xl bg-slate-950 hover:bg-slate-900 border border-slate-800 hover:border-emerald-500/40 text-slate-300 hover:text-emerald-300 transition shrink-0 active:scale-95">🌙 Night Reflection</button>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-12 gap-2.5 items-center text-xs">
+        <!-- Experience Category (3 Cols) -->
+        <div class="sm:col-span-4 flex items-center gap-1.5 min-w-0">
+          <span class="text-slate-400 font-semibold text-xs shrink-0">Type:</span>
+          <select id="dash-log-type-select" class="min-w-0 flex-1 bg-slate-900 border border-slate-800 text-slate-200 rounded-xl px-2.5 py-1.5 text-xs outline-none focus:border-emerald-500 font-semibold transition">
+            <option value="Daily Thought">💭 Thought</option>
+            <option value="Milestone / Win">🏆 Win / Milestone</option>
+            <option value="Key Learning">💡 Insight / Learning</option>
+            <option value="Gratitude">✨ Gratitude</option>
+            <option value="Life Experience">📸 Experience</option>
+            <option value="Challenge">⚡ Obstacle / Lesson</option>
+          </select>
+        </div>
+
+        <!-- Focus & Energy Level (3 Cols) -->
+        <div class="sm:col-span-4 flex items-center gap-1.5 justify-start">
+          <span class="text-slate-400 font-semibold text-xs shrink-0">Energy:</span>
+          <div class="flex gap-1 items-center" id="dash-energy-rating-group">
+            <button type="button" onclick="selectEnergyLevel(1)" id="energy-star-1" class="w-8 h-8 flex items-center justify-center text-base text-amber-400 opacity-100 transition transform hover:scale-125 active:scale-95 drop-shadow-[0_0_6px_rgba(251,191,36,0.5)]" title="1/5 Low Energy">⚡</button>
+            <button type="button" onclick="selectEnergyLevel(2)" id="energy-star-2" class="w-8 h-8 flex items-center justify-center text-base text-amber-400 opacity-100 transition transform hover:scale-125 active:scale-95 drop-shadow-[0_0_6px_rgba(251,191,36,0.5)]" title="2/5 Moderate">⚡</button>
+            <button type="button" onclick="selectEnergyLevel(3)" id="energy-star-3" class="w-8 h-8 flex items-center justify-center text-base text-amber-400 opacity-100 transition transform hover:scale-125 active:scale-95 drop-shadow-[0_0_6px_rgba(251,191,36,0.5)]" title="3/5 Normal">⚡</button>
+            <button type="button" onclick="selectEnergyLevel(4)" id="energy-star-4" class="w-8 h-8 flex items-center justify-center text-base text-amber-400 opacity-100 transition transform hover:scale-125 active:scale-95 drop-shadow-[0_0_6px_rgba(251,191,36,0.5)]" title="4/5 High">⚡</button>
+            <button type="button" onclick="selectEnergyLevel(5)" id="energy-star-5" class="w-8 h-8 flex items-center justify-center text-base text-slate-700 opacity-40 hover:opacity-80 transition transform hover:scale-125 active:scale-95" title="5/5 Peak State">⚡</button>
+          </div>
+        </div>
+
+        <!-- Highlight Pin Switch (2 Cols) -->
+        <div class="sm:col-span-4 flex items-center justify-start sm:justify-end">
+          <label class="flex items-center gap-1.5 cursor-pointer text-slate-400 hover:text-amber-300 transition select-none">
+            <input type="checkbox" id="dash-log-is-pinned" class="w-3.5 h-3.5 rounded accent-amber-400 cursor-pointer" />
+            <span class="text-xs font-bold font-mono">★ Pin Win</span>
+          </label>
+        </div>
+
+        </div>
+
         <!-- Image / Media Attachment, Location & Hashtags -->
-        <div class="flex flex-wrap items-center gap-2 flex-1">
+        <div class="flex flex-wrap items-center gap-2">
           <div class="relative flex-1 sm:max-w-xs min-w-[140px]">
             <i data-lucide="image" class="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none"></i>
             <input id="dash-log-image-url" type="url" placeholder="Photo / Media URL (Optional)" class="w-full bg-slate-900 border border-slate-800 rounded-xl pl-8 pr-2 py-1.5 text-xs text-slate-200 outline-none focus:border-emerald-500 font-mono transition text-[11px]" />
@@ -998,20 +998,18 @@ html, body {
             <input id="dash-log-location-input" type="text" placeholder="Location (e.g. Pune, HQ)" class="w-full bg-slate-900 border border-slate-800 rounded-xl pl-8 pr-2 py-1.5 text-[11px] text-slate-200 outline-none focus:border-emerald-500 font-mono transition" />
           </div>
         </div>
+      </div>
 
-        <!-- Quick Tag Preset Chips & Submit Action -->
-        <div class="flex items-center gap-2 justify-between sm:justify-end shrink-0">
-          <div class="hidden md:flex items-center gap-1">
-            <button type="button" onclick="appendQuickTag('#win')" class="px-2 py-1 rounded-lg bg-slate-900 hover:bg-emerald-500/10 text-slate-400 hover:text-emerald-300 text-[10px] font-mono border border-slate-800 transition active:scale-95">+ #win</button>
-            <button type="button" onclick="appendQuickTag('#milestone')" class="px-2 py-1 rounded-lg bg-slate-900 hover:bg-emerald-500/10 text-slate-400 hover:text-emerald-300 text-[10px] font-mono border border-slate-800 transition active:scale-95">+ #milestone</button>
-          </div>
+      <!-- Action row: options toggle + submit -->
+      <div class="flex items-center justify-between gap-2">
+        <button type="button" onclick="toggleDashAdvancedOptions()" id="dash-advanced-toggle" class="inline-flex items-center gap-1.5 min-h-[36px] px-2.5 py-1.5 rounded-xl bg-slate-900 border border-slate-800 text-slate-400 hover:text-slate-200 hover:border-emerald-500/30 text-[11px] font-semibold transition active:scale-95">
+          <i data-lucide="sliders-horizontal" class="w-3.5 h-3.5"></i> <span id="dash-advanced-toggle-label">More options</span>
+        </button>
 
-          <button type="button" onclick="saveDailyDiaryEntry()" class="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-slate-950 font-black rounded-xl transition text-xs shadow-lg shadow-emerald-600/20 shrink-0 flex items-center justify-center gap-2 active:scale-95">
-            <i data-lucide="send" class="w-3.5 h-3.5"></i>
-            <span>Log to Memory</span>
-          </button>
-        </div>
-
+        <button type="button" onclick="saveDailyDiaryEntry()" class="px-5 py-2.5 min-h-[38px] bg-emerald-600 hover:bg-emerald-500 text-slate-950 font-black rounded-xl transition text-xs shadow-lg shadow-emerald-600/20 shrink-0 flex items-center justify-center gap-2 active:scale-95">
+          <i data-lucide="send" class="w-3.5 h-3.5"></i>
+          <span>Log It</span>
+        </button>
       </div>
 
     </div>
@@ -1023,21 +1021,21 @@ html, body {
     <!-- Left: Priority Execution List with Filter -->
     <div class="lg:col-span-7 glass-card rounded-2xl p-4 md:p-5 space-y-3 border border-purple-500/20 bg-purple-500/[0.02]">
       <div class="flex flex-wrap justify-between items-center border-b border-slate-800/80 pb-3 gap-2">
-        <div>
-          <h3 class="text-xs font-extrabold text-white uppercase tracking-wider flex items-center gap-2">
-            <i data-lucide="check-square" class="w-4 h-4 text-purple-400"></i> Priority &amp; Due Action Tasks
+        <div class="min-w-0">
+          <h3 class="text-xs font-extrabold text-white uppercase tracking-wider flex items-center gap-2 truncate">
+            <i data-lucide="check-square" class="w-4 h-4 text-purple-400 shrink-0"></i> <span class="truncate">Priority &amp; Due Tasks</span>
           </h3>
-          <p class="text-[11px] text-slate-400 mt-0.5">Check off items directly or click title to jump to the matching task list.</p>
+          <p class="hidden sm:block text-[11px] text-slate-400 mt-0.5">Check off items directly or click title to jump to the matching task list.</p>
         </div>
 
-        <div class="flex items-center gap-2">
-          <select id="dash-task-prio-filter" onchange="renderPriorityTasksList()" class="bg-slate-950 border border-slate-800 text-slate-200 rounded-xl px-2.5 py-1 text-xs outline-none focus:border-purple-400 font-medium">
+        <div class="flex items-center gap-2 w-full sm:w-auto">
+          <select id="dash-task-prio-filter" onchange="renderPriorityTasksList()" class="flex-1 sm:flex-none min-w-0 bg-slate-950 border border-slate-800 text-slate-200 rounded-lg px-2.5 py-1 text-[11px] outline-none focus:border-purple-400 font-medium">
             <option value="ALL">All Pending</option>
             <option value="HIGH">🔥 High Priority</option>
             <option value="TODAY">📅 Due Today</option>
             <option value="OVERDUE">⚠️ Overdue</option>
           </select>
-          <button type="button" onclick="window.switchTab('tasks')" class="inline-flex items-center min-h-[28px] px-1 text-xs text-purple-400 hover:underline font-bold">All Tasks &rarr;</button>
+          <button type="button" onclick="window.switchTab('tasks')" class="inline-flex items-center min-h-[28px] px-1 shrink-0 text-xs text-purple-400 hover:underline font-bold">All Tasks &rarr;</button>
         </div>
       </div>
 
@@ -1049,11 +1047,26 @@ html, body {
     <!-- Right: Expense Category Doughnut Chart & Scratchpad -->
     <div class="lg:col-span-5 space-y-4">
       <div onclick="window.switchTab('finance')" class="glass-card rounded-2xl p-4 space-y-3 border border-slate-800 cursor-pointer hover:border-emerald-500/40 transition bg-slate-900/40">
-        <div class="flex justify-between items-center border-b border-slate-800 pb-2">
-          <h3 class="text-xs font-extrabold text-white uppercase tracking-wider flex items-center gap-2">
-            <i data-lucide="pie-chart" class="w-4 h-4 text-emerald-400"></i> Expense Category Allocation
+        <div class="flex items-center justify-between gap-2 border-b border-slate-800 pb-2">
+          <h3 class="min-w-0 text-xs font-extrabold text-white uppercase tracking-wider flex items-center gap-2 truncate">
+            <i data-lucide="pie-chart" class="w-4 h-4 text-emerald-400 shrink-0"></i>
+            <span class="truncate">Expense Allocation</span>
           </h3>
-          <span id="chart-period-badge" class="shrink-0 whitespace-nowrap text-[10px] bg-slate-950 text-slate-400 border border-slate-800 px-2 py-0.5 rounded font-mono">This Month</span>
+          <div class="flex items-center gap-1.5 shrink-0">
+            <!-- Chart type switcher -->
+            <div class="flex items-center bg-slate-950 p-0.5 rounded-lg border border-slate-800">
+              <button type="button" onclick="setDashboardChartType('doughnut')" data-chart-type="doughnut" class="dash-chart-type-btn w-7 h-7 flex items-center justify-center rounded-md bg-emerald-500/20 text-emerald-300 transition" title="Doughnut chart">
+                <i data-lucide="pie-chart" class="w-3.5 h-3.5"></i>
+              </button>
+              <button type="button" onclick="setDashboardChartType('bar')" data-chart-type="bar" class="dash-chart-type-btn w-7 h-7 flex items-center justify-center rounded-md text-slate-400 hover:text-slate-200 transition" title="Bar chart">
+                <i data-lucide="bar-chart-3" class="w-3.5 h-3.5"></i>
+              </button>
+              <button type="button" onclick="setDashboardChartType('polarArea')" data-chart-type="polarArea" class="dash-chart-type-btn w-7 h-7 flex items-center justify-center rounded-md text-slate-400 hover:text-slate-200 transition" title="Polar area chart">
+                <i data-lucide="radar" class="w-3.5 h-3.5"></i>
+              </button>
+            </div>
+            <span id="chart-period-badge" class="shrink-0 whitespace-nowrap text-[10px] bg-slate-950 text-slate-400 border border-slate-800 px-2 py-0.5 rounded font-mono">This Month</span>
+          </div>
         </div>
         <div class="h-44 relative flex items-center justify-center">
           <canvas id="financeCategoryChart"></canvas>
@@ -1353,6 +1366,22 @@ html, body {
     };
 
     /* Save Diary Entry Locally and to Cloud */
+    /* Shows / hides the extra diary options (kept collapsed for casual logging) */
+    window.toggleDashAdvancedOptions = function() {
+      const panel = document.getElementById('dash-advanced-options');
+      const btn = document.getElementById('dash-advanced-toggle');
+      if (!panel) return;
+      const willOpen = panel.classList.contains('hidden');
+      panel.classList.toggle('hidden', !willOpen);
+      if (btn) {
+        btn.className = willOpen
+          ? 'inline-flex items-center gap-1.5 min-h-[36px] px-2.5 py-1.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-[11px] font-semibold transition active:scale-95'
+          : 'inline-flex items-center gap-1.5 min-h-[36px] px-2.5 py-1.5 rounded-xl bg-slate-900 border border-slate-800 text-slate-400 hover:text-slate-200 hover:border-emerald-500/30 text-[11px] font-semibold transition active:scale-95';
+        const label = document.getElementById('dash-advanced-toggle-label');
+        if (label) label.textContent = willOpen ? 'Fewer options' : 'More options';
+      }
+    };
+
     /* Enter saves the entry on desktop; on touch devices Enter inserts a
        newline (phone keyboards have no Shift key) */
     window.dashDiaryKeypress = function(e) {
@@ -1795,6 +1824,29 @@ html, body {
       container.innerHTML = html;
     };
 
+    /* Chart type switcher for the expense allocation chart */
+    let dashboardChartType = 'doughnut';
+
+    window.setDashboardChartType = function(type) {
+      if (!type || type === dashboardChartType) return;
+      dashboardChartType = type;
+
+      document.querySelectorAll('.dash-chart-type-btn').forEach(btn => {
+        const isActive = btn.getAttribute('data-chart-type') === type;
+        btn.className = isActive
+          ? 'dash-chart-type-btn w-7 h-7 flex items-center justify-center rounded-md bg-emerald-500/20 text-emerald-300 transition'
+          : 'dash-chart-type-btn w-7 h-7 flex items-center justify-center rounded-md text-slate-400 hover:text-slate-200 transition';
+      });
+
+      // Chart.js cannot change type in place - rebuild it
+      if (typeof dashboardCategoryChart !== 'undefined' && dashboardCategoryChart) {
+        dashboardCategoryChart.destroy();
+        dashboardCategoryChart = null;
+      }
+
+      if (typeof window.renderDashboard === 'function') window.renderDashboard();
+    };
+
     function renderBurnRateAndChart(totalInc, totalExp) {
       const spentPct = totalInc > 0 ? Math.min(100, Math.round((totalExp / totalInc) * 100)) : (totalExp > 0 ? 100 : 0);
       const savingsVal = Math.max(0, totalInc - totalExp);
@@ -1848,14 +1900,16 @@ html, body {
         dashboardCategoryChart.data.datasets[0].data = dataValues;
         dashboardCategoryChart.update('none');
       } else {
+        const isBar = dashboardChartType === 'bar';
         dashboardCategoryChart = new Chart(ctx, {
-          type: 'doughnut',
+          type: dashboardChartType,
           data: {
             labels: categories,
             datasets: [{
               data: dataValues,
-              backgroundColor: ['#10b981', '#06b6d4', '#a855f7', '#f43f5e', '#f59e0b', '#38bdf8', '#6366f1'],
-              borderWidth: 0
+              backgroundColor: isBar ? ['#10b981', '#06b6d4', '#a855f7', '#f43f5e', '#f59e0b', '#38bdf8', '#6366f1'] : ['#10b981', '#06b6d4', '#a855f7', '#f43f5e', '#f59e0b', '#38bdf8', '#6366f1'],
+              borderWidth: 0,
+              borderRadius: isBar ? 6 : 0
             }]
           },
           options: {
@@ -1863,8 +1917,15 @@ html, body {
             maintainAspectRatio: false,
             animation: false,
             plugins: {
-              legend: { position: 'right', labels: { color: '#94a3b8', font: { size: 10 } } }
-            }
+              legend: {
+                position: isBar ? 'bottom' : 'right',
+                labels: { color: '#94a3b8', font: { size: 10 }, boxWidth: 8, boxHeight: 8 }
+              }
+            },
+            scales: isBar ? {
+              x: { ticks: { color: '#94a3b8', font: { size: 9 } }, grid: { display: false } },
+              y: { ticks: { color: '#94a3b8', font: { size: 9 } }, grid: { color: 'rgba(148,163,184,0.12)' } }
+            } : undefined
           }
         });
       }
