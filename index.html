@@ -10352,8 +10352,8 @@ html, body {
     </div>
 
     <!-- Right Workspace: Note Editor & Markdown Live Canvas -->
-    <div id="notes-editor-panel" class="lg:col-span-8 glass-card rounded-2xl p-4 md:p-5 space-y-3.5 flex flex-col justify-between h-[calc(100dvh-262px)] min-h-[340px] lg:h-auto lg:min-h-[580px] border border-slate-800 relative">
-      <div class="space-y-3 flex-1 min-h-0 flex flex-col">
+    <div id="notes-editor-panel" class="lg:col-span-8 glass-card rounded-2xl p-4 md:p-5 space-y-3.5 flex flex-col justify-between min-h-[580px] lg:min-h-[580px] border border-slate-800 relative">
+      <div class="space-y-3 flex-1 flex flex-col">
         
         <!-- Header Controls: Back, Title Input, Pin, Overflow Actions -->
         <div class="flex items-center gap-2 border-b border-slate-800 pb-2.5">
@@ -10405,7 +10405,7 @@ html, body {
         </div>
 
         <!-- Meta Logs & Reading Stats Bar -->
-        <div class="flex items-center justify-between gap-2 text-[10px] text-slate-400 font-mono bg-slate-950/60 px-2.5 py-1.5 rounded-lg border border-slate-800/80 overflow-hidden">
+        <div class="flex items-center justify-between gap-2 text-[10px] text-slate-400 font-mono bg-slate-950/60 px-3.5 py-2.5 rounded-lg border border-slate-800/80 overflow-hidden">
           <div class="flex items-center gap-2 min-w-0 truncate">
             <span class="hidden sm:inline shrink-0">Created: <strong id="note-created-log" class="text-slate-300">--</strong></span>
             <span class="shrink-0">Edited: <strong id="note-updated-log" class="text-slate-300">--</strong></span>
@@ -10499,8 +10499,8 @@ html, body {
 
       </div>
 
-      <!-- Footer Action Bar: TOC + Backlinks + Save (bottom row of the panel) -->
-      <div class="flex items-center justify-between gap-1.5 relative border-t border-slate-800 pt-1.5">
+      <!-- Footer Action Bar: TOC + Backlinks + Save (sticky) -->
+      <div class="sticky bottom-[58px] sm:bottom-0 z-20 -mx-4 md:-mx-5 px-3 md:px-5 py-1.5 bg-slate-950/95 backdrop-blur-md border-t border-slate-800 flex items-center justify-between gap-1.5 relative rounded-b-2xl">
 
         <!-- Table of Contents + Backlinks popovers -->
         <div class="flex items-center gap-1 shrink-0">
@@ -10936,34 +10936,6 @@ html, body {
       editor.classList.add('hidden');
     };
 
-    /* Fits the editor panel into the space between the header and the bottom nav */
-    window.syncNotesEditorHeight = function() {
-      const panel = document.getElementById('notes-editor-panel');
-      if (!panel) return;
-
-      if (window.innerWidth >= 1024) {
-        panel.style.height = '';
-        return;
-      }
-
-      const header = document.querySelector('#view-notes > div.glass-card');
-      let top = 0;
-      if (header) {
-        const hr = header.getBoundingClientRect();
-        top = hr.height > 0 ? hr.bottom + 12 : 190;
-      } else {
-        top = 190;
-      }
-
-      const navSpace = 64;
-      const height = Math.max(340, window.innerHeight - top - navSpace - 8);
-      panel.style.height = height + 'px';
-    };
-
-    window.addEventListener('resize', function() {
-      window.syncNotesEditorHeight();
-    });
-
     /* Back button: return to the notes list on phones */
     window.showMobileNotesListPanel = function() {
       if (window.innerWidth >= 1024) return;
@@ -11025,7 +10997,8 @@ html, body {
           preview.style.display = 'block';
           preview.innerHTML = window.parseMarkdownToHtml(input ? input.value : '');
         }
-        if (toolbar) toolbar.classList.add('hidden');
+        // Toolbar stays visible in preview - tapping a tool switches to Edit
+        if (toolbar) toolbar.classList.remove('hidden');
       }
 
       refreshIconsScoped(document.getElementById('notes-editor-panel'));
@@ -11263,6 +11236,7 @@ html, body {
       }
 
       let html = md;
+      let h1n = 0, h2n = 0, h3n = 0;
 
       let frontmatterHtml = '';
       html = html.replace(/^---\n([\s\S]*?)\n---/g, function(match, yaml) {
@@ -11345,9 +11319,9 @@ html, body {
       });
 
       html = html.replace(/`([^`]+)`/g, '<code class="bg-slate-900 text-amber-300 px-1.5 py-0.5 rounded text-[11px] font-mono border border-slate-800">$1</code>');
-      html = html.replace(/^### (.*$)/gim, '<h3 class="text-sm font-bold text-amber-300 mt-4 mb-1">$1</h3>');
-      html = html.replace(/^## (.*$)/gim, '<h2 class="text-base font-extrabold text-white mt-5 mb-2 border-b border-slate-800 pb-1">$1</h2>');
-      html = html.replace(/^# (.*$)/gim, '<h1 class="text-lg font-black text-white mt-6 mb-2 border-b border-amber-500/30 pb-1.5 text-amber-400">$1</h1>');
+      html = html.replace(/^### (.*$)/gim, (m, t) => `<h3 id="nh-h3-${++h3n}" class="text-sm font-bold text-amber-300 mt-4 mb-1 scroll-mt-2">${t}</h3>`);
+      html = html.replace(/^## (.*$)/gim, (m, t) => `<h2 id="nh-h2-${++h2n}" class="text-base font-extrabold text-white mt-5 mb-2 border-b border-slate-800 pb-1 scroll-mt-2">${t}</h2>`);
+      html = html.replace(/^# (.*$)/gim, (m, t) => `<h1 id="nh-h1-${++h1n}" class="text-lg font-black text-white mt-6 mb-2 border-b border-amber-500/30 pb-1.5 text-amber-400 scroll-mt-2">${t}</h1>`);
       html = html.replace(/^\> (.*$)/gim, '<blockquote class="border-l-2 border-amber-400 pl-3 my-2 text-slate-400 italic bg-amber-500/5 py-1 rounded-r-lg">$1</blockquote>');
       html = html.replace(/^---$/gim, '<hr class="border-slate-800 my-4" />');
       html = html.replace(/^- \[x\] (.*$)/gim, '<div class="flex items-center gap-2 text-slate-400 line-through my-1"><span class="w-4 h-4 rounded bg-amber-500/20 text-amber-400 border border-amber-500/40 flex items-center justify-center text-[10px] shrink-0 font-bold">✓</span> <span>$1</span></div>');
@@ -11370,6 +11344,43 @@ html, body {
       return frontmatterHtml + html;
     };
 
+    /* Scrolls the rendered preview to a heading (Table of Contents click) */
+    window.scrollNotePreviewToHeading = function(anchorId) {
+      const preview = document.getElementById('note-markdown-preview');
+      if (!preview) return;
+
+      if (preview.classList.contains('hidden')) {
+        window.setNoteEditorMode('preview');
+      }
+
+      setTimeout(() => {
+        const target = document.getElementById(anchorId);
+        if (!target) return;
+
+        // Scroll the preview pane if it scrolls on its own, otherwise the page
+        let node = target.parentElement;
+        let scroller = null;
+        while (node) {
+          const style = window.getComputedStyle(node);
+          if (/(auto|scroll)/.test(style.overflowY) && node.scrollHeight > node.clientHeight + 2) {
+            scroller = node;
+            break;
+          }
+          node = node.parentElement;
+        }
+
+        if (scroller) {
+          const top = target.getBoundingClientRect().top - scroller.getBoundingClientRect().top + scroller.scrollTop - 12;
+          scroller.scrollTo({ top: Math.max(0, top), behavior: 'smooth' });
+        } else {
+          try { target.scrollIntoView({ behavior: 'smooth', block: 'start' }); } catch (e) {}
+        }
+
+        target.classList.add('ring-2', 'ring-amber-400/70', 'rounded-lg', 'px-1');
+        setTimeout(() => target.classList.remove('ring-2', 'ring-amber-400/70', 'px-1'), 1600);
+      }, 60);
+    };
+
     /* Table of Contents & Backlinks */
     function updateTOCAndBacklinks() {
       const text = document.getElementById('note-content-input')?.value || '';
@@ -11377,6 +11388,7 @@ html, body {
 
       const tocContainer = document.getElementById('note-toc-container');
       if (tocContainer) {
+        const tocCounters = {};
         const headings = text.match(/^(#{1,3})\s+(.*)$/gm) || [];
         if (headings.length === 0) {
           tocContainer.innerHTML = '<span class="text-slate-500 italic">No headings defined in this note.</span>';
@@ -11385,7 +11397,9 @@ html, body {
             const level = h.match(/^#+/)[0].length;
             const title = h.replace(/^#+\s+/, '');
             const indent = (level - 1) * 12;
-            return `<div style="padding-left:${indent}px;" class="truncate text-slate-300 hover:text-amber-400 cursor-pointer font-medium font-mono"># ${escapeHtml(title)}</div>`;
+            tocCounters[level] = (tocCounters[level] || 0) + 1;
+            const anchorId = `nh-h${level}-${tocCounters[level]}`;
+            return `<div onclick="scrollNotePreviewToHeading('${anchorId}')" title="Jump to heading" style="padding-left:${indent}px;" class="truncate text-slate-300 hover:text-amber-400 cursor-pointer font-medium font-mono"># ${escapeHtml(title)}</div>`;
           }).join('');
         }
       }
@@ -12335,6 +12349,12 @@ html, body {
     window.insertMarkdownFormat = function(prefix, suffix, defaultText) {
       const textarea = document.getElementById('note-content-input');
       if (!textarea) return;
+
+      // Tapping a tool while previewing switches into Edit mode first
+      const editorBox = document.getElementById('note-editor-container');
+      if (editorBox && editorBox.classList.contains('hidden')) {
+        window.setNoteEditorMode('edit');
+      }
       
       const start = textarea.selectionStart;
       const end = textarea.selectionEnd;
@@ -20009,7 +20029,7 @@ html, body {
           case 'calendar': window.renderCalendarView?.(); break;
           case 'time': window.renderTimeTrackerView?.(); break;
           case 'logbook': window.renderLogbookTimeline?.(true); break;
-          case 'notes': window.ensureNoteEditorLoaded?.(); window.renderNoteFoldersNav?.(); window.renderNotesList?.(); window.syncNotesEditorHeight?.(); break;
+          case 'notes': window.ensureNoteEditorLoaded?.(); window.renderNoteFoldersNav?.(); window.renderNotesList?.(); break;
           case 'habits':
             if (typeof window.renderHabitsView === 'function') window.renderHabitsView();
             else window.renderHabitsMatrix?.();
