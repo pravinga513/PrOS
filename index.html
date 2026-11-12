@@ -319,7 +319,7 @@ html, body {
       <button type="button" onclick="switchAppView('time')" id="side-nav-time" data-section="time" class="side-nav-btn w-full py-2 px-3 rounded-xl text-xs font-semibold text-slate-400 hover:text-slate-200 hover:bg-slate-900/60 border border-transparent transition flex items-center justify-between group">
         <div class="flex items-center gap-2.5 min-w-0">
           <i data-lucide="timer" class="w-4 h-4 text-amber-400 shrink-0 group-hover:scale-110 transition-transform"></i>
-          <span class="truncate">Time Tracker</span>
+          <span class="truncate">Time Log</span>
         </div>
         <span id="badge-time-count" class="text-[9px] px-1.5 py-0.5 rounded bg-amber-500/15 text-amber-300 font-mono font-bold border border-amber-500/30">0.0h</span>
       </button>
@@ -328,7 +328,7 @@ html, body {
       <button type="button" onclick="switchAppView('focus')" id="side-nav-focus" data-section="focus" class="side-nav-btn w-full py-2 px-3 rounded-xl text-xs font-semibold text-slate-400 hover:text-slate-200 hover:bg-slate-900/60 border border-transparent transition flex items-center justify-between group">
         <div class="flex items-center gap-2.5 min-w-0">
           <i data-lucide="clock" class="w-4 h-4 text-indigo-400 shrink-0 group-hover:scale-110 transition-transform"></i>
-          <span class="truncate">Focus &amp; Audio</span>
+          <span class="truncate">Deep Focus</span>
         </div>
       </button>
 
@@ -8902,12 +8902,14 @@ html, body {
     <div class="flex items-center justify-between gap-2 w-full lg:w-auto lg:min-w-0">
       <h2 class="min-w-0 text-base sm:text-lg md:text-xl font-extrabold text-white tracking-tight flex items-center gap-2">
         <i data-lucide="timer" class="w-5 h-5 text-amber-400 shrink-0"></i>
-        <span class="sm:hidden truncate">Time Tracker</span>
-        <span class="hidden sm:inline truncate">Time Tracker &amp; Focus Engine</span>
+        <span class="sm:hidden truncate">Time Log</span>
+        <span class="hidden sm:inline truncate">Time Tracker &amp; Work Log</span>
         <span class="text-[9px] sm:text-[10px] px-2 py-0.5 bg-amber-500/15 text-amber-300 rounded-full border border-amber-500/30 font-semibold font-mono hidden sm:inline-block shrink-0">
           5.5h Target
         </span>
       </h2>
+
+      <p class="hidden lg:block text-[11px] text-slate-400 font-mono shrink-0">Where your hours went</p>
 
       <div class="flex items-center gap-1.5 shrink-0">
         <!-- Manage Custom Projects Trigger -->
@@ -8978,7 +8980,7 @@ html, body {
   <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3 md:gap-4">
     <div class="glass-card p-3 sm:p-4 rounded-2xl border border-amber-500/20 bg-amber-500/[0.03] space-y-1 hover:border-amber-500/40 transition">
       <div class="flex justify-between items-center text-xs font-bold text-slate-400">
-        <span class="uppercase tracking-wider text-[9px]">Today's Focus</span>
+        <span class="uppercase tracking-wider text-[9px]">Logged Today</span>
         <div class="p-1 bg-amber-500/10 text-amber-400 rounded-lg shrink-0">
           <i data-lucide="clock" class="w-3.5 h-3.5"></i>
         </div>
@@ -9057,15 +9059,15 @@ html, body {
       <div>
         <div class="flex items-center gap-2 flex-wrap">
           <h3 class="text-xs font-extrabold text-white uppercase tracking-wider flex items-center gap-1.5">
-            <i data-lucide="flame" class="w-4 h-4 text-amber-400 animate-pulse"></i> Live Focus Session
+            <i data-lucide="timer" class="w-4 h-4 text-amber-400"></i> Quick Stopwatch
           </h3>
-          <!-- Mode Switcher: Stopwatch vs Pomodoro -->
+          <!-- Mode Switcher: Stopwatch vs 25m Timer -->
           <div class="flex items-center bg-slate-950 p-0.5 rounded-lg border border-slate-800 text-[10px] font-semibold">
             <button type="button" id="timer-mode-stopwatch" onclick="setTimerEngineMode('stopwatch')" class="px-2 py-1 min-h-[28px] rounded-md bg-amber-500 text-slate-950 font-bold transition">Stopwatch</button>
-            <button type="button" id="timer-mode-pomodoro" onclick="setTimerEngineMode('pomodoro')" class="px-2 py-1 min-h-[28px] rounded-md text-slate-400 hover:text-white transition">Pomodoro</button>
+            <button type="button" id="timer-mode-pomodoro" onclick="setTimerEngineMode('pomodoro')" class="px-2 py-1 min-h-[28px] rounded-md text-slate-400 hover:text-white transition">25m Timer</button>
           </div>
         </div>
-        <p class="text-[11px] text-slate-400 mt-1"><span class="sm:hidden">Track work, then Auto-Log it.</span><span class="hidden sm:inline">Start tracking real-time work. "Auto-Log" automatically transfers the duration to the log form below.</span></p>
+        <p class="text-[11px] text-slate-400 mt-1"><span class="sm:hidden">Time a task, then Auto-Log it.</span><span class="hidden sm:inline">Time a task, then "Auto-Log" transfers the duration into the work session form below.</span></p>
       </div>
 
       <!-- Live Digital Counter Display -->
@@ -17546,10 +17548,12 @@ html, body {
   <div class="glass-card rounded-2xl p-3.5 sm:p-5 border border-slate-800 flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3 relative z-10">
     <div class="flex items-center justify-between w-full sm:w-auto min-w-0">
       <div class="min-w-0">
-        <h2 class="text-base sm:text-lg md:text-xl font-extrabold text-white tracking-tight flex items-center gap-2 truncate">
+        <h2 class="text-base sm:text-lg md:text-xl font-extrabold text-white tracking-tight flex items-center gap-2">
           <i data-lucide="headphones" class="w-5 h-5 text-indigo-400 shrink-0"></i>
-          <span class="truncate">Focus Engine &amp; Procedural Soundscape</span>
+          <span class="sm:hidden truncate">Deep Focus</span>
+          <span class="hidden sm:inline truncate">Deep Focus &amp; Soundscape</span>
         </h2>
+        <p class="text-[10px] text-slate-400 font-mono mt-0.5 truncate">Pomodoro deep work with ambient sound</p>
       </div>
 
       <!-- Quick Session Log Mobile Trigger -->
@@ -17579,7 +17583,7 @@ html, body {
 
       <button type="button" onclick="logCompletedFocusSession()" class="hidden sm:flex px-3.5 py-2 bg-indigo-600 hover:bg-indigo-500 font-bold text-xs text-white rounded-xl shadow-lg transition items-center gap-1.5 active:scale-95 touch-manipulation shrink-0">
         <i data-lucide="check-circle" class="w-4 h-4 shrink-0"></i>
-        <span>Log Completed Block</span>
+        <span>Log Focus Session</span>
       </button>
     </div>
   </div>
@@ -20256,7 +20260,7 @@ html, body {
       { id: 'finance', label: 'Finance', icon: 'wallet', hex: '#10b981', colorClass: 'text-emerald-400', bgClass: 'bg-emerald-500 hover:bg-emerald-400 text-slate-950', badgeClass: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30' },
       { id: 'tasks', label: 'Tasks', icon: 'check-square', hex: '#a855f7', colorClass: 'text-purple-400', bgClass: 'bg-purple-600 hover:bg-purple-500 text-white', badgeClass: 'bg-purple-500/20 text-purple-300 border-purple-500/30' },
       { id: 'goals', label: 'Goals', icon: 'target', hex: '#f43f5e', colorClass: 'text-rose-400', bgClass: 'bg-rose-600 hover:bg-rose-500 text-white', badgeClass: 'bg-rose-500/20 text-rose-300 border-rose-500/30' },
-      { id: 'time', label: 'Tracker', icon: 'timer', hex: '#f59e0b', colorClass: 'text-amber-400', bgClass: 'bg-amber-500 hover:bg-amber-400 text-slate-950', badgeClass: 'bg-amber-500/20 text-amber-300 border-amber-500/30' },
+      { id: 'time', label: 'Time Log', icon: 'timer', hex: '#f59e0b', colorClass: 'text-amber-400', bgClass: 'bg-amber-500 hover:bg-amber-400 text-slate-950', badgeClass: 'bg-amber-500/20 text-amber-300 border-amber-500/30' },
       { id: 'habits', label: 'Habits', icon: 'flame', hex: '#ef4444', colorClass: 'text-red-400', bgClass: 'bg-red-500 hover:bg-red-400 text-white', badgeClass: 'bg-red-500/20 text-red-300 border-red-500/30' },
       { id: 'notes', label: 'Notes', icon: 'file-text', hex: '#eab308', colorClass: 'text-yellow-400', bgClass: 'bg-yellow-500 hover:bg-yellow-400 text-slate-950', badgeClass: 'bg-yellow-500/20 text-yellow-300 border-yellow-500/30' },
       { id: 'mindmap', label: 'Mindmap', icon: 'brain-circuit', hex: '#10b981', colorClass: 'text-emerald-400', bgClass: 'bg-emerald-600 hover:bg-emerald-500 text-slate-950', badgeClass: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30' },
