@@ -12905,36 +12905,37 @@ html, body {
       </button>
     </div>
 
-    <!-- Toolbar Filters, Actions, Auto-Layout & Zoom HUD -->
-    <div class="flex flex-wrap items-center gap-2 w-full sm:w-auto justify-stretch sm:justify-end text-xs">
-      <select id="mindmap-select-map" onchange="switchMindmap(this.value)" class="flex-1 sm:flex-initial bg-slate-950 border border-slate-800 text-slate-200 text-xs rounded-xl px-3 py-2 outline-none font-semibold focus:border-emerald-400 transition min-w-[130px] truncate">
-        <!-- Populated via JS -->
-      </select>
+    <!-- Toolbar Filters, Actions & Map Controls -->
+    <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full lg:w-auto">
+      <div class="flex items-center gap-2 w-full sm:w-auto sm:contents">
+        <select id="mindmap-select-map" onchange="switchMindmap(this.value)" class="flex-1 sm:flex-none sm:w-44 bg-slate-950 border border-slate-800 text-slate-200 text-xs rounded-xl px-3 py-2 outline-none font-semibold focus:border-emerald-400 transition min-w-0 truncate">
+          <!-- Populated via JS -->
+        </select>
 
-      <div class="relative flex-1 sm:flex-none sm:w-48 min-w-[140px]">
-        <i data-lucide="search" class="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none"></i>
-        <input id="mindmap-search-input" type="text" onkeyup="filterMindmapNodes(this.value)" placeholder="Search nodes, tags..." class="w-full bg-slate-950 border border-slate-800 rounded-xl pl-8 pr-2.5 py-2 text-xs text-slate-200 outline-none focus:border-emerald-400 transition font-medium" />
+        <div class="relative flex-1 sm:flex-none sm:w-48 min-w-0">
+          <i data-lucide="search" class="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none"></i>
+          <input id="mindmap-search-input" type="text" onkeyup="filterMindmapNodes(this.value)" placeholder="Search nodes, tags..." class="w-full bg-slate-950 border border-slate-800 rounded-xl pl-8 pr-2.5 py-2 text-xs text-slate-200 outline-none focus:border-emerald-400 transition font-medium" />
+        </div>
       </div>
 
-      <button type="button" onclick="autoLayoutMindmapNodes()" class="px-3 py-2 bg-emerald-950/40 border border-emerald-500/30 hover:border-emerald-500/60 text-emerald-300 text-xs font-bold rounded-xl transition flex items-center gap-1.5 active:scale-95 shadow-sm" title="Arrange nodes hierarchically">
-        <i data-lucide="git-merge" class="w-3.5 h-3.5 text-emerald-400"></i>
-        <span class="hidden sm:inline">Align</span>
-      </button>
+      <div class="flex items-center gap-1.5 justify-end sm:justify-start">
+        <button type="button" onclick="autoLayoutMindmapNodes()" class="p-2 bg-emerald-950/40 border border-emerald-500/30 hover:border-emerald-500/60 text-emerald-300 text-xs font-bold rounded-xl transition flex items-center justify-center active:scale-95 shadow-sm shrink-0" title="Arrange nodes hierarchically">
+          <i data-lucide="git-merge" class="w-4 h-4 text-emerald-400"></i>
+        </button>
 
-      <button type="button" onclick="openConnectModal()" class="px-3 py-2 bg-slate-900 border border-slate-800 hover:border-emerald-500/40 text-emerald-300 text-xs font-bold rounded-xl transition flex items-center gap-1.5 active:scale-95 shadow-sm">
-        <i data-lucide="git-commit" class="w-3.5 h-3.5 text-emerald-400"></i>
-        <span class="hidden sm:inline">Connect</span>
-      </button>
+        <button type="button" onclick="openConnectModal()" class="p-2 bg-slate-900 border border-slate-800 hover:border-emerald-500/40 text-emerald-300 text-xs font-bold rounded-xl transition flex items-center justify-center active:scale-95 shadow-sm shrink-0" title="Connect two nodes">
+          <i data-lucide="git-commit" class="w-4 h-4 text-emerald-400"></i>
+        </button>
 
-      <button type="button" onclick="openCreateMapModal()" class="px-3 py-2 bg-slate-900 border border-slate-800 hover:border-emerald-500/40 text-slate-300 text-xs font-semibold rounded-xl transition flex items-center gap-1.5 active:scale-95 shadow-sm">
-        <i data-lucide="folder-plus" class="w-3.5 h-3.5 text-emerald-400"></i>
-        <span class="hidden md:inline">New Map</span>
-      </button>
+        <button type="button" onclick="openCreateMapModal()" class="p-2 bg-slate-900 border border-slate-800 hover:border-emerald-500/40 text-slate-300 text-xs font-semibold rounded-xl transition flex items-center justify-center active:scale-95 shadow-sm shrink-0" title="Create a new map">
+          <i data-lucide="folder-plus" class="w-4 h-4 text-emerald-400"></i>
+        </button>
 
-      <button type="button" onclick="openNodeModal(null)" class="hidden sm:flex px-3.5 py-2 bg-emerald-600 hover:bg-emerald-500 text-slate-950 font-black text-xs rounded-xl transition items-center gap-1.5 shadow-lg shadow-emerald-600/20 active:scale-95 touch-manipulation shrink-0">
-        <i data-lucide="plus-circle" class="w-4 h-4 shrink-0"></i>
-        <span>Add Node</span>
-      </button>
+        <button type="button" onclick="openNodeModal(null)" class="hidden sm:flex px-3.5 py-2 bg-emerald-600 hover:bg-emerald-500 text-slate-950 font-black text-xs rounded-xl transition items-center gap-1.5 shadow-lg shadow-emerald-600/20 active:scale-95 touch-manipulation shrink-0">
+          <i data-lucide="plus-circle" class="w-4 h-4 shrink-0"></i>
+          <span>Add Node</span>
+        </button>
+      </div>
     </div>
   </div>
 
@@ -12951,7 +12952,10 @@ html, body {
         <i data-lucide="zoom-out" class="w-4 h-4"></i>
       </button>
       <div class="w-px h-4 bg-slate-800 mx-0.5"></div>
-      <button type="button" onclick="resetCanvasTransform()" class="p-1.5 sm:p-2 text-slate-300 hover:text-white hover:bg-slate-800 rounded-xl transition active:scale-90" title="Recenter">
+      <button type="button" onclick="fitMindmapToScreen()" class="p-1.5 sm:p-2 text-slate-300 hover:text-white hover:bg-slate-800 rounded-xl transition active:scale-90" title="Fit all nodes on screen">
+        <i data-lucide="scan" class="w-4 h-4"></i>
+      </button>
+      <button type="button" onclick="resetCanvasTransform()" class="p-1.5 sm:p-2 text-slate-300 hover:text-white hover:bg-slate-800 rounded-xl transition active:scale-90" title="Recenter at 100%">
         <i data-lucide="maximize-2" class="w-4 h-4"></i>
       </button>
     </div>
@@ -13374,6 +13378,10 @@ html, body {
   (function() {
     let canvasScale = 1.0;
     let canvasPanX = 0;
+    let pendingNodeSpot = null;
+    let lastCanvasTapTime = 0;
+    let lastCanvasTapX = 0;
+    let lastCanvasTapY = 0;
     let canvasPanY = 0;
     let isPanningCanvas = false;
     let startPanPointerX = 0;
@@ -13639,6 +13647,76 @@ html, body {
       applyCanvasTransform();
     };
 
+    /* Fits every node of the current map into the visible canvas */
+    window.fitMindmapToScreen = function() {
+      const wrapper = document.getElementById('mindmap-wrapper');
+      const layer = document.getElementById('mindmap-nodes-layer');
+      if (!wrapper || !layer) return;
+
+      const nodeEls = Array.from(layer.children).filter(el => el.offsetWidth > 0);
+      if (!nodeEls.length) { window.resetCanvasTransform(); return; }
+
+      const rect = wrapper.getBoundingClientRect();
+      const padding = 24;
+
+      // Measure the real node boxes (offsetLeft/Width are unscaled stage coords)
+      let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+      nodeEls.forEach(el => {
+        const x = el.offsetLeft || 0;
+        const y = el.offsetTop || 0;
+        minX = Math.min(minX, x);
+        minY = Math.min(minY, y);
+        maxX = Math.max(maxX, x + el.offsetWidth);
+        maxY = Math.max(maxY, y + el.offsetHeight);
+      });
+
+      const contentW = Math.max(1, maxX - minX);
+      const contentH = Math.max(1, maxY - minY);
+      const scale = Math.min(1, (rect.width - padding * 2) / contentW, (rect.height - padding * 2) / contentH);
+
+      canvasScale = Math.min(2.5, Math.max(0.3, scale));
+      canvasPanX = (rect.width - contentW * canvasScale) / 2 - minX * canvasScale;
+      canvasPanY = (rect.height - contentH * canvasScale) / 2 - minY * canvasScale;
+      applyCanvasTransform();
+    };
+
+    /* Double tap / double click on empty canvas creates a node there */
+    function setupCanvasDoubleTapCreate() {
+      const wrapper = document.getElementById('mindmap-wrapper');
+      if (!wrapper) return;
+
+      const spotFromEvent = (e) => {
+        const rect = wrapper.getBoundingClientRect();
+        return {
+          x: Math.round((e.clientX - rect.left - canvasPanX) / canvasScale),
+          y: Math.round((e.clientY - rect.top - canvasPanY) / canvasScale)
+        };
+      };
+
+      const isInteractive = (e) => !!(e.target.closest && e.target.closest('.pointer-events-auto, button, input, select, a'));
+
+      wrapper.addEventListener('dblclick', (e) => {
+        if (isInteractive(e)) return;
+        e.preventDefault();
+        window.openNodeModal(null, spotFromEvent(e));
+      });
+
+      // Touch double tap (iOS does not fire dblclick on touch)
+      wrapper.addEventListener('pointerup', (e) => {
+        if (isInteractive(e)) return;
+        const now = Date.now();
+        const near = Math.abs(e.clientX - lastCanvasTapX) < 32 && Math.abs(e.clientY - lastCanvasTapY) < 32;
+        if (now - lastCanvasTapTime < 380 && near) {
+          lastCanvasTapTime = 0;
+          window.openNodeModal(null, spotFromEvent(e));
+        } else {
+          lastCanvasTapTime = now;
+          lastCanvasTapX = e.clientX;
+          lastCanvasTapY = e.clientY;
+        }
+      });
+    }
+
     function applyCanvasTransform() {
       const stage = document.getElementById('mindmap-transform-stage');
       const zoomText = document.getElementById('canvas-zoom-level-text');
@@ -13824,7 +13902,8 @@ html, body {
       if (window.showToast) window.showToast(`Mindmap '${name}' created with a core node!`, 'success');
     };
 
-    window.openNodeModal = function(nodeId = null) {
+    window.openNodeModal = function(nodeId = null, spot = null) {
+      pendingNodeSpot = spot || null;
       const modalTitle = document.getElementById('node-form-modal-title');
       const deleteBtn = document.getElementById('btn-delete-node');
       const saveBtn = document.getElementById('btn-save-node');
@@ -13958,7 +14037,8 @@ html, body {
         }
       } else {
         const newId = 'node_' + Date.now();
-        const freeSpot = findFreeNodeSpot();
+        const freeSpot = pendingNodeSpot || findFreeNodeSpot();
+        pendingNodeSpot = null;
         targetNode = {
           id: newId,
           mapId: window.appState.activeMindmapId || 'map_main',
@@ -14029,6 +14109,8 @@ html, body {
       window.appState.activeMindmapId = mapId;
       persistMindmapAndSync();
       window.renderMindmapNodes();
+      // Show the whole map instead of whatever part was panned to last
+      setTimeout(() => window.fitMindmapToScreen(), 60);
     };
 
     window.openConnectModal = function() {
@@ -15037,6 +15119,7 @@ html, body {
     // Auto-boot on load
     ensureMindmapStateInitialized();
     setupCanvasPanningAndTouch();
+    setupCanvasDoubleTapCreate();
     window.renderMindmapNodes();
   })();
 </script>
@@ -20167,7 +20250,7 @@ html, body {
             break;
           case 'bookmarks': window.renderBookmarksGrid?.(); break;
           case 'vehicle': window.renderVehicleLogs?.(); break;
-          case 'mindmap': window.renderMindmapNodes?.(); break;
+          case 'mindmap': window.renderMindmapNodes?.(); if (!window.__mindmapFitted) { window.__mindmapFitted = true; setTimeout(() => window.fitMindmapToScreen?.(), 80); } break;
           case 'analytics': window.renderAnalyticsView?.(); break;
         }
         if (typeof window.updateBadges === 'function') window.updateBadges();
