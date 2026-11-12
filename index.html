@@ -324,14 +324,6 @@ html, body {
         <span id="badge-time-count" class="text-[9px] px-1.5 py-0.5 rounded bg-amber-500/15 text-amber-300 font-mono font-bold border border-amber-500/30">0.0h</span>
       </button>
 
-      <!-- 12. Focus -->
-      <button type="button" onclick="switchAppView('focus')" id="side-nav-focus" data-section="focus" class="side-nav-btn w-full py-2 px-3 rounded-xl text-xs font-semibold text-slate-400 hover:text-slate-200 hover:bg-slate-900/60 border border-transparent transition flex items-center justify-between group">
-        <div class="flex items-center gap-2.5 min-w-0">
-          <i data-lucide="headphones" class="w-4 h-4 text-indigo-400 shrink-0 group-hover:scale-110 transition-transform"></i>
-          <span class="truncate">Soundscape</span>
-        </div>
-      </button>
-
       <!-- 13. Vehicle -->
       <button type="button" onclick="switchAppView('vehicles')" id="side-nav-vehicle" data-section="vehicle" class="side-nav-btn w-full py-2 px-3 rounded-xl text-xs font-semibold text-slate-400 hover:text-slate-200 hover:bg-slate-900/60 border border-transparent transition flex items-center justify-between group">
         <div class="flex items-center gap-2.5 min-w-0">
@@ -491,6 +483,7 @@ html, body {
           if (typeof window.openAddLinkModal === 'function') return window.openAddLinkModal();
           break;
         case 'focus':
+          if (window.switchTab) window.switchTab('time');
           if (typeof window.toggleTimerEngine === 'function') return window.toggleTimerEngine();
           break;
         case 'analytics':
@@ -8977,49 +8970,29 @@ html, body {
   </div>
 
   <!-- KPI Overview Metrics -->
-  <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3 md:gap-4">
-    <div class="glass-card p-3 sm:p-4 rounded-2xl border border-amber-500/20 bg-amber-500/[0.03] space-y-1 hover:border-amber-500/40 transition">
-      <div class="flex justify-between items-center text-xs font-bold text-slate-400">
-        <span class="uppercase tracking-wider text-[9px]">Logged Today</span>
-        <div class="p-1 bg-amber-500/10 text-amber-400 rounded-lg shrink-0">
-          <i data-lucide="clock" class="w-3.5 h-3.5"></i>
-        </div>
-      </div>
-      <div id="time-kpi-today" class="text-base sm:text-lg md:text-xl font-black text-amber-400">0.0 hrs</div>
-      <p id="time-kpi-today-sub" class="text-[10px] text-slate-500 font-mono">0 sessions recorded</p>
+  <div class="grid grid-cols-4 divide-x divide-amber-500/10 rounded-2xl border border-amber-500/20 bg-amber-500/[0.03] overflow-hidden">
+    <div class="px-2 sm:px-3 py-2.5 min-w-0">
+      <div class="text-[8px] sm:text-[9px] uppercase tracking-wider text-slate-500 font-bold truncate">Today</div>
+      <div id="time-kpi-today" class="text-[11px] sm:text-base font-black text-amber-400 truncate">0m</div>
+      <p id="time-kpi-today-sub" class="hidden sm:block text-[9px] text-slate-500 font-mono truncate">0 sessions</p>
     </div>
 
-    <div class="glass-card p-3 sm:p-4 rounded-2xl border border-amber-500/20 bg-amber-500/[0.03] space-y-1 hover:border-amber-500/40 transition">
-      <div class="flex justify-between items-center text-xs font-bold text-slate-400">
-        <span class="uppercase tracking-wider text-[9px]">This Week</span>
-        <div class="p-1 bg-amber-500/10 text-amber-300 rounded-lg shrink-0">
-          <i data-lucide="calendar-range" class="w-3.5 h-3.5"></i>
-        </div>
-      </div>
-      <div id="time-kpi-week" class="text-base sm:text-lg md:text-xl font-black text-slate-100">0.0 hrs</div>
-      <p class="text-[10px] text-slate-500 font-mono">Weekly productive time</p>
+    <div class="px-2 sm:px-3 py-2.5 min-w-0">
+      <div class="text-[8px] sm:text-[9px] uppercase tracking-wider text-slate-500 font-bold truncate">Week</div>
+      <div id="time-kpi-week" class="text-[11px] sm:text-base font-black text-slate-100 truncate">0m</div>
+      <p class="hidden sm:block text-[9px] text-slate-500 font-mono truncate">weekly total</p>
     </div>
 
-    <div class="glass-card p-3 sm:p-4 rounded-2xl border border-amber-500/20 bg-amber-500/[0.03] space-y-1 hover:border-amber-500/40 transition">
-      <div class="flex justify-between items-center text-xs font-bold text-slate-400">
-        <span class="uppercase tracking-wider text-[9px]">This Month</span>
-        <div class="p-1 bg-amber-500/10 text-amber-300 rounded-lg shrink-0">
-          <i data-lucide="calendar" class="w-3.5 h-3.5"></i>
-        </div>
-      </div>
-      <div id="time-kpi-month" class="text-base sm:text-lg md:text-xl font-black text-amber-300">0.0 hrs</div>
-      <p class="text-[10px] text-slate-500 font-mono">Monthly total time</p>
+    <div class="px-2 sm:px-3 py-2.5 min-w-0">
+      <div class="text-[8px] sm:text-[9px] uppercase tracking-wider text-slate-500 font-bold truncate">Month</div>
+      <div id="time-kpi-month" class="text-[11px] sm:text-base font-black text-amber-300 truncate">0m</div>
+      <p class="hidden sm:block text-[9px] text-slate-500 font-mono truncate">monthly total</p>
     </div>
 
-    <div class="glass-card p-3 sm:p-4 rounded-2xl border border-amber-500/20 bg-amber-500/[0.03] space-y-1 hover:border-amber-500/40 transition">
-      <div class="flex justify-between items-center text-xs font-bold text-slate-400">
-        <span class="uppercase tracking-wider text-[9px]">Est. Billable</span>
-        <div class="p-1 bg-amber-500/10 text-amber-400 rounded-lg shrink-0">
-          <i data-lucide="coins" class="w-3.5 h-3.5"></i>
-        </div>
-      </div>
-      <div id="time-kpi-earnings" class="text-base sm:text-lg md:text-xl font-black text-amber-400">₹0.00</div>
-      <p class="text-[10px] text-slate-500 font-mono">Billable hourly rate logs</p>
+    <div class="px-2 sm:px-3 py-2.5 min-w-0">
+      <div class="text-[8px] sm:text-[9px] uppercase tracking-wider text-slate-500 font-bold truncate">Billable</div>
+      <div id="time-kpi-earnings" class="text-[11px] sm:text-base font-black text-amber-400 truncate">₹0</div>
+      <p class="hidden sm:block text-[9px] text-slate-500 font-mono truncate">est. earnings</p>
     </div>
   </div>
 
@@ -9096,13 +9069,39 @@ html, body {
         <p class="text-[10px] text-slate-500 font-mono text-center">Stop the timer, then log it against the project above</p>
       </div>
     </div>
+
+    <!-- Ambient soundscape (collapsed by default) -->
+    <div class="border-t border-slate-800/70 pt-3">
+      <button type="button" onclick="toggleTimeSoundscape()" id="time-soundscape-toggle" class="inline-flex items-center gap-2 min-h-[32px] px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-slate-400 hover:text-indigo-300 hover:border-indigo-500/40 transition text-[11px] font-semibold">
+        <i data-lucide="headphones" class="w-3.5 h-3.5"></i> Ambient sound
+        <span id="focus-kpi-sound-status" class="font-mono text-[10px] text-amber-400">Inactive</span>
+      </button>
+
+      <div id="time-soundscape-panel" class="hidden mt-2.5 space-y-2.5">
+        <div class="grid grid-cols-4 gap-1.5">
+          <button type="button" onclick="toggleAmbientSound('rain')" id="audio-btn-rain" class="px-2 py-2 bg-slate-950 border border-slate-800 text-slate-300 hover:text-white rounded-lg font-bold transition text-[11px]">Rain</button>
+          <button type="button" onclick="toggleAmbientSound('white')" id="audio-btn-white" class="px-2 py-2 bg-slate-950 border border-slate-800 text-slate-300 hover:text-white rounded-lg font-bold transition text-[11px]">Noise</button>
+          <button type="button" onclick="toggleAmbientSound('drone')" id="audio-btn-drone" class="px-2 py-2 bg-slate-950 border border-slate-800 text-slate-300 hover:text-white rounded-lg font-bold transition text-[11px]">Drone</button>
+          <button type="button" onclick="toggleAmbientSound('brown')" id="audio-btn-brown" class="px-2 py-2 bg-slate-950 border border-slate-800 text-slate-300 hover:text-white rounded-lg font-bold transition text-[11px]">Brown</button>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="text-[10px] text-slate-500 font-mono shrink-0">Volume</span>
+          <input type="range" id="ambient-volume" min="0" max="1" step="0.05" value="0.5" oninput="setAmbientVolume(this.value)" class="flex-1 accent-indigo-500 cursor-pointer" />
+          <span id="ambient-volume-label" class="font-mono text-[10px] text-indigo-400 shrink-0">50%</span>
+        </div>
+      </div>
+    </div>
   </div>
 
   <!-- Workspace Grid Layout: Left Manual Form (4 Cols) + Right Distribution & History (8 Cols) -->
   <div class="grid grid-cols-1 lg:grid-cols-12 gap-3 sm:gap-4 items-start">
 
-    <!-- Left Column: Manual Hour Logging Form -->
-    <div id="time-entry-form-card" class="lg:col-span-4 glass-card rounded-2xl p-3.5 sm:p-4 space-y-3.5 border border-amber-500/20 bg-amber-500/[0.02]">
+    <!-- Left Column: Manual Hour Logging Form (collapsed on phones) -->
+    <div class="lg:col-span-4 space-y-2">
+      <button type="button" onclick="toggleTimeManualForm()" id="time-manual-toggle" class="lg:hidden w-full px-3 py-2.5 rounded-xl bg-slate-900 border border-slate-800 text-slate-400 hover:text-amber-300 hover:border-amber-500/40 text-xs font-semibold transition flex items-center justify-center gap-1.5">
+        <i data-lucide="plus" class="w-3.5 h-3.5"></i> Log time manually
+      </button>
+      <div id="time-entry-form-card" class="hidden lg:block glass-card rounded-2xl p-3.5 sm:p-4 space-y-3.5 border border-amber-500/20 bg-amber-500/[0.02]">
       <div class="border-b border-slate-800/80 pb-2 flex justify-between items-center">
         <h3 class="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-2">
           <i data-lucide="clock" class="w-4 h-4 text-amber-400"></i> Record Work Session
@@ -9175,6 +9174,7 @@ html, body {
           Save Work Session
         </button>
       </form>
+      </div>
     </div>
 
     <!-- Right Column: Project Breakdown & Logs History (8 Cols) -->
@@ -9894,6 +9894,16 @@ html, body {
       window.renderTimeTrackerView();
       if (window.refreshAllViews) window.refreshAllViews();
       if (window.showToast) window.showToast(`Logged ${formatTimeDuration(loggedSecs / 3600)} for ${projTag}!`, 'success');
+    };
+
+    window.toggleTimeManualForm = function() {
+      const card = document.getElementById('time-entry-form-card');
+      if (card) card.classList.toggle('hidden');
+    };
+
+    window.toggleTimeSoundscape = function() {
+      const panel = document.getElementById('time-soundscape-panel');
+      if (panel) panel.classList.toggle('hidden');
     };
 
     window.scrollToTimeForm = function() {
@@ -14722,8 +14732,8 @@ html, body {
 
     window.startFocusTimerForNode = function() {
       closeModalDirect('node-inspector-modal');
-      if (window.switchTab) window.switchTab('focus');
-      if (window.showToast) window.showToast(`Focus session focused on ${window.getCurrentInspectorTitle()}!`, 'info');
+      if (window.switchTab) window.switchTab('time');
+      if (window.showToast) window.showToast(`Focus timer ready for ${window.getCurrentInspectorTitle()}!`, 'info');
     };
 
     window.toggleTaskItemDirect = function(taskId) {
@@ -17596,170 +17606,6 @@ html, body {
  <!-- ========================================================================= -->
 <!-- SECTION 12: FOCUS ENGINE, PROCEDURAL AUDIO SYNTH & FLOW MATRIX            -->
 <!-- ========================================================================= -->
-<section id="view-focus" class="app-view hidden space-y-4 sm:space-y-6 max-w-7xl mx-auto w-full pb-40 px-2 sm:px-4 box-border">
-
-  <!-- Top Responsive Header Toolbar -->
-  <div class="glass-card rounded-2xl p-3.5 sm:p-5 border border-slate-800 flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3 relative z-10">
-    <div class="flex items-center justify-between w-full sm:w-auto min-w-0">
-      <div class="min-w-0">
-        <h2 class="text-base sm:text-lg md:text-xl font-extrabold text-white tracking-tight flex items-center gap-2">
-          <i data-lucide="headphones" class="w-5 h-5 text-indigo-400 shrink-0"></i>
-          <span class="sm:hidden truncate">Soundscape</span>
-          <span class="hidden sm:inline truncate">Soundscape &amp; Deep Work Audio</span>
-        </h2>
-        <p class="text-[10px] text-slate-400 font-mono mt-0.5 truncate">Procedural ambient audio generated on the fly</p>
-      </div>
-
-      <!-- Link to the single place where time gets logged -->
-      <button type="button" onclick="window.switchAppView('time')" class="sm:hidden shrink-0 px-3 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs rounded-xl transition flex items-center gap-1 shadow-lg shadow-indigo-600/20 active:scale-95 touch-manipulation">
-        <i data-lucide="timer" class="w-4 h-4 shrink-0"></i>
-        <span>Log time</span>
-      </button>
-    </div>
-
-    <!-- Toolbar Action Buttons -->
-    <div class="flex flex-wrap items-center gap-2 w-full sm:w-auto justify-stretch sm:justify-end text-xs">
-      <div class="relative inline-block text-left shrink-0" id="focus-action-dropdown-wrapper">
-        <button type="button" onclick="toggleFocusActionMenu(event)" class="px-3 py-2 bg-slate-900 border border-slate-800 hover:border-slate-700 text-slate-300 font-semibold rounded-xl transition flex items-center gap-1.5 shadow-sm active:scale-95 touch-manipulation">
-          <i data-lucide="download" class="w-3.5 h-3.5 text-indigo-400 shrink-0"></i>
-          <span class="hidden sm:inline">Export</span>
-          <i data-lucide="chevron-down" class="w-3 h-3 text-slate-500 shrink-0"></i>
-        </button>
-        <div id="focus-action-dropdown" class="hidden absolute right-0 mt-2 w-48 bg-slate-900 border border-slate-800 rounded-xl shadow-2xl py-1.5 z-50 text-xs backdrop-blur-xl divide-y divide-slate-800/60">
-          <button type="button" onclick="exportFocusLogsCSV(); toggleFocusActionMenu(event);" class="w-full px-3 py-2 text-left text-slate-300 hover:bg-slate-800 hover:text-white flex items-center gap-2 font-medium transition">
-            <i data-lucide="file-spreadsheet" class="w-3.5 h-3.5 text-emerald-400 shrink-0"></i> Export CSV (.csv)
-          </button>
-          <button type="button" onclick="exportFocusLogsJSON(); toggleFocusActionMenu(event);" class="w-full px-3 py-2 text-left text-slate-300 hover:bg-slate-800 hover:text-white flex items-center gap-2 font-medium transition">
-            <i data-lucide="file-code" class="w-3.5 h-3.5 text-amber-400 shrink-0"></i> Export JSON Backup
-          </button>
-        </div>
-      </div>
-
-      <button type="button" onclick="window.switchAppView('time')" class="hidden sm:flex px-3.5 py-2 bg-indigo-600 hover:bg-indigo-500 font-bold text-xs text-white rounded-xl shadow-lg transition items-center gap-1.5 active:scale-95 touch-manipulation shrink-0">
-        <i data-lucide="timer" class="w-4 h-4 shrink-0"></i>
-        <span>Log time in Time Log</span>
-      </button>
-    </div>
-  </div>
-
-  <!-- How it works + Soundscape status -->
-  <div class="glass-card rounded-2xl p-3.5 sm:p-4 border border-slate-800/80 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-    <div class="flex items-start gap-3 min-w-0">
-      <div class="p-2 rounded-xl bg-indigo-500/10 text-indigo-400 shrink-0">
-        <i data-lucide="timer" class="w-4 h-4"></i>
-      </div>
-      <div class="min-w-0">
-        <div class="text-xs font-bold text-white">Your time is logged in one place</div>
-        <p class="text-[11px] text-slate-400 mt-0.5">Start the ring timer in <span class="text-amber-300 font-semibold">Time Log</span>, pick the project, and stop it when you are done.</p>
-      </div>
-    </div>
-    <button type="button" onclick="window.switchAppView('time')" class="shrink-0 px-3 py-2 bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs rounded-xl transition active:scale-95 flex items-center gap-1.5">
-      <i data-lucide="timer" class="w-3.5 h-3.5"></i> Open Time Log
-    </button>
-  </div>
-
-  <!-- Procedural Soundscape (ambient audio) -->
-  <div class="space-y-3.5">
-      
-      <!-- Multi-Channel Procedural Ambient Soundcard -->
-      <div class="glass-card rounded-3xl p-4 sm:p-5 border border-slate-800 space-y-3.5">
-        <div class="flex items-center justify-between gap-2 border-b border-slate-800/80 pb-2.5">
-          <h3 class="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-2">
-            <i data-lucide="radio" class="w-4 h-4 text-indigo-400"></i> Procedural Audio Synthesizer
-          </h3>
-          <span id="focus-kpi-sound-status" class="text-[10px] text-amber-400 font-mono shrink-0">Inactive</span>
-        </div>
-
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs">
-          
-          <!-- Rain Synth -->
-          <div class="p-3 bg-slate-950 rounded-2xl border border-slate-800 flex items-center justify-between gap-2">
-            <div class="flex items-center gap-2.5 min-w-0">
-              <div class="p-2 rounded-xl bg-sky-500/10 text-sky-400 shrink-0">
-                <i data-lucide="cloud-rain" class="w-4 h-4"></i>
-              </div>
-              <div class="truncate">
-                <span class="font-bold text-white block truncate">Rain Storm</span>
-                <span class="text-[10px] text-slate-500 font-mono">Filtered Pink Noise</span>
-              </div>
-            </div>
-            <button type="button" onclick="toggleAmbientSound('rain')" id="audio-btn-rain" class="px-3 py-1.5 bg-slate-900 border border-slate-800 text-slate-300 hover:text-white rounded-xl font-bold transition text-[11px] shrink-0">Play</button>
-          </div>
-
-          <!-- White Noise Synth -->
-          <div class="p-3 bg-slate-950 rounded-2xl border border-slate-800 flex items-center justify-between gap-2">
-            <div class="flex items-center gap-2.5 min-w-0">
-              <div class="p-2 rounded-xl bg-teal-500/10 text-teal-400 shrink-0">
-                <i data-lucide="waves" class="w-4 h-4"></i>
-              </div>
-              <div class="truncate">
-                <span class="font-bold text-white block truncate">White Noise</span>
-                <span class="text-[10px] text-slate-500 font-mono">Gaussian Spectrum</span>
-              </div>
-            </div>
-            <button type="button" onclick="toggleAmbientSound('white')" id="audio-btn-white" class="px-3 py-1.5 bg-slate-900 border border-slate-800 text-slate-300 hover:text-white rounded-xl font-bold transition text-[11px] shrink-0">Play</button>
-          </div>
-
-          <!-- Binaural Focus Drone -->
-          <div class="p-3 bg-slate-950 rounded-2xl border border-slate-800 flex items-center justify-between gap-2">
-            <div class="flex items-center gap-2.5 min-w-0">
-              <div class="p-2 rounded-xl bg-purple-500/10 text-purple-400 shrink-0">
-                <i data-lucide="zap" class="w-4 h-4"></i>
-              </div>
-              <div class="truncate">
-                <span class="font-bold text-white block truncate">432Hz Drone</span>
-                <span class="text-[10px] text-slate-500 font-mono">Harmonic Resonance</span>
-              </div>
-            </div>
-            <button type="button" onclick="toggleAmbientSound('drone')" id="audio-btn-drone" class="px-3 py-1.5 bg-slate-900 border border-slate-800 text-slate-300 hover:text-white rounded-xl font-bold transition text-[11px] shrink-0">Play</button>
-          </div>
-
-          <!-- Coffee Shop Ambient Drone -->
-          <div class="p-3 bg-slate-950 rounded-2xl border border-slate-800 flex items-center justify-between gap-2">
-            <div class="flex items-center gap-2.5 min-w-0">
-              <div class="p-2 rounded-xl bg-amber-500/10 text-amber-400 shrink-0">
-                <i data-lucide="coffee" class="w-4 h-4"></i>
-              </div>
-              <div class="truncate">
-                <span class="font-bold text-white block truncate">Brown Noise</span>
-                <span class="text-[10px] text-slate-500 font-mono">Deep Warmth</span>
-              </div>
-            </div>
-            <button type="button" onclick="toggleAmbientSound('brown')" id="audio-btn-brown" class="px-3 py-1.5 bg-slate-900 border border-slate-800 text-slate-300 hover:text-white rounded-xl font-bold transition text-[11px] shrink-0">Play</button>
-          </div>
-
-        </div>
-
-        <!-- Master Volume Slider -->
-        <div class="p-3 bg-slate-950 rounded-2xl border border-slate-800 space-y-1.5">
-          <div class="flex justify-between items-center text-[10px] font-semibold text-slate-400">
-            <span class="flex items-center gap-1.5">
-              <i data-lucide="volume-2" class="w-3.5 h-3.5 text-indigo-400"></i> Master Synthesizer Gain
-            </span>
-            <span id="ambient-volume-label" class="font-mono text-indigo-400">50%</span>
-          </div>
-          <input type="range" id="ambient-volume" min="0" max="1" step="0.05" value="0.5" oninput="setAmbientVolume(this.value)" class="w-full accent-indigo-500 cursor-pointer" />
-        </div>
-      </div>
-
-      <!-- How sessions are logged -->
-      <div class="glass-card rounded-3xl p-4 sm:p-5 border border-slate-800 space-y-3">
-        <div class="flex items-center justify-between border-b border-slate-800/80 pb-2">
-          <h3 class="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-2">
-            <i data-lucide="history" class="w-4 h-4 text-indigo-400"></i> Past Focus Sessions
-          </h3>
-          <span id="focus-history-count" class="text-[10px] text-slate-500 font-mono">0 sessions</span>
-        </div>
-
-        <div id="focus-history-container" class="space-y-2 max-h-48 overflow-y-auto pr-1">
-          <!-- Injected dynamically via JS -->
-        </div>
-      </div>
-
-    </div>
-  </div>
-
-</section>
 
 <!-- ========================================================================= -->
 <!-- SECTION 12 JAVASCRIPT LOGIC MODULE                                        -->
@@ -17867,7 +17713,7 @@ html, body {
       activeSoundType = null;
       document.querySelectorAll('[id^="audio-btn-"]').forEach(b => {
         b.textContent = 'Play';
-        b.className = 'px-3 py-1.5 bg-slate-900 border border-slate-800 text-slate-300 hover:text-white rounded-xl font-bold transition text-[11px] shrink-0';
+        b.className = 'px-2 py-2 bg-slate-950 border border-slate-800 text-slate-300 hover:text-white rounded-lg font-bold transition text-[11px]';
       });
       const statusEl = document.getElementById('focus-kpi-sound-status');
       if (statusEl) statusEl.textContent = 'Inactive';
@@ -17890,7 +17736,7 @@ html, body {
       const btn = document.getElementById(`audio-btn-${type}`);
       if (btn) {
         btn.textContent = 'Stop';
-        btn.className = 'px-3 py-1.5 bg-indigo-600 text-white rounded-xl font-bold transition text-[11px] shrink-0 shadow-md shadow-indigo-600/20 animate-pulse';
+        btn.className = 'px-2 py-2 bg-indigo-600 text-white rounded-lg font-bold transition text-[11px] shrink-0 shadow-md shadow-indigo-600/20 animate-pulse';
       }
 
       const statusEl = document.getElementById('focus-kpi-sound-status');
@@ -20226,7 +20072,6 @@ html, body {
           case 'bookmarks': window.renderBookmarksGrid?.(); break;
           case 'vehicle': window.renderVehicleLogs?.(); break;
           case 'mindmap': window.renderMindmapNodes?.(); break;
-          case 'focus': window.renderFocusView?.(); break;
           case 'analytics': window.renderAnalyticsView?.(); break;
         }
         if (typeof window.updateBadges === 'function') window.updateBadges();
@@ -20250,7 +20095,6 @@ html, body {
       { id: 'mindmap', label: 'Mindmap', icon: 'brain-circuit', hex: '#10b981', colorClass: 'text-emerald-400', bgClass: 'bg-emerald-600 hover:bg-emerald-500 text-slate-950', badgeClass: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30' },
       { id: 'links', label: 'Vault', icon: 'bookmark', hex: '#38bdf8', colorClass: 'text-sky-400', bgClass: 'bg-sky-500 hover:bg-sky-400 text-slate-950', badgeClass: 'bg-sky-500/20 text-sky-300 border-sky-500/30' },
       { id: 'vehicles', label: 'Vehicles', icon: 'car', hex: '#60a5fa', colorClass: 'text-blue-400', bgClass: 'bg-blue-500 hover:bg-blue-400 text-white', badgeClass: 'bg-blue-500/20 text-blue-300 border-blue-500/30' },
-      { id: 'focus', label: 'Soundscape', icon: 'headphones', hex: '#818cf8', colorClass: 'text-indigo-400', bgClass: 'bg-indigo-600 hover:bg-indigo-500 text-white', badgeClass: 'bg-indigo-500/20 text-indigo-300 border-indigo-500/30' },
       { id: 'analytics', label: 'Backup', icon: 'database', hex: '#2dd4bf', colorClass: 'text-teal-400', bgClass: 'bg-teal-500 hover:bg-teal-400 text-slate-950', badgeClass: 'bg-teal-500/20 text-teal-300 border-teal-500/30' },
       { id: 'settings', label: 'Studio', icon: 'sliders', hex: '#2dd4bf', colorClass: 'text-teal-400', bgClass: 'bg-teal-500 hover:bg-teal-400 text-slate-950', badgeClass: 'bg-teal-500/20 text-teal-300 border-teal-500/30' }
     ];
@@ -20647,6 +20491,7 @@ html, body {
           if (typeof window.openAddLinkModal === 'function') return window.openAddLinkModal();
           break;
         case 'focus':
+          if (window.switchTab) window.switchTab('time');
           if (typeof window.toggleTimerEngine === 'function') return window.toggleTimerEngine();
           break;
         default:
