@@ -10240,12 +10240,6 @@ html, body {
       </h2>
 
       <div class="flex items-center gap-2 shrink-0">
-        <!-- Mobile View Switcher Toggle Button (List vs Editor) -->
-        <button type="button" onclick="toggleMobileNotesSidebar()" id="mobile-notes-toggle-btn" title="Switch between Notes List and Editor" class="lg:hidden p-2 sm:px-3 sm:py-1.5 bg-slate-900 border border-slate-800 hover:border-slate-700 text-amber-400 font-bold text-xs rounded-xl flex items-center gap-1.5 shrink-0 transition touch-manipulation">
-          <i data-lucide="pencil-line" class="w-4 h-4 shrink-0"></i>
-          <span id="mobile-toggle-btn-text" class="hidden sm:inline">Note Editor</span>
-        </button>
-
         <!-- Primary action (mobile placement) -->
         <button type="button" onclick="createNewNote()" class="sm:hidden px-3 py-1.5 app-accent-bg text-slate-950 font-bold text-xs rounded-xl transition flex items-center gap-1.5 shadow-lg active:scale-95 touch-manipulation shrink-0">
           <i data-lucide="plus" class="w-4 h-4 shrink-0"></i>
@@ -10358,15 +10352,21 @@ html, body {
     </div>
 
     <!-- Right Workspace: Note Editor & Markdown Live Canvas -->
-    <div id="notes-editor-panel" class="lg:col-span-8 glass-card rounded-2xl p-4 md:p-5 space-y-3.5 flex flex-col justify-between min-h-[580px] border border-slate-800 relative">
-      <div class="space-y-3 flex-1 flex flex-col">
+    <div id="notes-editor-panel" class="lg:col-span-8 glass-card rounded-2xl p-4 md:p-5 space-y-3.5 flex flex-col justify-between h-[calc(100dvh-262px)] min-h-[340px] lg:h-auto lg:min-h-[580px] border border-slate-800 relative">
+      <div class="space-y-3 flex-1 min-h-0 flex flex-col">
         
-        <!-- Header Controls: Pin, Title Input, Overflow Actions -->
+        <!-- Header Controls: Back, Title Input, Pin, Overflow Actions -->
         <div class="flex items-center gap-2 border-b border-slate-800 pb-2.5">
+          <!-- Back to the notes list (mobile) -->
+          <button type="button" onclick="showMobileNotesListPanel()" class="lg:hidden shrink-0 p-2 rounded-xl bg-slate-950 border border-slate-800 hover:border-amber-500/40 text-slate-300 hover:text-white active:scale-95 transition" title="Back to notes list">
+            <i data-lucide="arrow-left" class="w-4 h-4"></i>
+          </button>
+
+          <input id="note-title-input" type="text" oninput="markUnsavedChanges()" placeholder="Untitled note — tap to rename" class="flex-1 min-w-0 bg-transparent border-b border-slate-700/70 focus:border-amber-500 pb-1 text-base md:text-lg font-bold text-white outline-none transition placeholder:text-slate-600 placeholder:font-medium focus:placeholder:text-slate-700" />
+
           <button type="button" id="note-pin-btn" onclick="togglePinCurrentNote()" class="p-2 rounded-xl bg-slate-950 border border-slate-800 text-slate-400 hover:text-amber-400 transition shrink-0" title="Favorite / Pin Note">
             <i data-lucide="pin" class="w-4 h-4"></i>
           </button>
-          <input id="note-title-input" type="text" oninput="markUnsavedChanges()" placeholder="Note Title..." class="flex-1 min-w-0 bg-transparent text-base md:text-lg font-bold text-white outline-none focus:border-amber-500 transition truncate" />
 
           <!-- Overflow actions (copy / download / version history / audit) -->
           <div class="relative shrink-0" id="note-overflow-wrapper">
@@ -10454,6 +10454,9 @@ html, body {
             <button type="button" onclick="openInsertHyperlinkModal()" class="p-1.5 rounded leading-none hover:bg-slate-800 text-sky-400 font-bold" title="Insert Hyperlink">🔗 URL</button>
             <button type="button" onclick="insertMarkdownFormat('`', '`', 'code')" class="p-1.5 rounded leading-none hover:bg-slate-800 text-amber-300 font-mono text-[11px]" title="Inline Code (`code`)">&lt;/&gt;</button>
             <button type="button" onclick="insertMarkdownFormat('\n```javascript\n', '\n```\n', '// code here')" class="p-1.5 rounded leading-none hover:bg-slate-800 text-amber-300 font-mono text-[11px]" title="Code Block (```)">Block</button>
+            <button type="button" onclick="insertCurrentDateTime()" class="p-1.5 rounded leading-none hover:bg-slate-800 text-emerald-400 flex items-center" title="Insert today's date &amp; time">
+              <i data-lucide="calendar-clock" class="w-4 h-4"></i>
+            </button>
             <button type="button" onclick="openInsertTableModal()" class="p-1.5 rounded leading-none hover:bg-slate-800 text-emerald-400 flex items-center" title="Build &amp; Insert Table">
               <i data-lucide="table" class="w-4 h-4"></i>
             </button>
@@ -10477,7 +10480,7 @@ html, body {
         </div>
 
         <!-- Note Text Editor & Live Preview Panes Container -->
-        <div id="note-panes-wrapper" class="flex-1 min-h-[340px] md:min-h-[400px] flex gap-4 relative">
+        <div id="note-panes-wrapper" class="flex-1 min-h-[220px] md:min-h-[400px] flex gap-4 relative">
           <!-- Textarea Editor with WikiLinks Listener -->
           <div id="note-editor-container" class="flex-1 flex flex-col relative w-full">
             <textarea id="note-content-input" oninput="handleNoteContentInput()" placeholder="Start typing specifications, thoughts, [[WikiLinks]], or markdown notes... (Tip: Paste images directly with Ctrl+V!)" class="flex-1 w-full h-full bg-transparent text-xs text-slate-200 outline-none resize-none leading-relaxed font-mono p-1 border-0 focus:ring-0"></textarea>
@@ -10496,8 +10499,8 @@ html, body {
 
       </div>
 
-      <!-- Footer Action Bar (sticky): TOC + Backlinks + Save -->
-      <div class="sticky bottom-[58px] sm:bottom-0 z-20 -mx-4 md:-mx-5 px-3 md:px-5 py-1.5 bg-slate-950/95 backdrop-blur-md border-t border-slate-800 flex items-center justify-between gap-1.5 relative">
+      <!-- Footer Action Bar: TOC + Backlinks + Save (bottom row of the panel) -->
+      <div class="flex items-center justify-between gap-1.5 relative border-t border-slate-800 pt-1.5">
 
         <!-- Table of Contents + Backlinks popovers -->
         <div class="flex items-center gap-1 shrink-0">
@@ -10921,7 +10924,7 @@ html, body {
     };
 
     /* On phones the sidebar + editor stack into one very long page.
-       Open on the Notes List instead; the header toggle switches to the editor. */
+       Open on the Notes List instead; opening a note switches to the editor. */
     window.initMobileNotesLayout = function() {
       if (hasInitMobileNotesLayout) return;
       if (window.innerWidth >= 1024) return;
@@ -10931,37 +10934,44 @@ html, body {
       hasInitMobileNotesLayout = true;
       sidebar.classList.remove('hidden');
       editor.classList.add('hidden');
-      updateMobileNotesToggle(false);
     };
 
-    function updateMobileNotesToggle(editorVisible) {
-      const btnText = document.getElementById('mobile-toggle-btn-text');
-      if (btnText) btnText.textContent = editorVisible ? 'Notes List' : 'Note Editor';
-      const btn = document.getElementById('mobile-notes-toggle-btn');
-      if (btn) {
-        const iconEl = btn.querySelector('[data-lucide]');
-        if (iconEl) {
-          iconEl.setAttribute('data-lucide', editorVisible ? 'list' : 'pencil-line');
-          refreshIconsScoped(btn);
-        }
-      }
-    }
+    /* Fits the editor panel into the space between the header and the bottom nav */
+    window.syncNotesEditorHeight = function() {
+      const panel = document.getElementById('notes-editor-panel');
+      if (!panel) return;
 
-    window.toggleMobileNotesSidebar = function() {
+      if (window.innerWidth >= 1024) {
+        panel.style.height = '';
+        return;
+      }
+
+      const header = document.querySelector('#view-notes > div.glass-card');
+      let top = 0;
+      if (header) {
+        const hr = header.getBoundingClientRect();
+        top = hr.height > 0 ? hr.bottom + 12 : 190;
+      } else {
+        top = 190;
+      }
+
+      const navSpace = 64;
+      const height = Math.max(340, window.innerHeight - top - navSpace - 8);
+      panel.style.height = height + 'px';
+    };
+
+    window.addEventListener('resize', function() {
+      window.syncNotesEditorHeight();
+    });
+
+    /* Back button: return to the notes list on phones */
+    window.showMobileNotesListPanel = function() {
+      if (window.innerWidth >= 1024) return;
       const sidebar = document.getElementById('notes-sidebar-panel');
       const editor = document.getElementById('notes-editor-panel');
-
-      if (!sidebar || !editor) return;
-
-      const isSidebarHidden = sidebar.classList.contains('hidden');
-      if (isSidebarHidden) {
+      if (sidebar && editor) {
         sidebar.classList.remove('hidden');
         editor.classList.add('hidden');
-        updateMobileNotesToggle(false);
-      } else {
-        sidebar.classList.add('hidden');
-        editor.classList.remove('hidden');
-        updateMobileNotesToggle(true);
       }
     };
 
@@ -11036,40 +11046,85 @@ html, body {
     };
 
     /* Web Speech Voice Dictation */
+    const VOICE_IDLE_CLASS = 'p-1.5 rounded leading-none hover:bg-slate-800 text-rose-400 flex items-center transition';
+    const VOICE_ACTIVE_CLASS = 'p-1.5 rounded leading-none bg-rose-500/20 text-rose-300 border border-rose-500/40 flex items-center animate-pulse';
+
     window.toggleVoiceDictation = function() {
       const btn = document.getElementById('btn-voice-dictation');
       const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 
       if (!SpeechRecognition) {
-        if (window.showToast) window.showToast('Speech recognition not supported in this browser.', 'error');
+        if (window.showToast) window.showToast('Speech recognition is not supported in this browser.', 'error');
         return;
       }
 
       if (isVoiceDictating) {
-        if (voiceRecognitionInstance) voiceRecognitionInstance.stop();
+        if (voiceRecognitionInstance) {
+          voiceRecognitionInstance.onend = null;
+          try { voiceRecognitionInstance.stop(); } catch (e) {}
+        }
         isVoiceDictating = false;
-        if (btn) btn.className = 'w-full px-3 py-2.5 text-left text-slate-300 hover:bg-slate-800 hover:text-white flex items-center gap-2 font-medium transition';
+        if (btn) btn.className = VOICE_IDLE_CLASS;
         if (window.showToast) window.showToast('Voice dictation stopped.', 'info');
-      } else {
+        return;
+      }
+
+      try {
         voiceRecognitionInstance = new SpeechRecognition();
-        voiceRecognitionInstance.continuous = true;
-        voiceRecognitionInstance.interimResults = false;
-        voiceRecognitionInstance.lang = 'en-US';
+      } catch (err) {
+        if (window.showToast) window.showToast('Could not start dictation: ' + err.message, 'error');
+        return;
+      }
 
-        voiceRecognitionInstance.onresult = function(event) {
-          const transcript = event.results[event.results.length - 1][0].transcript;
-          insertMarkdownFormat(' ', '', transcript);
-        };
+      voiceRecognitionInstance.continuous = true;
+      voiceRecognitionInstance.interimResults = true;
+      voiceRecognitionInstance.lang = 'en-US';
 
-        voiceRecognitionInstance.onerror = function() {
-          isVoiceDictating = false;
-          if (btn) btn.className = 'w-full px-3 py-2.5 text-left text-slate-300 hover:bg-slate-800 hover:text-white flex items-center gap-2 font-medium transition';
-        };
+      voiceRecognitionInstance.onresult = function(event) {
+        let transcript = '';
+        let interim = '';
+        for (let i = event.resultIndex; i < event.results.length; i++) {
+          const chunk = event.results[i][0].transcript;
+          if (event.results[i].isFinal) transcript += chunk;
+          else interim += chunk;
+        }
+        if (transcript) insertMarkdownFormat('', '', transcript);
+        else if (interim) {
+          const ta = document.getElementById('note-content-input');
+          if (ta) ta.setAttribute('data-interim', interim);
+        }
+      };
 
+      voiceRecognitionInstance.onerror = function(event) {
+        const code = (event && event.error) || 'unknown';
+        isVoiceDictating = false;
+        if (btn) btn.className = VOICE_IDLE_CLASS;
+        if (code === 'not-allowed' || code === 'service-not-allowed') {
+          if (window.showToast) window.showToast('Microphone blocked — allow mic access to dictate.', 'error');
+        } else if (code === 'no-speech') {
+          if (window.showToast) window.showToast('Did not catch that — try again.', 'info');
+        } else if (code === 'network') {
+          if (window.showToast) window.showToast('Dictation needs a working network connection.', 'error');
+        } else {
+          if (window.showToast) window.showToast('Dictation error: ' + code, 'error');
+        }
+      };
+
+      voiceRecognitionInstance.onend = function() {
+        // Chrome ends the session after a pause - keep listening while active
+        if (isVoiceDictating && voiceRecognitionInstance) {
+          try { voiceRecognitionInstance.start(); } catch (e) { isVoiceDictating = false; if (btn) btn.className = VOICE_IDLE_CLASS; }
+        }
+      };
+
+      try {
         voiceRecognitionInstance.start();
         isVoiceDictating = true;
-        if (btn) btn.className = 'p-1.5 rounded bg-rose-500 text-white font-mono text-[11px] font-bold flex items-center gap-1 animate-pulse';
-        if (window.showToast) window.showToast('🎙️ Voice dictation active! Start speaking...', 'success');
+        if (btn) btn.className = VOICE_ACTIVE_CLASS;
+        if (window.showToast) window.showToast('Listening... speak now.', 'success');
+      } catch (err) {
+        isVoiceDictating = false;
+        if (window.showToast) window.showToast('Could not start dictation: ' + err.message, 'error');
       }
     };
 
@@ -11298,6 +11353,7 @@ html, body {
       html = html.replace(/^- \[x\] (.*$)/gim, '<div class="flex items-center gap-2 text-slate-400 line-through my-1"><span class="w-4 h-4 rounded bg-amber-500/20 text-amber-400 border border-amber-500/40 flex items-center justify-center text-[10px] shrink-0 font-bold">✓</span> <span>$1</span></div>');
       html = html.replace(/^- \[ \] (.*$)/gim, '<div class="flex items-center gap-2 text-slate-200 my-1"><span class="w-4 h-4 rounded bg-slate-900 border border-slate-700 shrink-0"></span> <span>$1</span></div>');
       html = html.replace(/^[\-\*] (.*$)/gim, '<li class="ml-4 list-disc text-slate-300 my-0.5">$1</li>');
+      html = html.replace(/^(\d+)\. (.*$)/gim, '<div class="flex items-start gap-2 text-slate-300 my-0.5"><span class="font-mono text-amber-400/80 text-[11px] shrink-0 mt-px">$1.</span><span>$2</span></div>');
       html = html.replace(/~~([^~]+)~~/g, '<del class="line-through text-slate-500">$1</del>');
       html = html.replace(/==([^=]+)==/g, '<mark class="bg-amber-500/30 text-amber-200 px-1 py-0.5 rounded border border-amber-500/40">$1</mark>');
       html = html.replace(/\*\*([^\*]+)\*\*/g, '<strong class="font-bold text-white">$1</strong>');
@@ -11591,6 +11647,8 @@ html, body {
         folders.forEach(f => {
           const isNode = f.isNodeFolder || !!f.nodeTag;
           const noteCount = (window.appState.notes || []).filter(n => n.folderId === f.id).length;
+          // Consistent with Goals/Tasks: empty mindmap node folders are not listed
+          if (isNode && noteCount === 0 && f.id !== 'nf_default' && window.appState.activeNoteFolderFilter !== f.id) return;
           const opt = document.createElement('option');
           opt.value = f.id;
           opt.textContent = `${isNode ? '🧠 ' : '📁 '}${f.name}${noteCount ? ` (${noteCount})` : ''}`;
@@ -11705,7 +11763,6 @@ html, body {
             if (sidebar && editor) {
               sidebar.classList.add('hidden');
               editor.classList.remove('hidden');
-              updateMobileNotesToggle(true);
             }
           }
         };
@@ -11771,7 +11828,6 @@ html, body {
           if (sidebarPanel && editorPanel) {
             sidebarPanel.classList.add('hidden');
             editorPanel.classList.remove('hidden');
-            updateMobileNotesToggle(true);
           }
         }
 
@@ -12266,6 +12322,14 @@ html, body {
         window.loadNoteIntoEditor(note.id);
         if (window.showToast) window.showToast(note.pinned ? 'Pinned to favorites!' : 'Unpinned from favorites', 'info');
       }
+    };
+
+    window.insertCurrentDateTime = function() {
+      const now = new Date();
+      const stamp = now.toLocaleString('en-GB', {
+        day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit'
+      });
+      window.insertMarkdownFormat('', '', `📅 ${stamp}`);
     };
 
     window.insertMarkdownFormat = function(prefix, suffix, defaultText) {
@@ -19945,7 +20009,7 @@ html, body {
           case 'calendar': window.renderCalendarView?.(); break;
           case 'time': window.renderTimeTrackerView?.(); break;
           case 'logbook': window.renderLogbookTimeline?.(true); break;
-          case 'notes': window.ensureNoteEditorLoaded?.(); window.renderNoteFoldersNav?.(); window.renderNotesList?.(); break;
+          case 'notes': window.ensureNoteEditorLoaded?.(); window.renderNoteFoldersNav?.(); window.renderNotesList?.(); window.syncNotesEditorHeight?.(); break;
           case 'habits':
             if (typeof window.renderHabitsView === 'function') window.renderHabitsView();
             else window.renderHabitsMatrix?.();
