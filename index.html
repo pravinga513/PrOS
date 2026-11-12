@@ -10254,12 +10254,11 @@ html, body {
       </div>
     </div>
 
-    <!-- Toolbar Action Strip: single scrollable row instead of wrapping -->
-    <div class="relative w-full lg:w-auto">
-      <div class="flex items-center gap-2 w-full lg:w-auto lg:justify-end text-xs overflow-x-auto pb-0.5">
+    <!-- Toolbar Action Buttons -->
+    <div class="flex items-center gap-2 w-full lg:w-auto lg:justify-end text-xs">
       <!-- Insert Template Dropdown -->
-      <select id="note-template-select" onchange="applyNoteTemplate(this.value)" class="bg-slate-950 border border-slate-800 text-slate-300 rounded-xl px-3 py-2 text-xs outline-none focus:border-amber-500 transition font-medium shrink-0 w-[150px] sm:w-auto">
-        <option value="">+ Insert Template...</option>
+      <select id="note-template-select" onchange="applyNoteTemplate(this.value)" class="bg-slate-950 border border-slate-800 text-slate-300 rounded-xl px-2.5 py-2 text-[11px] outline-none focus:border-amber-500 transition font-medium shrink-0 w-[118px] sm:w-auto">
+        <option value="">+ Template...</option>
         <option value="vehicle">🚗 Vehicle Maintenance Log</option>
         <option value="meeting">📅 Meeting Notes &amp; Action Items</option>
         <option value="project">⚡ Project Architecture Specification</option>
@@ -10269,52 +10268,20 @@ html, body {
       </select>
 
       <!-- Interactive Table Builder -->
-      <button type="button" onclick="openInsertTableModal()" class="px-3 py-2 bg-slate-900 border border-slate-800 hover:border-slate-700 text-slate-300 font-semibold text-xs rounded-xl transition flex items-center gap-1.5 shadow-sm active:scale-95 touch-manipulation shrink-0" title="Insert Interactive Table">
+      <button type="button" onclick="openInsertTableModal()" class="px-2.5 py-2 bg-slate-900 border border-slate-800 hover:border-slate-700 text-slate-300 font-semibold text-[11px] rounded-xl transition flex items-center gap-1.5 shadow-sm active:scale-95 touch-manipulation shrink-0" title="Insert Interactive Table">
         <i data-lucide="table" class="w-3.5 h-3.5 text-emerald-400 shrink-0"></i> <span>Table</span>
       </button>
 
       <!-- Image Upload via ImgBB -->
-      <button type="button" onclick="openInsertImageModal()" class="px-3 py-2 bg-slate-900 border border-slate-800 hover:border-slate-700 text-slate-300 font-semibold text-xs rounded-xl transition flex items-center gap-1.5 shadow-sm active:scale-95 touch-manipulation shrink-0" title="Upload / Attach Image (Fast ImgBB)">
+      <button type="button" onclick="openInsertImageModal()" class="px-2.5 py-2 bg-slate-900 border border-slate-800 hover:border-slate-700 text-slate-300 font-semibold text-[11px] rounded-xl transition flex items-center gap-1.5 shadow-sm active:scale-95 touch-manipulation shrink-0" title="Upload / Attach Image (Fast ImgBB)">
         <i data-lucide="image" class="w-3.5 h-3.5 text-amber-400 shrink-0"></i> <span>Image</span>
       </button>
 
-      <!-- Zen Fullscreen Focus Mode -->
-      <button type="button" onclick="toggleZenFocusMode()" class="px-3 py-2 bg-slate-900 border border-slate-800 hover:border-slate-700 text-purple-400 font-semibold text-xs rounded-xl transition flex items-center gap-1.5 shadow-sm active:scale-95 touch-manipulation shrink-0" title="Distraction-Free Zen Mode">
-        <i data-lucide="maximize-2" class="w-3.5 h-3.5 shrink-0"></i> <span class="sm:hidden">Zen</span><span class="hidden sm:inline">Zen Mode</span>
-      </button>
-
-      <!-- Export & Actions Dropdown Menu -->
-      <div class="relative inline-block text-left shrink-0" id="note-action-dropdown-wrapper">
-        <button type="button" onclick="toggleNoteActionMenu(event)" class="px-3 py-2 bg-slate-900 border border-slate-800 hover:border-slate-700 text-slate-300 font-semibold rounded-xl transition flex items-center gap-1.5 shadow-sm active:scale-95 touch-manipulation">
-          <i data-lucide="download" class="w-3.5 h-3.5 text-sky-400 shrink-0"></i>
-          <span>Export</span>
-          <i data-lucide="chevron-down" class="w-3 h-3 text-slate-500 shrink-0"></i>
-        </button>
-        <div id="note-action-dropdown" class="hidden absolute right-0 mt-2 w-52 bg-slate-900/95 border border-slate-800 rounded-xl shadow-2xl py-1.5 z-50 text-xs backdrop-blur-xl divide-y divide-slate-800/60">
-          <button type="button" onclick="copyCurrentNoteMarkdown(); toggleNoteActionMenu(event);" class="w-full px-3 py-2.5 text-left text-slate-300 hover:bg-slate-800 hover:text-white flex items-center gap-2 font-medium transition">
-            <i data-lucide="copy" class="w-3.5 h-3.5 text-amber-400 shrink-0"></i> Copy Markdown
-          </button>
-          <button type="button" onclick="downloadCurrentNoteAsFile(); toggleNoteActionMenu(event);" class="w-full px-3 py-2.5 text-left text-slate-300 hover:bg-slate-800 hover:text-white flex items-center gap-2 font-medium transition">
-            <i data-lucide="file-code" class="w-3.5 h-3.5 text-emerald-400 shrink-0"></i> Download .md File
-          </button>
-          <button type="button" onclick="openVersionHistoryModal(); toggleNoteActionMenu(event);" class="w-full px-3 py-2.5 text-left text-slate-300 hover:bg-slate-800 hover:text-white flex items-center gap-2 font-medium transition">
-            <i data-lucide="history" class="w-3.5 h-3.5 text-purple-400 shrink-0"></i> Version History (Rollback)
-          </button>
-          <button type="button" onclick="exportNotesAudit(); toggleNoteActionMenu(event);" class="w-full px-3 py-2.5 text-left text-slate-300 hover:bg-slate-800 hover:text-white flex items-center gap-2 font-medium transition">
-            <i data-lucide="file-text" class="w-3.5 h-3.5 text-sky-400 shrink-0"></i> Export Audit (.txt)
-          </button>
-        </div>
-      </div>
-
       <!-- Primary action (desktop placement) -->
-      <button type="button" onclick="createNewNote()" class="hidden sm:flex px-4 py-2 app-accent-bg text-slate-950 font-bold text-xs rounded-xl transition items-center gap-1.5 shadow-lg active:scale-95 touch-manipulation shrink-0">
+      <button type="button" onclick="createNewNote()" class="hidden sm:flex px-3.5 py-2 app-accent-bg text-slate-950 font-bold text-[11px] rounded-xl transition items-center gap-1.5 shadow-lg active:scale-95 touch-manipulation shrink-0">
         <i data-lucide="plus" class="w-4 h-4 shrink-0"></i>
         <span>New Note</span>
       </button>
-      </div>
-
-      <!-- Scroll affordance for the action strip on narrow screens -->
-      <div class="pointer-events-none absolute inset-y-0 right-0 w-8 bg-gradient-to-l from-slate-950/95 to-transparent lg:hidden"></div>
     </div>
   </div>
 
@@ -10394,68 +10361,114 @@ html, body {
     <div id="notes-editor-panel" class="lg:col-span-8 glass-card rounded-2xl p-4 md:p-5 space-y-3.5 flex flex-col justify-between min-h-[580px] border border-slate-800 relative">
       <div class="space-y-3 flex-1 flex flex-col">
         
-        <!-- Header Controls: Title Input, Folder Select, Pin, View Mode Switcher -->
-        <div class="flex flex-col sm:flex-row gap-3 items-start sm:items-center justify-between border-b border-slate-800 pb-3">
-          <div class="flex items-center gap-2 w-full sm:flex-1 min-w-0">
-            <button type="button" id="note-pin-btn" onclick="togglePinCurrentNote()" class="p-2 rounded-xl bg-slate-950 border border-slate-800 text-slate-400 hover:text-amber-400 transition shrink-0" title="Favorite / Pin Note">
-              <i data-lucide="pin" class="w-4 h-4"></i>
+        <!-- Header Controls: Pin, Title Input, Overflow Actions -->
+        <div class="flex items-center gap-2 border-b border-slate-800 pb-2.5">
+          <button type="button" id="note-pin-btn" onclick="togglePinCurrentNote()" class="p-2 rounded-xl bg-slate-950 border border-slate-800 text-slate-400 hover:text-amber-400 transition shrink-0" title="Favorite / Pin Note">
+            <i data-lucide="pin" class="w-4 h-4"></i>
+          </button>
+          <input id="note-title-input" type="text" oninput="markUnsavedChanges()" placeholder="Note Title..." class="flex-1 min-w-0 bg-transparent text-base md:text-lg font-bold text-white outline-none focus:border-amber-500 transition truncate" />
+
+          <!-- Overflow actions (copy / download / version history / audit) -->
+          <div class="relative shrink-0" id="note-overflow-wrapper">
+            <button type="button" onclick="toggleNoteOverflowMenu(event)" class="p-2 rounded-xl bg-slate-950 border border-slate-800 text-slate-400 hover:text-white transition active:scale-95" title="More actions">
+              <i data-lucide="more-horizontal" class="w-4 h-4"></i>
             </button>
-            <input id="note-title-input" type="text" oninput="markUnsavedChanges()" placeholder="Note Title..." class="w-full bg-transparent text-base md:text-lg font-bold text-white outline-none focus:border-amber-500 transition truncate" />
-          </div>
-
-          <div class="flex items-center gap-2 w-full sm:w-auto justify-end">
-            <select id="note-folder-select" onchange="markUnsavedChanges()" class="bg-slate-950 border border-slate-800 text-slate-300 rounded-xl px-2.5 py-1.5 text-xs outline-none focus:border-amber-500 transition font-medium max-w-[150px] truncate">
-              <!-- Populated dynamically -->
-            </select>
-
-            <!-- Mode Switcher: Edit, Split View, Live Preview -->
-            <div class="flex items-center bg-slate-950 p-1 rounded-xl border border-slate-800 text-xs font-semibold shrink-0">
-              <button type="button" onclick="setNoteEditorMode('edit')" id="note-mode-edit-btn" class="px-2.5 py-1 rounded-lg bg-amber-500/20 text-amber-300 border border-amber-500/30 transition">Edit</button>
-              <button type="button" onclick="setNoteEditorMode('split')" id="note-mode-split-btn" class="hidden md:block px-2.5 py-1 rounded-lg text-slate-400 hover:text-slate-200 transition">Split</button>
-              <button type="button" onclick="setNoteEditorMode('preview')" id="note-mode-preview-btn" class="px-2.5 py-1 rounded-lg text-slate-400 hover:text-slate-200 transition">Preview</button>
+            <div id="note-overflow-menu" class="hidden absolute right-0 mt-2 w-52 bg-slate-900/95 border border-slate-800 rounded-xl shadow-2xl py-1.5 z-50 text-xs backdrop-blur-xl divide-y divide-slate-800/60">
+              <button type="button" onclick="copyCurrentNoteMarkdown(); toggleNoteOverflowMenu(event);" class="w-full px-3 py-2.5 text-left text-slate-300 hover:bg-slate-800 hover:text-white flex items-center gap-2 font-medium transition">
+                <i data-lucide="copy" class="w-3.5 h-3.5 text-amber-400 shrink-0"></i> Copy Markdown
+              </button>
+              <button type="button" onclick="downloadCurrentNoteAsFile(); toggleNoteOverflowMenu(event);" class="w-full px-3 py-2.5 text-left text-slate-300 hover:bg-slate-800 hover:text-white flex items-center gap-2 font-medium transition">
+                <i data-lucide="file-code" class="w-3.5 h-3.5 text-emerald-400 shrink-0"></i> Download .md File
+              </button>
+              <button type="button" onclick="openVersionHistoryModal(); toggleNoteOverflowMenu(event);" class="w-full px-3 py-2.5 text-left text-slate-300 hover:bg-slate-800 hover:text-white flex items-center gap-2 font-medium transition">
+                <i data-lucide="history" class="w-3.5 h-3.5 text-purple-400 shrink-0"></i> Version History (Rollback)
+              </button>
+              <button type="button" onclick="exportNotesAudit(); toggleNoteOverflowMenu(event);" class="w-full px-3 py-2.5 text-left text-slate-300 hover:bg-slate-800 hover:text-white flex items-center gap-2 font-medium transition">
+                <i data-lucide="file-text" class="w-3.5 h-3.5 text-sky-400 shrink-0"></i> Export Audit (.txt)
+              </button>
             </div>
           </div>
         </div>
 
-        <!-- Meta Logs & Reading Stats Bar -->
-        <div class="flex flex-wrap items-center justify-between gap-2 text-[10px] text-slate-400 font-mono bg-slate-950/60 p-2 rounded-xl border border-slate-800/80">
-          <div class="flex flex-wrap items-center gap-3">
-            <span>Created: <strong id="note-created-log" class="text-slate-300">--</strong></span>
-            <span>Edited: <strong id="note-updated-log" class="text-slate-300">--</strong></span>
+        <!-- Compact Row: Folder Select + View Mode Switcher -->
+        <div class="flex items-center gap-2">
+          <select id="note-folder-select" onchange="markUnsavedChanges()" class="bg-slate-950 border border-slate-800 text-slate-300 rounded-lg px-2 py-1 text-[11px] outline-none focus:border-amber-500 transition font-medium max-w-[120px] sm:max-w-[170px] truncate">
+            <!-- Populated dynamically -->
+          </select>
+
+          <!-- Mode Switcher: Edit, Split View, Live Preview -->
+          <div class="flex items-center bg-slate-950 p-0.5 rounded-lg border border-slate-800 text-[11px] font-semibold shrink-0 ml-auto">
+            <button type="button" onclick="setNoteEditorMode('edit')" id="note-mode-edit-btn" class="px-2 py-1 rounded-md bg-amber-500/20 text-amber-300 border border-amber-500/30 transition">Edit</button>
+            <button type="button" onclick="setNoteEditorMode('split')" id="note-mode-split-btn" class="hidden md:block px-2 py-1 rounded-md text-slate-400 hover:text-slate-200 transition">Split</button>
+            <button type="button" onclick="setNoteEditorMode('preview')" id="note-mode-preview-btn" class="px-2 py-1 rounded-md text-slate-400 hover:text-slate-200 transition">Preview</button>
           </div>
-          <div class="flex items-center gap-3">
+        </div>
+
+        <!-- Meta Logs & Reading Stats Bar -->
+        <div class="flex items-center justify-between gap-2 text-[10px] text-slate-400 font-mono bg-slate-950/60 px-2.5 py-1.5 rounded-lg border border-slate-800/80 overflow-hidden">
+          <div class="flex items-center gap-2 min-w-0 truncate">
+            <span class="hidden sm:inline shrink-0">Created: <strong id="note-created-log" class="text-slate-300">--</strong></span>
+            <span class="shrink-0">Edited: <strong id="note-updated-log" class="text-slate-300">--</strong></span>
+          </div>
+          <div class="flex items-center gap-2 shrink-0">
             <span id="note-reading-time" class="text-slate-400">0 min read</span>
             <span id="note-word-count" class="text-amber-400 font-bold">0 words | 0 chars</span>
           </div>
         </div>
 
-        <!-- Markdown Quick Formatting Toolbar -->
-        <div id="note-format-toolbar" class="flex flex-wrap items-center gap-1 p-1.5 bg-slate-950/80 rounded-xl border border-slate-800 text-xs overflow-x-auto">
-          <button type="button" onclick="insertMarkdownFormat('**', '**', 'bold text')" class="p-1.5 rounded hover:bg-slate-800 text-slate-300 font-bold" title="Bold (**text**)">B</button>
-          <button type="button" onclick="insertMarkdownFormat('*', '*', 'italic text')" class="p-1.5 rounded hover:bg-slate-800 text-slate-300 italic" title="Italic (*text*)">I</button>
-          <button type="button" onclick="insertMarkdownFormat('~~', '~~', 'strikethrough')" class="p-1.5 rounded hover:bg-slate-800 text-slate-400 line-through" title="Strikethrough (~~text~~)">S</button>
-          <button type="button" onclick="insertMarkdownFormat('==', '==', 'highlighted text')" class="p-1.5 rounded hover:bg-slate-800 text-amber-300 font-bold bg-amber-500/10 px-2" title="Highlight (==text==)">H</button>
-          <div class="w-px h-4 bg-slate-800 mx-1 shrink-0"></div>
-          <button type="button" onclick="insertMarkdownFormat('# ', '', 'Heading 1')" class="p-1.5 rounded hover:bg-slate-800 text-amber-400 font-extrabold" title="Heading 1 (#)">H1</button>
-          <button type="button" onclick="insertMarkdownFormat('## ', '', 'Heading 2')" class="p-1.5 rounded hover:bg-slate-800 text-amber-400 font-bold" title="Heading 2 (##)">H2</button>
-          <button type="button" onclick="insertMarkdownFormat('### ', '', 'Heading 3')" class="p-1.5 rounded hover:bg-slate-800 text-amber-400 font-semibold" title="Heading 3 (###)">H3</button>
-          <div class="w-px h-4 bg-slate-800 mx-1 shrink-0"></div>
-          <button type="button" onclick="insertMarkdownFormat('- ', '', 'Bullet item')" class="p-1.5 rounded hover:bg-slate-800 text-slate-300" title="Bullet List (- )">• List</button>
-          <button type="button" onclick="insertMarkdownFormat('- [ ] ', '', 'Task item')" class="p-1.5 rounded hover:bg-slate-800 text-slate-300" title="Task Checkbox (- [ ])">☑ Task</button>
-          <button type="button" onclick="insertMarkdownFormat('> ', '', 'Quote text')" class="p-1.5 rounded hover:bg-slate-800 text-slate-300" title="Blockquote (> )">“ Quote</button>
-          <button type="button" onclick="insertWikiLinkPlaceholder()" class="p-1.5 rounded hover:bg-slate-800 text-sky-400 font-bold" title="Insert [[WikiLink]]">[[Link]]</button>
-          <button type="button" onclick="openInsertHyperlinkModal()" class="p-1.5 rounded hover:bg-slate-800 text-sky-400 font-bold" title="Insert Hyperlink">🔗 URL</button>
-          <div class="w-px h-4 bg-slate-800 mx-1 shrink-0"></div>
-          <button type="button" onclick="insertMarkdownFormat('`', '`', 'code')" class="p-1.5 rounded hover:bg-slate-800 text-amber-300 font-mono text-[11px]" title="Inline Code (`code`)">&lt;/&gt;</button>
-          <button type="button" onclick="insertMarkdownFormat('\n```javascript\n', '\n```\n', '// code here')" class="p-1.5 rounded hover:bg-slate-800 text-amber-300 font-mono text-[11px]" title="Code Block (```)">Block</button>
-          <button type="button" onclick="insertMermaidPlaceholder()" class="p-1.5 rounded hover:bg-slate-800 text-purple-400 font-mono text-[11px] font-bold" title="Insert Mermaid Diagram">📐 Diagram</button>
-          <button type="button" onclick="insertKaTeXPlaceholder()" class="p-1.5 rounded hover:bg-slate-800 text-teal-400 font-mono text-[11px] font-bold" title="Insert LaTeX Formula">🧮 Math</button>
-          <button type="button" onclick="toggleVoiceDictation()" id="btn-voice-dictation" class="p-1.5 rounded hover:bg-slate-800 text-rose-400 font-mono text-[11px] font-bold flex items-center gap-1" title="Voice-to-Text Dictation">
-            <i data-lucide="mic" class="w-3.5 h-3.5"></i>
-          </button>
-          <button type="button" onclick="openInsertTableModal()" class="p-1.5 rounded hover:bg-slate-800 text-emerald-400 font-mono text-[11px] font-bold flex items-center gap-1" title="Build &amp; Insert Table">📊 Table</button>
-          <button type="button" onclick="openInsertImageModal()" class="p-1.5 rounded hover:bg-slate-800 text-amber-400 font-mono text-[11px] flex items-center gap-1 font-bold" title="Insert / Upload Image">🖼️ Image</button>
-          <button type="button" onclick="insertMarkdownFormat('\n---\n', '', '')" class="p-1.5 rounded hover:bg-slate-800 text-slate-400 text-[11px]" title="Divider (---)">— HR</button>
+        <!-- Markdown Quick Formatting Toolbar (essentials + overflow) -->
+        <div id="note-format-toolbar" class="flex items-center gap-1 p-1.5 bg-slate-950/80 rounded-xl border border-slate-800 text-xs">
+          <button type="button" onclick="insertMarkdownFormat('**', '**', 'bold text')" class="p-1.5 rounded leading-none hover:bg-slate-800 text-slate-300 font-bold" title="Bold (**text**)">B</button>
+          <button type="button" onclick="insertMarkdownFormat('*', '*', 'italic text')" class="p-1.5 rounded leading-none hover:bg-slate-800 text-slate-300 italic" title="Italic (*text*)">I</button>
+          <button type="button" onclick="insertMarkdownFormat('# ', '', 'Heading 1')" class="p-1.5 rounded leading-none hover:bg-slate-800 text-amber-400 font-extrabold" title="Heading 1 (#)">H1</button>
+          <div class="w-px h-4 bg-slate-800 mx-0.5 shrink-0"></div>
+          <button type="button" onclick="insertMarkdownFormat('- ', '', 'Bullet item')" class="p-1.5 rounded leading-none hover:bg-slate-800 text-slate-300" title="Bullet List (- )">• List</button>
+          <button type="button" onclick="insertMarkdownFormat('- [ ] ', '', 'Task item')" class="p-1.5 rounded leading-none hover:bg-slate-800 text-slate-300" title="Task Checkbox (- [ ])">☑ Task</button>
+          <button type="button" onclick="insertMarkdownFormat('> ', '', 'Quote text')" class="p-1.5 rounded leading-none hover:bg-slate-800 text-slate-300" title="Blockquote (> )">“ Quote</button>
+          <div class="w-px h-4 bg-slate-800 mx-0.5 shrink-0"></div>
+          <button type="button" onclick="insertWikiLinkPlaceholder()" class="p-1.5 rounded leading-none hover:bg-slate-800 text-sky-400 font-bold" title="Insert [[WikiLink]]">[[Link]]</button>
+
+          <!-- Overflow formatting actions -->
+          <div class="relative shrink-0" id="note-format-overflow-wrapper">
+            <button type="button" onclick="toggleNoteFormatMenu(event)" class="p-1.5 rounded hover:bg-slate-800 text-slate-400 font-bold" title="More formatting options">
+              <i data-lucide="more-horizontal" class="w-4 h-4"></i>
+            </button>
+            <div id="note-format-overflow-menu" class="hidden absolute right-0 mt-2 w-52 bg-slate-900/95 border border-slate-800 rounded-xl shadow-2xl py-1.5 z-50 text-xs backdrop-blur-xl divide-y divide-slate-800/60">
+              <button type="button" onclick="insertMarkdownFormat('~~', '~~', 'strikethrough'); toggleNoteFormatMenu(event);" class="w-full px-3 py-2.5 text-left text-slate-300 hover:bg-slate-800 hover:text-white flex items-center gap-2 font-medium transition">
+                <i data-lucide="strikethrough" class="w-3.5 h-3.5 text-slate-400 shrink-0"></i> Strikethrough
+              </button>
+              <button type="button" onclick="insertMarkdownFormat('==', '==', 'highlighted text'); toggleNoteFormatMenu(event);" class="w-full px-3 py-2.5 text-left text-slate-300 hover:bg-slate-800 hover:text-white flex items-center gap-2 font-medium transition">
+                <i data-lucide="highlighter" class="w-3.5 h-3.5 text-amber-400 shrink-0"></i> Highlight
+              </button>
+              <button type="button" onclick="insertMarkdownFormat('## ', '', 'Heading 2'); toggleNoteFormatMenu(event);" class="w-full px-3 py-2.5 text-left text-slate-300 hover:bg-slate-800 hover:text-white flex items-center gap-2 font-medium transition">
+                <i data-lucide="heading-2" class="w-3.5 h-3.5 text-amber-400 shrink-0"></i> Heading 2
+              </button>
+              <button type="button" onclick="insertMarkdownFormat('### ', '', 'Heading 3'); toggleNoteFormatMenu(event);" class="w-full px-3 py-2.5 text-left text-slate-300 hover:bg-slate-800 hover:text-white flex items-center gap-2 font-medium transition">
+                <i data-lucide="heading-3" class="w-3.5 h-3.5 text-amber-400 shrink-0"></i> Heading 3
+              </button>
+              <button type="button" onclick="openInsertHyperlinkModal(); toggleNoteFormatMenu(event);" class="w-full px-3 py-2.5 text-left text-slate-300 hover:bg-slate-800 hover:text-white flex items-center gap-2 font-medium transition">
+                <i data-lucide="link" class="w-3.5 h-3.5 text-sky-400 shrink-0"></i> Hyperlink
+              </button>
+              <button type="button" onclick="insertMarkdownFormat('\n```javascript\n', '\n```\n', '// code here'); toggleNoteFormatMenu(event);" class="w-full px-3 py-2.5 text-left text-slate-300 hover:bg-slate-800 hover:text-white flex items-center gap-2 font-medium transition">
+                <i data-lucide="code" class="w-3.5 h-3.5 text-amber-300 shrink-0"></i> Code Block
+              </button>
+              <button type="button" onclick="insertMarkdownFormat('\`', '\`', 'code'); toggleNoteFormatMenu(event);" class="w-full px-3 py-2.5 text-left text-slate-300 hover:bg-slate-800 hover:text-white flex items-center gap-2 font-medium transition">
+                <i data-lucide="braces" class="w-3.5 h-3.5 text-amber-300 shrink-0"></i> Inline Code
+              </button>
+              <button type="button" onclick="insertMermaidPlaceholder(); toggleNoteFormatMenu(event);" class="w-full px-3 py-2.5 text-left text-slate-300 hover:bg-slate-800 hover:text-white flex items-center gap-2 font-medium transition">
+                <i data-lucide="workflow" class="w-3.5 h-3.5 text-purple-400 shrink-0"></i> Mermaid Diagram
+              </button>
+              <button type="button" onclick="insertKaTeXPlaceholder(); toggleNoteFormatMenu(event);" class="w-full px-3 py-2.5 text-left text-slate-300 hover:bg-slate-800 hover:text-white flex items-center gap-2 font-medium transition">
+                <i data-lucide="sigma" class="w-3.5 h-3.5 text-teal-400 shrink-0"></i> Math Formula
+              </button>
+              <button type="button" onclick="toggleVoiceDictation(); toggleNoteFormatMenu(event);" id="btn-voice-dictation" class="w-full px-3 py-2.5 text-left text-slate-300 hover:bg-slate-800 hover:text-white flex items-center gap-2 font-medium transition">
+                <i data-lucide="mic" class="w-3.5 h-3.5 text-rose-400 shrink-0"></i> Voice Dictation
+              </button>
+              <button type="button" onclick="insertMarkdownFormat('\n---\n', '', ''); toggleNoteFormatMenu(event);" class="w-full px-3 py-2.5 text-left text-slate-300 hover:bg-slate-800 hover:text-white flex items-center gap-2 font-medium transition">
+                <i data-lucide="minus" class="w-3.5 h-3.5 text-slate-400 shrink-0"></i> Divider
+              </button>
+            </div>
+          </div>
         </div>
 
         <!-- Note Text Editor & Live Preview Panes Container -->
@@ -10501,23 +10514,21 @@ html, body {
 
       </div>
 
-      <!-- Footer Action Buttons & Save Indicator -->
-      <div class="flex justify-between items-center pt-3 border-t border-slate-800">
-        <div class="flex items-center gap-2">
-          <span id="note-status-indicator" class="text-xs text-slate-500 font-medium flex items-center gap-1.5">
-            <span class="w-2 h-2 rounded-full bg-emerald-400"></span> Saved
-          </span>
-        </div>
+      <!-- Footer Action Buttons & Save Indicator (sticky so Save is always visible) -->
+      <div class="sticky bottom-[62px] sm:bottom-0 z-20 -mx-4 md:-mx-5 px-4 md:px-5 pt-2.5 pb-1 bg-slate-950/92 backdrop-blur-md border-t border-slate-800 flex items-center justify-between gap-2">
+        <span id="note-status-indicator" class="text-[11px] text-slate-500 font-medium flex items-center gap-1.5 shrink-0">
+          <span class="w-2 h-2 rounded-full bg-emerald-400"></span> Saved
+        </span>
 
-        <div class="flex items-center gap-2">
-          <button type="button" onclick="duplicateCurrentNote()" class="px-3.5 py-2 bg-slate-900 border border-slate-800 hover:border-slate-700 text-slate-300 font-semibold text-xs rounded-xl transition active:scale-95">
+        <div class="flex items-center gap-1.5">
+          <button type="button" onclick="duplicateCurrentNote()" class="px-2.5 py-2 bg-slate-900 border border-slate-800 hover:border-slate-700 text-slate-300 font-semibold text-[11px] rounded-lg transition active:scale-95" title="Duplicate this note">
             Duplicate
           </button>
-          <button type="button" onclick="deleteCurrentNote()" class="px-3.5 py-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 font-semibold text-xs rounded-xl transition active:scale-95">
+          <button type="button" onclick="deleteCurrentNote()" class="px-2.5 py-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 font-semibold text-[11px] rounded-lg transition active:scale-95" title="Delete this note">
             Delete
           </button>
-          <button type="button" onclick="saveCurrentNote()" class="px-5 py-2 app-accent-bg text-slate-950 font-bold text-xs rounded-xl transition flex items-center gap-1.5 shadow-lg active:scale-95">
-            <i data-lucide="save" class="w-3.5 h-3.5"></i> Save Note
+          <button type="button" onclick="saveCurrentNote()" class="px-3.5 py-2 app-accent-bg text-slate-950 font-bold text-[11px] rounded-lg transition flex items-center gap-1.5 shadow-lg active:scale-95" title="Save note (it also saves automatically)">
+            <i data-lucide="save" class="w-3.5 h-3.5"></i> Save
           </button>
         </div>
       </div>
@@ -10766,23 +10777,49 @@ html, body {
     };
 
     /* Actions Menu Toggle */
-    window.toggleNoteActionMenu = function(e) {
+    /* Overflow Menus (editor actions + formatting extras) */
+    function toggleDropdownMenu(menuId, wrapperId) {
+      const menu = document.getElementById(menuId);
+      const wrapper = document.getElementById(wrapperId);
+      if (!menu) return;
+      const willOpen = menu.classList.contains('hidden');
+      // close the other menu first
+      ['note-overflow-menu', 'note-format-overflow-menu'].forEach(id => {
+        if (id !== menuId) {
+          const other = document.getElementById(id);
+          if (other) other.classList.add('hidden');
+        }
+      });
+      menu.classList.toggle('hidden', !willOpen);
+      if (willOpen) refreshIconsScoped(menu);
+      if (wrapper) wrapper.classList.toggle('ring-1', willOpen);
+    }
+
+    window.toggleNoteOverflowMenu = function(e) {
       if (e) e.stopPropagation();
-      const menu = document.getElementById('note-action-dropdown');
-      if (menu) {
-        menu.classList.toggle('hidden');
-        refreshIconsScoped(menu);
-      }
+      toggleDropdownMenu('note-overflow-menu', 'note-overflow-wrapper');
+    };
+
+    window.toggleNoteFormatMenu = function(e) {
+      if (e) e.stopPropagation();
+      toggleDropdownMenu('note-format-overflow-menu', 'note-format-overflow-wrapper');
     };
 
     document.addEventListener('click', function(e) {
-      const wrapper = document.getElementById('note-action-dropdown-wrapper');
-      const menu = document.getElementById('note-action-dropdown');
       const popover = document.getElementById('wikilinks-autocomplete-popover');
 
-      if (menu && !menu.classList.contains('hidden') && wrapper && !wrapper.contains(e.target)) {
-        menu.classList.add('hidden');
-      }
+      [
+        ['note-overflow-menu', 'note-overflow-wrapper'],
+        ['note-format-overflow-menu', 'note-format-overflow-wrapper']
+      ].forEach(([menuId, wrapperId]) => {
+        const menu = document.getElementById(menuId);
+        const wrapper = document.getElementById(wrapperId);
+        if (menu && !menu.classList.contains('hidden') && wrapper && !wrapper.contains(e.target)) {
+          menu.classList.add('hidden');
+          if (wrapper) wrapper.classList.remove('ring-1');
+        }
+      });
+
       if (popover && !popover.classList.contains('hidden') && !popover.contains(e.target) && e.target.id !== 'note-content-input') {
         popover.classList.add('hidden');
       }
@@ -10927,11 +10964,11 @@ html, body {
       const btnPreview = document.getElementById('note-mode-preview-btn');
 
       [btnEdit, btnSplit, btnPreview].forEach(btn => {
-        if (btn) btn.className = 'px-2.5 py-1 rounded-lg text-slate-400 hover:text-slate-200 transition';
+        if (btn) btn.className = 'px-2 py-1 rounded-md text-slate-400 hover:text-slate-200 transition';
       });
 
       if (mode === 'edit') {
-        if (btnEdit) btnEdit.className = 'px-2.5 py-1 rounded-lg bg-amber-500/20 text-amber-300 border border-amber-500/30 transition';
+        if (btnEdit) btnEdit.className = 'px-2 py-1 rounded-md bg-amber-500/20 text-amber-300 border border-amber-500/30 transition';
         if (editorBox) {
           editorBox.classList.remove('hidden');
           editorBox.style.display = 'flex';
@@ -10942,7 +10979,7 @@ html, body {
         }
         if (toolbar) toolbar.classList.remove('hidden');
       } else if (mode === 'split') {
-        if (btnSplit) btnSplit.className = 'px-2.5 py-1 rounded-lg bg-amber-500/20 text-amber-300 border border-amber-500/30 transition';
+        if (btnSplit) btnSplit.className = 'px-2 py-1 rounded-md bg-amber-500/20 text-amber-300 border border-amber-500/30 transition';
         if (editorBox) {
           editorBox.classList.remove('hidden');
           editorBox.style.display = 'flex';
@@ -10954,7 +10991,7 @@ html, body {
         }
         if (toolbar) toolbar.classList.remove('hidden');
       } else if (mode === 'preview') {
-        if (btnPreview) btnPreview.className = 'px-2.5 py-1 rounded-lg bg-amber-500/20 text-amber-300 border border-amber-500/30 transition';
+        if (btnPreview) btnPreview.className = 'px-2 py-1 rounded-md bg-amber-500/20 text-amber-300 border border-amber-500/30 transition';
         if (editorBox) {
           editorBox.classList.add('hidden');
           editorBox.style.display = 'none';
@@ -10997,7 +11034,7 @@ html, body {
       if (isVoiceDictating) {
         if (voiceRecognitionInstance) voiceRecognitionInstance.stop();
         isVoiceDictating = false;
-        if (btn) btn.className = 'p-1.5 rounded hover:bg-slate-800 text-rose-400 font-mono text-[11px] font-bold flex items-center gap-1';
+        if (btn) btn.className = 'w-full px-3 py-2.5 text-left text-slate-300 hover:bg-slate-800 hover:text-white flex items-center gap-2 font-medium transition';
         if (window.showToast) window.showToast('Voice dictation stopped.', 'info');
       } else {
         voiceRecognitionInstance = new SpeechRecognition();
@@ -11012,7 +11049,7 @@ html, body {
 
         voiceRecognitionInstance.onerror = function() {
           isVoiceDictating = false;
-          if (btn) btn.className = 'p-1.5 rounded hover:bg-slate-800 text-rose-400 font-mono text-[11px] font-bold flex items-center gap-1';
+          if (btn) btn.className = 'w-full px-3 py-2.5 text-left text-slate-300 hover:bg-slate-800 hover:text-white flex items-center gap-2 font-medium transition';
         };
 
         voiceRecognitionInstance.start();
@@ -11666,9 +11703,11 @@ html, body {
       refreshIconsScoped(container);
     };
 
-    window.loadNoteIntoEditor = function(id) {
+    window.loadNoteIntoEditor = function(id, opts) {
+      const openingDifferent = id !== window.appState.activeNoteId;
+
       // Persist pending edits on the note we are leaving before switching away
-      if (window.appState.activeNoteId && window.appState.activeNoteId !== id) {
+      if (openingDifferent) {
         window.flushNoteAutosave(true);
       }
       window.appState.activeNoteId = id;
@@ -11685,6 +11724,12 @@ html, body {
 
         isUnsaved = false;
         setNoteStatusIndicator('saved');
+
+        // Existing notes open as a reading preview on phones; brand new notes open in Edit
+        if (openingDifferent) {
+          const wantedMode = (opts && opts.mode) || (window.innerWidth < 1024 ? 'preview' : 'edit');
+          window.setNoteEditorMode(wantedMode);
+        }
 
         // Keep the live preview canvas in sync with the loaded note
         const preview = document.getElementById('note-markdown-preview');
@@ -12046,7 +12091,7 @@ html, body {
       if (!window.appState.notes) window.appState.notes = [];
       window.appState.notes.unshift(newNote);
       if (window.saveCloudData) window.saveCloudData();
-      window.loadNoteIntoEditor(id);
+      window.loadNoteIntoEditor(id, { mode: 'edit' });
       window.renderNotesList();
       if (window.showToast) window.showToast('New note created!', 'success');
     };
@@ -19726,6 +19771,11 @@ html, body {
       }
 
       const targetViewId = CANON_VIEW_ALIASES[viewId] || viewId;
+
+      // Notes section: on phones open on the list (not a stacked list + editor)
+      if (targetViewId === 'notes' && typeof window.initMobileNotesLayout === 'function') {
+        try { window.initMobileNotesLayout(); } catch (e) {}
+      }
       const currentViewId = window.appState.currentView || 'dashboard';
       const currentViewEl = document.getElementById(`view-${currentViewId}`) || document.getElementById(currentViewId);
 
@@ -19800,7 +19850,7 @@ html, body {
           case 'calendar': window.renderCalendarView?.(); break;
           case 'time': window.renderTimeTrackerView?.(); break;
           case 'logbook': window.renderLogbookTimeline?.(true); break;
-          case 'notes': window.initMobileNotesLayout?.(); window.renderNoteFoldersNav?.(); window.renderNotesList?.(); break;
+          case 'notes': window.renderNoteFoldersNav?.(); window.renderNotesList?.(); break;
           case 'habits':
             if (typeof window.renderHabitsView === 'function') window.renderHabitsView();
             else window.renderHabitsMatrix?.();
