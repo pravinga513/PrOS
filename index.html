@@ -10250,26 +10250,12 @@ html, body {
 
     <!-- Toolbar Action Buttons -->
     <div class="flex items-center gap-2 w-full lg:w-auto lg:justify-end text-xs">
-      <!-- Insert Template Dropdown -->
-      <select id="note-template-select" onchange="applyNoteTemplate(this.value)" class="bg-slate-950 border border-slate-800 text-slate-300 rounded-xl px-2.5 py-2 text-[11px] outline-none focus:border-amber-500 transition font-medium shrink-0 w-[118px] sm:w-auto">
-        <option value="">+ Template...</option>
-        <option value="vehicle">🚗 Vehicle Maintenance Log</option>
-        <option value="meeting">📅 Meeting Notes &amp; Action Items</option>
-        <option value="project">⚡ Project Architecture Specification</option>
-        <option value="journal">📖 Daily Reflection &amp; Gratitude Journal</option>
-        <option value="mermaid">📐 Mermaid Architecture Flowchart</option>
-        <option value="math">🧮 KaTeX Mathematical Formulation</option>
-      </select>
-
-      <!-- Interactive Table Builder -->
-      <button type="button" onclick="openInsertTableModal()" class="px-2.5 py-2 bg-slate-900 border border-slate-800 hover:border-slate-700 text-slate-300 font-semibold text-[11px] rounded-xl transition flex items-center gap-1.5 shadow-sm active:scale-95 touch-manipulation shrink-0" title="Insert Interactive Table">
-        <i data-lucide="table" class="w-3.5 h-3.5 text-emerald-400 shrink-0"></i> <span>Table</span>
-      </button>
-
-      <!-- Image Upload via ImgBB -->
-      <button type="button" onclick="openInsertImageModal()" class="px-2.5 py-2 bg-slate-900 border border-slate-800 hover:border-slate-700 text-slate-300 font-semibold text-[11px] rounded-xl transition flex items-center gap-1.5 shadow-sm active:scale-95 touch-manipulation shrink-0" title="Upload / Attach Image (Fast ImgBB)">
-        <i data-lucide="image" class="w-3.5 h-3.5 text-amber-400 shrink-0"></i> <span>Image</span>
-      </button>
+      <!-- Notes Search (same pattern as the Goals section) -->
+      <div class="relative w-full sm:w-52 lg:w-48">
+        <i data-lucide="search" class="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none"></i>
+        <input id="note-search-input" type="text" onkeyup="renderNotesList()" placeholder="Search notes, #tags..." class="w-full bg-slate-950 border border-slate-800 rounded-xl pl-8 pr-7 py-2 text-[11px] text-slate-200 outline-none focus:border-amber-500 transition" />
+        <button type="button" onclick="clearNoteSearch()" id="note-search-clear-btn" class="hidden absolute right-2 top-1/2 -translate-y-1/2 text-slate-500 hover:text-white text-xs">✕</button>
+      </div>
 
       <!-- Primary action (desktop placement) -->
       <button type="button" onclick="createNewNote()" class="hidden sm:flex px-3.5 py-2 app-accent-bg text-slate-950 font-bold text-[11px] rounded-xl transition items-center gap-1.5 shadow-lg active:scale-95 touch-manipulation shrink-0">
@@ -10295,12 +10281,6 @@ html, body {
       <div class="space-y-3">
         <!-- Search & Filter Controls -->
         <div class="space-y-2">
-          <div class="relative">
-            <i data-lucide="search" class="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none"></i>
-            <input id="note-search-input" type="text" onkeyup="renderNotesList()" placeholder="Search notes, #tags..." class="w-full bg-slate-950 border border-slate-800 rounded-xl pl-8 pr-8 py-2 text-xs text-slate-200 outline-none focus:border-amber-500 transition" />
-            <button type="button" onclick="clearNoteSearch()" id="note-search-clear-btn" class="hidden absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-500 hover:text-white text-xs">✕</button>
-          </div>
-
           <div class="grid grid-cols-2 gap-2 text-xs">
             <div>
               <label class="text-[10px] text-slate-400 font-semibold block mb-0.5">Filter Folder</label>
@@ -10353,7 +10333,7 @@ html, body {
 
     <!-- Right Workspace: Note Editor & Markdown Live Canvas -->
     <div id="notes-editor-panel" class="lg:col-span-8 glass-card rounded-2xl p-4 md:p-5 space-y-3.5 flex flex-col justify-between min-h-[380px] lg:min-h-[580px] border border-slate-800 relative">
-      <div class="space-y-3 flex-1 flex flex-col">
+      <div class="space-y-3 flex-1 min-h-0 flex flex-col">
         
         <!-- Header Controls: Back, Title Input, Pin, Overflow Actions -->
         <div class="flex items-center gap-2 border-b border-slate-800 pb-2.5">
@@ -10455,6 +10435,31 @@ html, body {
 
           <!-- Insert tools -->
           <div class="p-1.5 hidden flex items-center gap-1 flex-wrap" data-note-format-panel="insert">
+            <div class="relative shrink-0" id="note-template-wrapper">
+              <button type="button" onclick="toggleNoteTemplateMenu(event)" class="p-1.5 rounded leading-none hover:bg-slate-800 text-amber-400 flex items-center" title="Insert a template">
+                <i data-lucide="layout-template" class="w-4 h-4"></i>
+              </button>
+              <div id="note-template-menu" class="hidden absolute bottom-full left-0 mb-2 w-56 bg-slate-900/95 border border-slate-800 rounded-xl shadow-2xl py-1.5 z-50 text-xs backdrop-blur-xl divide-y divide-slate-800/60">
+                <button type="button" onclick="applyNoteTemplate('vehicle'); toggleNoteTemplateMenu(event);" class="w-full px-3 py-2.5 text-left text-slate-300 hover:bg-slate-800 hover:text-white flex items-center gap-2 font-medium transition">
+                  <i data-lucide="car" class="w-3.5 h-3.5 text-amber-400 shrink-0"></i> Vehicle Maintenance Log
+                </button>
+                <button type="button" onclick="applyNoteTemplate('meeting'); toggleNoteTemplateMenu(event);" class="w-full px-3 py-2.5 text-left text-slate-300 hover:bg-slate-800 hover:text-white flex items-center gap-2 font-medium transition">
+                  <i data-lucide="calendar-days" class="w-3.5 h-3.5 text-cyan-400 shrink-0"></i> Meeting Notes &amp; Actions
+                </button>
+                <button type="button" onclick="applyNoteTemplate('project'); toggleNoteTemplateMenu(event);" class="w-full px-3 py-2.5 text-left text-slate-300 hover:bg-slate-800 hover:text-white flex items-center gap-2 font-medium transition">
+                  <i data-lucide="zap" class="w-3.5 h-3.5 text-purple-400 shrink-0"></i> Project Architecture Spec
+                </button>
+                <button type="button" onclick="applyNoteTemplate('journal'); toggleNoteTemplateMenu(event);" class="w-full px-3 py-2.5 text-left text-slate-300 hover:bg-slate-800 hover:text-white flex items-center gap-2 font-medium transition">
+                  <i data-lucide="book-heart" class="w-3.5 h-3.5 text-rose-400 shrink-0"></i> Daily Reflection Journal
+                </button>
+                <button type="button" onclick="applyNoteTemplate('mermaid'); toggleNoteTemplateMenu(event);" class="w-full px-3 py-2.5 text-left text-slate-300 hover:bg-slate-800 hover:text-white flex items-center gap-2 font-medium transition">
+                  <i data-lucide="workflow" class="w-3.5 h-3.5 text-violet-400 shrink-0"></i> Mermaid Flowchart
+                </button>
+                <button type="button" onclick="applyNoteTemplate('math'); toggleNoteTemplateMenu(event);" class="w-full px-3 py-2.5 text-left text-slate-300 hover:bg-slate-800 hover:text-white flex items-center gap-2 font-medium transition">
+                  <i data-lucide="sigma" class="w-3.5 h-3.5 text-teal-400 shrink-0"></i> Math Formulation
+                </button>
+              </div>
+            </div>
             <button type="button" onclick="insertWikiLinkPlaceholder()" class="p-1.5 rounded leading-none hover:bg-slate-800 text-sky-400 font-bold" title="Insert [[WikiLink]]">[[Link]]</button>
             <button type="button" onclick="openInsertHyperlinkModal()" class="p-1.5 rounded leading-none hover:bg-slate-800 text-sky-400 font-bold" title="Insert Hyperlink">🔗 URL</button>
             <button type="button" onclick="insertMarkdownFormat('`', '`', 'code')" class="p-1.5 rounded leading-none hover:bg-slate-800 text-amber-300 font-mono text-[11px]" title="Inline Code (`code`)">&lt;/&gt;</button>
@@ -10485,7 +10490,7 @@ html, body {
         </div>
 
         <!-- Note Text Editor & Live Preview Panes Container -->
-        <div id="note-panes-wrapper" class="flex-1 min-h-[220px] md:min-h-[400px] flex gap-4 relative">
+        <div id="note-panes-wrapper" class="flex-1 min-h-0 min-h-[220px] md:min-h-[400px] flex gap-4 relative overflow-hidden">
           <!-- Textarea Editor with WikiLinks Listener -->
           <div id="note-editor-container" class="flex-1 flex flex-col relative w-full">
             <textarea id="note-content-input" oninput="handleNoteContentInput()" placeholder="Start typing specifications, thoughts, [[WikiLinks]], or markdown notes... (Tip: Paste images directly with Ctrl+V!)" class="flex-1 w-full h-full bg-transparent text-xs text-slate-200 outline-none resize-none leading-relaxed font-mono p-1 border-0 focus:ring-0"></textarea>
@@ -10504,8 +10509,8 @@ html, body {
 
       </div>
 
-      <!-- Footer Action Bar: TOC + Backlinks + Save (sticky) -->
-      <div class="sticky bottom-[58px] sm:bottom-0 z-20 -mx-4 md:-mx-5 px-3 md:px-5 py-1.5 bg-slate-950/95 backdrop-blur-md border-t border-slate-800 flex items-center justify-between gap-1.5 relative rounded-b-2xl">
+      <!-- Footer Action Bar: TOC + Backlinks + Save (seamless bottom row) -->
+      <div class="relative flex items-center justify-between gap-1.5 pt-2 border-t border-slate-800/60">
 
         <!-- Table of Contents + Backlinks popovers -->
         <div class="flex items-center gap-1 shrink-0">
@@ -10832,6 +10837,18 @@ html, body {
       refreshIconsScoped(document.getElementById('note-format-toolbar'));
     };
 
+    /* Templates dropdown inside the editor's Insert tab */
+    window.toggleNoteTemplateMenu = function(e) {
+      if (e) e.stopPropagation();
+      const menu = document.getElementById('note-template-menu');
+      if (!menu) return;
+      const willOpen = menu.classList.contains('hidden');
+      const overflow = document.getElementById('note-overflow-menu');
+      if (overflow) overflow.classList.add('hidden');
+      menu.classList.toggle('hidden', !willOpen);
+      if (willOpen) refreshIconsScoped(menu);
+    };
+
     document.addEventListener('click', function(e) {
       const popover = document.getElementById('wikilinks-autocomplete-popover');
 
@@ -10840,6 +10857,12 @@ html, body {
       if (menu && !menu.classList.contains('hidden') && wrapper && !wrapper.contains(e.target)) {
         menu.classList.add('hidden');
         if (wrapper) wrapper.classList.remove('ring-1');
+      }
+
+      const templateMenu = document.getElementById('note-template-menu');
+      const templateWrapper = document.getElementById('note-template-wrapper');
+      if (templateMenu && !templateMenu.classList.contains('hidden') && templateWrapper && !templateWrapper.contains(e.target)) {
+        templateMenu.classList.add('hidden');
       }
 
       if (popover && !popover.classList.contains('hidden') && !popover.contains(e.target) && e.target.id !== 'note-content-input') {
@@ -10948,11 +10971,6 @@ html, body {
 
       if (panel.classList.contains('note-fullscreen')) return;
 
-      if (window.innerWidth >= 1024) {
-        panel.style.height = '';
-        return;
-      }
-
       const header = document.querySelector('#view-notes > div.glass-card');
       const main = document.querySelector('main.overflow-y-auto');
 
@@ -10982,34 +11000,36 @@ html, body {
 
       const entering = !panel.classList.contains('note-fullscreen');
       const actionBar = panel.lastElementChild;
+      const main = document.querySelector('main.overflow-y-auto');
 
       if (entering) {
+        // Fill the app content area (not the whole browser window)
+        const mr = main ? main.getBoundingClientRect() : null;
         panel.classList.add('note-fullscreen');
         panel.style.position = 'fixed';
-        panel.style.top = '0';
-        panel.style.left = '0';
-        panel.style.right = '0';
-        panel.style.bottom = '0';
-        panel.style.zIndex = '70';
-        panel.style.height = '100dvh';
+        panel.style.top = mr ? mr.top + 'px' : '0px';
+        panel.style.left = mr ? mr.left + 'px' : '0px';
+        panel.style.width = mr ? mr.width + 'px' : '100%';
+        panel.style.height = mr ? mr.height + 'px' : '100dvh';
         panel.style.minHeight = '0';
         panel.style.borderRadius = '0';
         panel.style.border = 'none';
         panel.style.background = '#08080f';
+        panel.style.zIndex = '60';
         try { document.body.style.overflow = 'hidden'; } catch (e) {}
-        if (actionBar) actionBar.style.bottom = '0px';
+        if (actionBar) actionBar.style.bottom = '';
       } else {
         panel.classList.remove('note-fullscreen');
         panel.style.position = '';
         panel.style.top = '';
         panel.style.left = '';
-        panel.style.right = '';
-        panel.style.bottom = '';
-        panel.style.zIndex = '';
+        panel.style.width = '';
+        panel.style.height = '';
         panel.style.minHeight = '';
         panel.style.borderRadius = '';
         panel.style.border = '';
         panel.style.background = '';
+        panel.style.zIndex = '';
         try { document.body.style.overflow = ''; } catch (e) {}
         if (actionBar) actionBar.style.bottom = '';
         window.syncNotesEditorHeight();
@@ -12591,7 +12611,6 @@ html, body {
       if (type === 'math') template = '# 🧮 Mathematical Formulation\n\n$$\\mathcal{L}(\\theta) = \\frac{1}{N} \\sum_{i=1}^N \\ell(f(x_i; \\theta), y_i) + \\lambda \\|\\theta\\|_2^2$$\n\n- **Loss Factor:** $\\ell(\\cdot)$\n- **Regularization:** $\\lambda$';
 
       if (contentInput) contentInput.value = template;
-      document.getElementById('note-template-select').value = '';
       window.markUnsavedChanges();
       window.updateNoteWordCount();
     };
