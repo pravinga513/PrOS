@@ -668,19 +668,17 @@ html, body {
   <!-- Header Banner & Period Switcher -->
   <div class="glass-card rounded-2xl p-4 md:p-5 border border-slate-800 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-3 bg-slate-900/60 backdrop-blur-xl">
     <div class="min-w-0 flex-1">
-      <div class="flex items-center justify-between gap-3">
-        <h2 id="dash-greeting-text" class="text-lg md:text-xl font-extrabold text-white tracking-tight truncate">
-          Good Day, Commander
-        </h2>
-        <span id="dash-live-clock" class="shrink-0 text-xs md:text-sm px-2.5 py-1 rounded-lg bg-slate-950 text-slate-200 border border-slate-800 font-mono font-bold">
+      <h2 id="dash-greeting-text" class="text-base sm:text-xl font-extrabold text-white tracking-tight leading-tight">
+        Good Day, Commander
+      </h2>
+      <div class="flex items-center gap-2 mt-1.5 flex-wrap">
+        <span id="dash-live-clock" class="shrink-0 text-[11px] sm:text-xs px-2 py-0.5 rounded-lg bg-slate-950 text-slate-200 border border-slate-800 font-mono font-bold">
           00:00:00
         </span>
-      </div>
-      <div class="flex items-center gap-2 mt-1.5 flex-wrap">
-        <span class="text-[10px] md:text-xs px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 font-semibold font-mono">
+        <span class="text-[10px] sm:text-xs px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 font-semibold font-mono">
           Executive Hub
         </span>
-        <p id="dash-date-subtitle" class="text-[11px] text-slate-400 font-mono truncate">
+        <p id="dash-date-subtitle" class="text-[11px] text-slate-400 font-mono truncate min-w-0">
           Loading schedule &amp; metrics...
         </p>
       </div>
@@ -822,23 +820,28 @@ html, body {
     
     <!-- Left: Schedule & Celebrations Radar -->
     <div class="lg:col-span-7 glass-card rounded-2xl p-4 space-y-3 border border-slate-800 flex flex-col justify-between bg-slate-900/40">
-      <div class="flex flex-wrap justify-between items-center border-b border-slate-800 pb-2.5 gap-2">
-        <div class="flex items-center gap-2 min-w-0">
-          <h3 class="min-w-0 text-xs font-extrabold text-cyan-300 uppercase tracking-wider flex items-center gap-2 truncate">
-            <i data-lucide="calendar" class="w-4 h-4 text-cyan-400 shrink-0"></i> <span class="truncate">Events &amp; Celebrations</span>
-          </h3>
+      <div class="flex items-center justify-between gap-2 border-b border-slate-800 pb-2.5">
+        <h3 class="min-w-0 text-xs font-extrabold text-cyan-300 uppercase tracking-wider flex items-center gap-2 truncate">
+          <i data-lucide="calendar" class="w-4 h-4 text-cyan-400 shrink-0"></i>
+          <span class="truncate">Events &amp; Celebrations</span>
           <span id="dash-radar-count-badge" class="shrink-0 whitespace-nowrap text-[10px] px-2 py-0.5 rounded-full bg-slate-800 text-slate-400 font-mono">0 events</span>
-        </div>
+        </h3>
+        <button type="button" onclick="window.switchTab('calendar')" class="shrink-0 p-1.5 rounded-lg bg-slate-950 border border-slate-800 text-cyan-400 hover:text-cyan-300 hover:border-cyan-500/40 transition active:scale-95" title="Open Calendar">
+          <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+        </button>
+      </div>
 
-        <div class="flex items-center gap-2 w-full sm:w-auto">
-          <select id="dash-radar-filter" onchange="renderTodayAgendaRadar()" class="flex-1 sm:flex-none min-w-0 bg-slate-950 border border-slate-800 text-slate-300 rounded-lg px-2 py-1 text-[11px] outline-none focus:border-cyan-400 font-medium">
-            <option value="TODAY">📅 Today's Agenda</option>
-            <option value="WEEK" selected>⚡ Next 7 Days</option>
-            <option value="BIRTHDAYS">🎂 Birthdays &amp; Anniversaries</option>
-            <option value="ALL">All Events</option>
-          </select>
-          <button type="button" onclick="window.switchTab('calendar')" class="inline-flex items-center min-h-[28px] px-1 shrink-0 text-[11px] text-cyan-400 hover:underline font-bold">Open Calendar &rarr;</button>
-        </div>
+      <div class="flex items-center gap-1.5 overflow-x-auto pb-0.5">
+        <button type="button" onclick="setDashRadarFilter('TODAY')" data-dash-radar="TODAY" class="shrink-0 px-2.5 py-1 min-h-[30px] rounded-lg bg-slate-950 border border-slate-800 text-slate-400 hover:text-slate-200 transition text-[11px] font-semibold">📅 Today</button>
+        <button type="button" onclick="setDashRadarFilter('WEEK')" data-dash-radar="WEEK" class="shrink-0 px-2.5 py-1 min-h-[30px] rounded-lg bg-cyan-500/15 border border-cyan-500/40 text-cyan-300 transition text-[11px] font-semibold">⚡ 7 Days</button>
+        <button type="button" onclick="setDashRadarFilter('BIRTHDAYS')" data-dash-radar="BIRTHDAYS" class="shrink-0 px-2.5 py-1 min-h-[30px] rounded-lg bg-slate-950 border border-slate-800 text-slate-400 hover:text-slate-200 transition text-[11px] font-semibold">🎂 Birthdays</button>
+        <button type="button" onclick="setDashRadarFilter('ALL')" data-dash-radar="ALL" class="shrink-0 px-2.5 py-1 min-h-[30px] rounded-lg bg-slate-950 border border-slate-800 text-slate-400 hover:text-slate-200 transition text-[11px] font-semibold">All Events</button>
+        <select id="dash-radar-filter" class="hidden" onchange="renderTodayAgendaRadar()">
+          <option value="TODAY">📅 Today's Agenda</option>
+          <option value="WEEK" selected>⚡ Next 7 Days</option>
+          <option value="BIRTHDAYS">🎂 Birthdays &amp; Anniversaries</option>
+          <option value="ALL">All Events</option>
+        </select>
       </div>
 
       <div id="dash-today-agenda-container" class="space-y-2 max-h-60 overflow-y-auto pr-1 text-xs scrollbar-none">
@@ -848,23 +851,28 @@ html, body {
 
     <!-- Right: Circadian Habits Check-In with Slot Filters -->
     <div class="lg:col-span-5 glass-card rounded-2xl p-4 space-y-3 border border-slate-800 flex flex-col justify-between bg-slate-900/40">
-      <div class="flex flex-wrap justify-between items-center border-b border-slate-800 pb-2.5 gap-2">
-        <div class="flex items-center gap-2 min-w-0">
-          <h3 class="min-w-0 text-xs font-extrabold text-red-300 uppercase tracking-wider flex items-center gap-2 truncate">
-            <i data-lucide="flame" class="w-4 h-4 text-red-400 shrink-0"></i> <span class="truncate">Habits Check-In</span>
-          </h3>
-        </div>
+      <div class="flex items-center justify-between gap-2 border-b border-slate-800 pb-2.5">
+        <h3 class="min-w-0 text-xs font-extrabold text-red-300 uppercase tracking-wider flex items-center gap-2 truncate">
+          <i data-lucide="flame" class="w-4 h-4 text-red-400 shrink-0"></i> <span class="truncate">Habits Check-In</span>
+        </h3>
+        <button type="button" onclick="window.switchTab('habits')" class="shrink-0 p-1.5 rounded-lg bg-slate-950 border border-slate-800 text-red-400 hover:text-red-300 hover:border-red-500/40 transition active:scale-95" title="Open Habits Matrix">
+          <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+        </button>
+      </div>
 
-        <div class="flex items-center gap-2 w-full sm:w-auto">
-          <select id="dash-habit-slot-filter" onchange="renderTodayRoutinesStrip()" class="flex-1 sm:flex-none min-w-0 bg-slate-950 border border-slate-800 text-slate-300 rounded-lg px-2 py-1 text-[11px] outline-none focus:border-red-400 font-medium">
-            <option value="ALL" selected>All Flow</option>
-            <option value="Morning">🌅 Morning</option>
-            <option value="Afternoon">☀️ Midday</option>
-            <option value="Evening">🌙 Night</option>
-            <option value="Anytime">⚡ Anytime</option>
-          </select>
-          <button type="button" onclick="window.switchTab('habits')" class="inline-flex items-center min-h-[28px] px-1 shrink-0 text-[11px] text-red-400 hover:underline font-bold">Matrix &rarr;</button>
-        </div>
+      <div class="flex items-center gap-1.5 overflow-x-auto pb-0.5">
+        <button type="button" onclick="setDashHabitSlot('ALL')" data-dash-slot="ALL" class="shrink-0 px-2.5 py-1 min-h-[30px] rounded-lg bg-red-500/15 border border-red-500/40 text-red-300 transition text-[11px] font-semibold">All Flow</button>
+        <button type="button" onclick="setDashHabitSlot('Morning')" data-dash-slot="Morning" class="shrink-0 px-2.5 py-1 min-h-[30px] rounded-lg bg-slate-950 border border-slate-800 text-slate-400 hover:text-slate-200 transition text-[11px] font-semibold">🌅 Morning</button>
+        <button type="button" onclick="setDashHabitSlot('Afternoon')" data-dash-slot="Afternoon" class="shrink-0 px-2.5 py-1 min-h-[30px] rounded-lg bg-slate-950 border border-slate-800 text-slate-400 hover:text-slate-200 transition text-[11px] font-semibold">☀️ Midday</button>
+        <button type="button" onclick="setDashHabitSlot('Evening')" data-dash-slot="Evening" class="shrink-0 px-2.5 py-1 min-h-[30px] rounded-lg bg-slate-950 border border-slate-800 text-slate-400 hover:text-slate-200 transition text-[11px] font-semibold">🌙 Night</button>
+        <button type="button" onclick="setDashHabitSlot('Anytime')" data-dash-slot="Anytime" class="shrink-0 px-2.5 py-1 min-h-[30px] rounded-lg bg-slate-950 border border-slate-800 text-slate-400 hover:text-slate-200 transition text-[11px] font-semibold">⚡ Anytime</button>
+        <select id="dash-habit-slot-filter" class="hidden" onchange="renderTodayRoutinesStrip()">
+          <option value="ALL" selected>All Flow</option>
+          <option value="Morning">🌅 Morning</option>
+          <option value="Afternoon">☀️ Midday</option>
+          <option value="Evening">🌙 Night</option>
+          <option value="Anytime">⚡ Anytime</option>
+        </select>
       </div>
 
       <div id="dash-routines-container" class="space-y-2 max-h-60 overflow-y-auto pr-1 scrollbar-none">
@@ -1020,23 +1028,26 @@ html, body {
     
     <!-- Left: Priority Execution List with Filter -->
     <div class="lg:col-span-7 glass-card rounded-2xl p-4 md:p-5 space-y-3 border border-purple-500/20 bg-purple-500/[0.02]">
-      <div class="flex flex-wrap justify-between items-center border-b border-slate-800/80 pb-3 gap-2">
-        <div class="min-w-0">
-          <h3 class="text-xs font-extrabold text-white uppercase tracking-wider flex items-center gap-2 truncate">
-            <i data-lucide="check-square" class="w-4 h-4 text-purple-400 shrink-0"></i> <span class="truncate">Priority &amp; Due Tasks</span>
-          </h3>
-          <p class="hidden sm:block text-[11px] text-slate-400 mt-0.5">Check off items directly or click title to jump to the matching task list.</p>
-        </div>
+      <div class="flex items-center justify-between gap-2 border-b border-slate-800/80 pb-2.5">
+        <h3 class="min-w-0 text-xs font-extrabold text-white uppercase tracking-wider flex items-center gap-2 truncate">
+          <i data-lucide="check-square" class="w-4 h-4 text-purple-400 shrink-0"></i> <span class="truncate">Priority &amp; Due Tasks</span>
+        </h3>
+        <button type="button" onclick="window.switchTab('tasks')" class="shrink-0 p-1.5 rounded-lg bg-slate-950 border border-slate-800 text-purple-400 hover:text-purple-300 hover:border-purple-500/40 transition active:scale-95" title="Open all tasks">
+          <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+        </button>
+      </div>
 
-        <div class="flex items-center gap-2 w-full sm:w-auto">
-          <select id="dash-task-prio-filter" onchange="renderPriorityTasksList()" class="flex-1 sm:flex-none min-w-0 bg-slate-950 border border-slate-800 text-slate-200 rounded-lg px-2.5 py-1 text-[11px] outline-none focus:border-purple-400 font-medium">
-            <option value="ALL">All Pending</option>
-            <option value="HIGH">🔥 High Priority</option>
-            <option value="TODAY">📅 Due Today</option>
-            <option value="OVERDUE">⚠️ Overdue</option>
-          </select>
-          <button type="button" onclick="window.switchTab('tasks')" class="inline-flex items-center min-h-[28px] px-1 shrink-0 text-xs text-purple-400 hover:underline font-bold">All Tasks &rarr;</button>
-        </div>
+      <div class="flex items-center gap-1.5 overflow-x-auto pb-0.5">
+        <button type="button" onclick="setDashTaskFilter('ALL')" data-dash-task-filter="ALL" class="shrink-0 px-2.5 py-1 min-h-[30px] rounded-lg bg-purple-500/15 border border-purple-500/40 text-purple-300 transition text-[11px] font-semibold">All Pending</button>
+        <button type="button" onclick="setDashTaskFilter('HIGH')" data-dash-task-filter="HIGH" class="shrink-0 px-2.5 py-1 min-h-[30px] rounded-lg bg-slate-950 border border-slate-800 text-slate-400 hover:text-slate-200 transition text-[11px] font-semibold">🔥 High</button>
+        <button type="button" onclick="setDashTaskFilter('TODAY')" data-dash-task-filter="TODAY" class="shrink-0 px-2.5 py-1 min-h-[30px] rounded-lg bg-slate-950 border border-slate-800 text-slate-400 hover:text-slate-200 transition text-[11px] font-semibold">📅 Today</button>
+        <button type="button" onclick="setDashTaskFilter('OVERDUE')" data-dash-task-filter="OVERDUE" class="shrink-0 px-2.5 py-1 min-h-[30px] rounded-lg bg-slate-950 border border-slate-800 text-slate-400 hover:text-slate-200 transition text-[11px] font-semibold">⚠️ Overdue</button>
+        <select id="dash-task-prio-filter" class="hidden" onchange="renderPriorityTasksList()">
+          <option value="ALL">All Pending</option>
+          <option value="HIGH">🔥 High Priority</option>
+          <option value="TODAY">📅 Due Today</option>
+          <option value="OVERDUE">⚠️ Overdue</option>
+        </select>
       </div>
 
       <div id="dashboard-urgent-tasks-list" class="space-y-2 max-h-72 overflow-y-auto pr-1 scrollbar-none">
@@ -1073,25 +1084,36 @@ html, body {
 
   <!-- Monthly Cash Flow & Burn Rate Analysis -->
   <div onclick="window.switchTab('finance')" class="glass-card rounded-2xl p-4 md:p-5 space-y-3 border border-slate-800 cursor-pointer hover:border-emerald-500/40 transition bg-slate-900/40">
-    <div class="flex justify-between items-center border-b border-slate-800 pb-2">
-      <h3 class="text-xs font-extrabold text-white uppercase tracking-wider flex items-center gap-2">
-        <i data-lucide="trending-up" class="w-4 h-4 text-emerald-400"></i> Cash Flow &amp; Burn Rate Analysis
+    <div class="flex items-center justify-between gap-2 border-b border-slate-800 pb-2">
+      <h3 class="min-w-0 text-xs font-extrabold text-white uppercase tracking-wider flex items-center gap-2 truncate">
+        <i data-lucide="trending-up" class="w-4 h-4 text-emerald-400 shrink-0"></i> <span class="truncate">Cash Flow</span>
       </h3>
-      <span id="dash-cashflow-status" class="text-xs font-bold text-emerald-400 px-2.5 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20">Positive Flow</span>
+      <span id="dash-cashflow-status" class="shrink-0 whitespace-nowrap text-[10px] sm:text-xs font-bold text-emerald-400 px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20">Positive Flow</span>
+    </div>
+
+    <div class="grid grid-cols-3 gap-2">
+      <div class="min-w-0 rounded-lg bg-slate-950/70 border border-slate-800 p-2">
+        <div class="text-[9px] uppercase tracking-wider text-slate-500 font-bold">Income</div>
+        <div id="dash-cf-income" class="text-xs font-black text-emerald-400 mt-0.5 truncate">₹0</div>
+      </div>
+      <div class="min-w-0 rounded-lg bg-slate-950/70 border border-slate-800 p-2">
+        <div class="text-[9px] uppercase tracking-wider text-slate-500 font-bold">Expenses</div>
+        <div id="dash-bar-exp-text" class="text-xs font-black text-rose-400 mt-0.5 truncate">₹0</div>
+      </div>
+      <div class="min-w-0 rounded-lg bg-slate-950/70 border border-slate-800 p-2">
+        <div class="text-[9px] uppercase tracking-wider text-slate-500 font-bold">Net Saved</div>
+        <div id="dash-bar-sav-text" class="text-xs font-black text-emerald-400 mt-0.5 truncate">₹0</div>
+      </div>
     </div>
 
     <div class="space-y-1.5 text-xs">
-      <div class="flex justify-between font-semibold">
-        <span class="text-slate-300">Income Burn Rate</span>
+      <div class="flex justify-between font-semibold items-center">
+        <span class="text-slate-400">Burn rate</span>
         <span id="dash-savings-percentage" class="text-sky-400 font-bold font-mono">0% Spent</span>
       </div>
-      <div class="w-full bg-slate-950 h-3 rounded-full overflow-hidden border border-slate-800 flex">
+      <div class="w-full bg-slate-950 h-2.5 rounded-full overflow-hidden border border-slate-800 flex">
         <div id="dash-bar-expense" class="bg-rose-500 h-full transition-all duration-500" style="width: 0%" title="Expenses"></div>
         <div id="dash-bar-savings" class="bg-emerald-500 h-full transition-all duration-500" style="width: 100%" title="Net Savings"></div>
-      </div>
-      <div class="flex justify-between text-[11px] text-slate-400 pt-0.5 font-mono">
-        <span>Expenses: <strong id="dash-bar-exp-text" class="text-rose-400">₹0</strong></span>
-        <span>Net Savings: <strong id="dash-bar-sav-text" class="text-emerald-400">₹0</strong></span>
       </div>
     </div>
   </div>
@@ -1810,6 +1832,47 @@ html, body {
       container.innerHTML = html;
     };
 
+    /* Chip-based filters for the dashboard cards */
+    function applyDashChipGroup(attr, value, activeClass, idleClass) {
+      document.querySelectorAll(`[data-${attr}]`).forEach(btn => {
+        const isActive = btn.getAttribute(`data-${attr}`) === value;
+        btn.className = isActive ? activeClass : idleClass;
+      });
+    }
+
+    window.setDashRadarFilter = function(value) {
+      const sel = document.getElementById('dash-radar-filter');
+      if (sel) sel.value = value;
+      applyDashChipGroup(
+        'dash-radar', value,
+        'shrink-0 px-2.5 py-1 min-h-[30px] rounded-lg bg-cyan-500/15 border border-cyan-500/40 text-cyan-300 transition text-[11px] font-semibold',
+        'shrink-0 px-2.5 py-1 min-h-[30px] rounded-lg bg-slate-950 border border-slate-800 text-slate-400 hover:text-slate-200 transition text-[11px] font-semibold'
+      );
+      window.renderTodayAgendaRadar?.();
+    };
+
+    window.setDashHabitSlot = function(value) {
+      const sel = document.getElementById('dash-habit-slot-filter');
+      if (sel) sel.value = value;
+      applyDashChipGroup(
+        'dash-slot', value,
+        'shrink-0 px-2.5 py-1 min-h-[30px] rounded-lg bg-red-500/15 border border-red-500/40 text-red-300 transition text-[11px] font-semibold',
+        'shrink-0 px-2.5 py-1 min-h-[30px] rounded-lg bg-slate-950 border border-slate-800 text-slate-400 hover:text-slate-200 transition text-[11px] font-semibold'
+      );
+      window.renderTodayRoutinesStrip?.();
+    };
+
+    window.setDashTaskFilter = function(value) {
+      const sel = document.getElementById('dash-task-prio-filter');
+      if (sel) sel.value = value;
+      applyDashChipGroup(
+        'dash-task-filter', value,
+        'shrink-0 px-2.5 py-1 min-h-[30px] rounded-lg bg-purple-500/15 border border-purple-500/40 text-purple-300 transition text-[11px] font-semibold',
+        'shrink-0 px-2.5 py-1 min-h-[30px] rounded-lg bg-slate-950 border border-slate-800 text-slate-400 hover:text-slate-200 transition text-[11px] font-semibold'
+      );
+      window.renderPriorityTasksList?.();
+    };
+
     function renderBurnRateAndChart(totalInc, totalExp) {
       const spentPct = totalInc > 0 ? Math.min(100, Math.round((totalExp / totalInc) * 100)) : (totalExp > 0 ? 100 : 0);
       const savingsVal = Math.max(0, totalInc - totalExp);
@@ -1828,6 +1891,9 @@ html, body {
 
       const elSavText = document.getElementById('dash-bar-sav-text');
       if (elSavText) elSavText.textContent = `₹${savingsVal.toLocaleString('en-IN')}`;
+
+      const elIncome = document.getElementById('dash-cf-income');
+      if (elIncome) elIncome.textContent = `₹${totalInc.toLocaleString('en-IN')}`;
 
       const statusBadge = document.getElementById('dash-cashflow-status');
       if (statusBadge) {
