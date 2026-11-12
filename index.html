@@ -10416,58 +10416,63 @@ html, body {
           </div>
         </div>
 
-        <!-- Markdown Quick Formatting Toolbar (essentials + overflow) -->
-        <div id="note-format-toolbar" class="flex items-center gap-1 p-1.5 bg-slate-950/80 rounded-xl border border-slate-800 text-xs">
-          <button type="button" onclick="insertMarkdownFormat('**', '**', 'bold text')" class="p-1.5 rounded leading-none hover:bg-slate-800 text-slate-300 font-bold" title="Bold (**text**)">B</button>
-          <button type="button" onclick="insertMarkdownFormat('*', '*', 'italic text')" class="p-1.5 rounded leading-none hover:bg-slate-800 text-slate-300 italic" title="Italic (*text*)">I</button>
-          <button type="button" onclick="insertMarkdownFormat('# ', '', 'Heading 1')" class="p-1.5 rounded leading-none hover:bg-slate-800 text-amber-400 font-extrabold" title="Heading 1 (#)">H1</button>
-          <div class="w-px h-4 bg-slate-800 mx-0.5 shrink-0"></div>
-          <button type="button" onclick="insertMarkdownFormat('- ', '', 'Bullet item')" class="p-1.5 rounded leading-none hover:bg-slate-800 text-slate-300" title="Bullet List (- )">• List</button>
-          <button type="button" onclick="insertMarkdownFormat('- [ ] ', '', 'Task item')" class="p-1.5 rounded leading-none hover:bg-slate-800 text-slate-300" title="Task Checkbox (- [ ])">☑ Task</button>
-          <button type="button" onclick="insertMarkdownFormat('> ', '', 'Quote text')" class="p-1.5 rounded leading-none hover:bg-slate-800 text-slate-300" title="Blockquote (> )">“ Quote</button>
-          <div class="w-px h-4 bg-slate-800 mx-0.5 shrink-0"></div>
-          <button type="button" onclick="insertWikiLinkPlaceholder()" class="p-1.5 rounded leading-none hover:bg-slate-800 text-sky-400 font-bold" title="Insert [[WikiLink]]">[[Link]]</button>
+        <!-- Markdown Formatting Toolbar (tabbed: Text / Lists / Insert / Media) -->
+        <div id="note-format-toolbar" class="bg-slate-950/80 rounded-xl border border-slate-800 text-xs overflow-hidden">
+          <!-- Tab strip -->
+          <div class="flex items-center gap-1 p-1 border-b border-slate-800/80">
+            <button type="button" onclick="setNoteFormatTab('text')" data-note-format-tab="text" class="note-format-tab px-2.5 py-1 rounded-lg bg-amber-500/20 text-amber-300 border border-amber-500/30 font-semibold transition">Text</button>
+            <button type="button" onclick="setNoteFormatTab('lists')" data-note-format-tab="lists" class="note-format-tab px-2.5 py-1 rounded-lg text-slate-400 hover:text-slate-200 font-semibold transition">Lists</button>
+            <button type="button" onclick="setNoteFormatTab('insert')" data-note-format-tab="insert" class="note-format-tab px-2.5 py-1 rounded-lg text-slate-400 hover:text-slate-200 font-semibold transition">Insert</button>
+            <button type="button" onclick="setNoteFormatTab('media')" data-note-format-tab="media" class="note-format-tab px-2.5 py-1 rounded-lg text-slate-400 hover:text-slate-200 font-semibold transition">Media</button>
+          </div>
 
-          <!-- Overflow formatting actions -->
-          <div class="relative shrink-0" id="note-format-overflow-wrapper">
-            <button type="button" onclick="toggleNoteFormatMenu(event)" class="p-1.5 rounded hover:bg-slate-800 text-slate-400 font-bold" title="More formatting options">
-              <i data-lucide="more-horizontal" class="w-4 h-4"></i>
+          <!-- Text tools -->
+          <div class="p-1.5 flex items-center gap-1 flex-wrap" data-note-format-panel="text">
+            <button type="button" onclick="insertMarkdownFormat('**', '**', 'bold text')" class="p-1.5 rounded leading-none hover:bg-slate-800 text-slate-300 font-bold" title="Bold (**text**)">B</button>
+            <button type="button" onclick="insertMarkdownFormat('*', '*', 'italic text')" class="p-1.5 rounded leading-none hover:bg-slate-800 text-slate-300 italic" title="Italic (*text*)">I</button>
+            <button type="button" onclick="insertMarkdownFormat('~~', '~~', 'strikethrough')" class="p-1.5 rounded leading-none hover:bg-slate-800 text-slate-400 line-through" title="Strikethrough (~~text~~)">S</button>
+            <button type="button" onclick="insertMarkdownFormat('==', '==', 'highlighted text')" class="p-1.5 rounded leading-none hover:bg-slate-800 text-amber-300 font-bold bg-amber-500/10" title="Highlight (==text==)">H</button>
+            <div class="w-px h-4 bg-slate-800 mx-0.5 shrink-0"></div>
+            <button type="button" onclick="insertMarkdownFormat('# ', '', 'Heading 1')" class="p-1.5 rounded leading-none hover:bg-slate-800 text-amber-400 font-extrabold" title="Heading 1 (#)">H1</button>
+            <button type="button" onclick="insertMarkdownFormat('## ', '', 'Heading 2')" class="p-1.5 rounded leading-none hover:bg-slate-800 text-amber-400 font-bold" title="Heading 2 (##)">H2</button>
+            <button type="button" onclick="insertMarkdownFormat('### ', '', 'Heading 3')" class="p-1.5 rounded leading-none hover:bg-slate-800 text-amber-400 font-semibold" title="Heading 3 (###)">H3</button>
+            <div class="w-px h-4 bg-slate-800 mx-0.5 shrink-0"></div>
+            <button type="button" onclick="insertMarkdownFormat('\n---\n', '', '')" class="p-1.5 rounded leading-none hover:bg-slate-800 text-slate-400 text-[11px]" title="Divider (---)">— HR</button>
+          </div>
+
+          <!-- List / block tools -->
+          <div class="p-1.5 hidden flex items-center gap-1 flex-wrap" data-note-format-panel="lists">
+            <button type="button" onclick="insertMarkdownFormat('- ', '', 'Bullet item')" class="p-1.5 rounded leading-none hover:bg-slate-800 text-slate-300" title="Bullet List (- )">• List</button>
+            <button type="button" onclick="insertMarkdownFormat('1. ', '', 'Numbered item')" class="p-1.5 rounded leading-none hover:bg-slate-800 text-slate-300" title="Numbered List (1. )">1. List</button>
+            <button type="button" onclick="insertMarkdownFormat('- [ ] ', '', 'Task item')" class="p-1.5 rounded leading-none hover:bg-slate-800 text-slate-300" title="Task Checkbox (- [ ])">☑ Task</button>
+            <button type="button" onclick="insertMarkdownFormat('> ', '', 'Quote text')" class="p-1.5 rounded leading-none hover:bg-slate-800 text-slate-300" title="Blockquote (> )">“ Quote</button>
+          </div>
+
+          <!-- Insert tools -->
+          <div class="p-1.5 hidden flex items-center gap-1 flex-wrap" data-note-format-panel="insert">
+            <button type="button" onclick="insertWikiLinkPlaceholder()" class="p-1.5 rounded leading-none hover:bg-slate-800 text-sky-400 font-bold" title="Insert [[WikiLink]]">[[Link]]</button>
+            <button type="button" onclick="openInsertHyperlinkModal()" class="p-1.5 rounded leading-none hover:bg-slate-800 text-sky-400 font-bold" title="Insert Hyperlink">🔗 URL</button>
+            <button type="button" onclick="insertMarkdownFormat('`', '`', 'code')" class="p-1.5 rounded leading-none hover:bg-slate-800 text-amber-300 font-mono text-[11px]" title="Inline Code (`code`)">&lt;/&gt;</button>
+            <button type="button" onclick="insertMarkdownFormat('\n```javascript\n', '\n```\n', '// code here')" class="p-1.5 rounded leading-none hover:bg-slate-800 text-amber-300 font-mono text-[11px]" title="Code Block (```)">Block</button>
+          </div>
+
+          <!-- Media tools -->
+          <div class="p-1.5 hidden flex items-center gap-1 flex-wrap" data-note-format-panel="media">
+            <button type="button" onclick="openInsertTableModal()" class="p-1.5 rounded leading-none hover:bg-slate-800 text-emerald-400 flex items-center" title="Build &amp; Insert Table">
+              <i data-lucide="table" class="w-4 h-4"></i>
             </button>
-            <div id="note-format-overflow-menu" class="hidden absolute right-0 mt-2 w-52 bg-slate-900/95 border border-slate-800 rounded-xl shadow-2xl py-1.5 z-50 text-xs backdrop-blur-xl divide-y divide-slate-800/60">
-              <button type="button" onclick="insertMarkdownFormat('~~', '~~', 'strikethrough'); toggleNoteFormatMenu(event);" class="w-full px-3 py-2.5 text-left text-slate-300 hover:bg-slate-800 hover:text-white flex items-center gap-2 font-medium transition">
-                <i data-lucide="strikethrough" class="w-3.5 h-3.5 text-slate-400 shrink-0"></i> Strikethrough
-              </button>
-              <button type="button" onclick="insertMarkdownFormat('==', '==', 'highlighted text'); toggleNoteFormatMenu(event);" class="w-full px-3 py-2.5 text-left text-slate-300 hover:bg-slate-800 hover:text-white flex items-center gap-2 font-medium transition">
-                <i data-lucide="highlighter" class="w-3.5 h-3.5 text-amber-400 shrink-0"></i> Highlight
-              </button>
-              <button type="button" onclick="insertMarkdownFormat('## ', '', 'Heading 2'); toggleNoteFormatMenu(event);" class="w-full px-3 py-2.5 text-left text-slate-300 hover:bg-slate-800 hover:text-white flex items-center gap-2 font-medium transition">
-                <i data-lucide="heading-2" class="w-3.5 h-3.5 text-amber-400 shrink-0"></i> Heading 2
-              </button>
-              <button type="button" onclick="insertMarkdownFormat('### ', '', 'Heading 3'); toggleNoteFormatMenu(event);" class="w-full px-3 py-2.5 text-left text-slate-300 hover:bg-slate-800 hover:text-white flex items-center gap-2 font-medium transition">
-                <i data-lucide="heading-3" class="w-3.5 h-3.5 text-amber-400 shrink-0"></i> Heading 3
-              </button>
-              <button type="button" onclick="openInsertHyperlinkModal(); toggleNoteFormatMenu(event);" class="w-full px-3 py-2.5 text-left text-slate-300 hover:bg-slate-800 hover:text-white flex items-center gap-2 font-medium transition">
-                <i data-lucide="link" class="w-3.5 h-3.5 text-sky-400 shrink-0"></i> Hyperlink
-              </button>
-              <button type="button" onclick="insertMarkdownFormat('\n```javascript\n', '\n```\n', '// code here'); toggleNoteFormatMenu(event);" class="w-full px-3 py-2.5 text-left text-slate-300 hover:bg-slate-800 hover:text-white flex items-center gap-2 font-medium transition">
-                <i data-lucide="code" class="w-3.5 h-3.5 text-amber-300 shrink-0"></i> Code Block
-              </button>
-              <button type="button" onclick="insertMarkdownFormat('\`', '\`', 'code'); toggleNoteFormatMenu(event);" class="w-full px-3 py-2.5 text-left text-slate-300 hover:bg-slate-800 hover:text-white flex items-center gap-2 font-medium transition">
-                <i data-lucide="braces" class="w-3.5 h-3.5 text-amber-300 shrink-0"></i> Inline Code
-              </button>
-              <button type="button" onclick="insertMermaidPlaceholder(); toggleNoteFormatMenu(event);" class="w-full px-3 py-2.5 text-left text-slate-300 hover:bg-slate-800 hover:text-white flex items-center gap-2 font-medium transition">
-                <i data-lucide="workflow" class="w-3.5 h-3.5 text-purple-400 shrink-0"></i> Mermaid Diagram
-              </button>
-              <button type="button" onclick="insertKaTeXPlaceholder(); toggleNoteFormatMenu(event);" class="w-full px-3 py-2.5 text-left text-slate-300 hover:bg-slate-800 hover:text-white flex items-center gap-2 font-medium transition">
-                <i data-lucide="sigma" class="w-3.5 h-3.5 text-teal-400 shrink-0"></i> Math Formula
-              </button>
-              <button type="button" onclick="toggleVoiceDictation(); toggleNoteFormatMenu(event);" id="btn-voice-dictation" class="w-full px-3 py-2.5 text-left text-slate-300 hover:bg-slate-800 hover:text-white flex items-center gap-2 font-medium transition">
-                <i data-lucide="mic" class="w-3.5 h-3.5 text-rose-400 shrink-0"></i> Voice Dictation
-              </button>
-              <button type="button" onclick="insertMarkdownFormat('\n---\n', '', ''); toggleNoteFormatMenu(event);" class="w-full px-3 py-2.5 text-left text-slate-300 hover:bg-slate-800 hover:text-white flex items-center gap-2 font-medium transition">
-                <i data-lucide="minus" class="w-3.5 h-3.5 text-slate-400 shrink-0"></i> Divider
-              </button>
-            </div>
+            <button type="button" onclick="openInsertImageModal()" class="p-1.5 rounded leading-none hover:bg-slate-800 text-amber-400 flex items-center" title="Insert / Upload Image">
+              <i data-lucide="image" class="w-4 h-4"></i>
+            </button>
+            <button type="button" onclick="insertMermaidPlaceholder()" class="p-1.5 rounded leading-none hover:bg-slate-800 text-purple-400 flex items-center" title="Insert Mermaid Diagram">
+              <i data-lucide="workflow" class="w-4 h-4"></i>
+            </button>
+            <button type="button" onclick="insertKaTeXPlaceholder()" class="p-1.5 rounded leading-none hover:bg-slate-800 text-teal-400 flex items-center" title="Insert LaTeX Formula">
+              <i data-lucide="sigma" class="w-4 h-4"></i>
+            </button>
+            <button type="button" onclick="toggleVoiceDictation()" id="btn-voice-dictation" class="p-1.5 rounded leading-none hover:bg-slate-800 text-rose-400 flex items-center" title="Voice-to-Text Dictation">
+              <i data-lucide="mic" class="w-4 h-4"></i>
+            </button>
           </div>
         </div>
 
@@ -10777,14 +10782,14 @@ html, body {
     };
 
     /* Actions Menu Toggle */
-    /* Overflow Menus (editor actions + formatting extras) */
+    /* Overflow Menus (editor actions) */
     function toggleDropdownMenu(menuId, wrapperId) {
       const menu = document.getElementById(menuId);
       const wrapper = document.getElementById(wrapperId);
       if (!menu) return;
       const willOpen = menu.classList.contains('hidden');
       // close the other menu first
-      ['note-overflow-menu', 'note-format-overflow-menu'].forEach(id => {
+      ['note-overflow-menu'].forEach(id => {
         if (id !== menuId) {
           const other = document.getElementById(id);
           if (other) other.classList.add('hidden');
@@ -10800,25 +10805,30 @@ html, body {
       toggleDropdownMenu('note-overflow-menu', 'note-overflow-wrapper');
     };
 
-    window.toggleNoteFormatMenu = function(e) {
-      if (e) e.stopPropagation();
-      toggleDropdownMenu('note-format-overflow-menu', 'note-format-overflow-wrapper');
+    /* Formatting tabs (Text / Lists / Insert / Media) */
+    window.setNoteFormatTab = function(tab) {
+      const active = tab || 'text';
+      document.querySelectorAll('[data-note-format-tab]').forEach(btn => {
+        const isActive = btn.getAttribute('data-note-format-tab') === active;
+        btn.className = isActive
+          ? 'note-format-tab px-2.5 py-1 rounded-lg bg-amber-500/20 text-amber-300 border border-amber-500/30 font-semibold transition'
+          : 'note-format-tab px-2.5 py-1 rounded-lg text-slate-400 hover:text-slate-200 font-semibold transition';
+      });
+      document.querySelectorAll('[data-note-format-panel]').forEach(panel => {
+        panel.classList.toggle('hidden', panel.getAttribute('data-note-format-panel') !== active);
+      });
+      refreshIconsScoped(document.getElementById('note-format-toolbar'));
     };
 
     document.addEventListener('click', function(e) {
       const popover = document.getElementById('wikilinks-autocomplete-popover');
 
-      [
-        ['note-overflow-menu', 'note-overflow-wrapper'],
-        ['note-format-overflow-menu', 'note-format-overflow-wrapper']
-      ].forEach(([menuId, wrapperId]) => {
-        const menu = document.getElementById(menuId);
-        const wrapper = document.getElementById(wrapperId);
-        if (menu && !menu.classList.contains('hidden') && wrapper && !wrapper.contains(e.target)) {
-          menu.classList.add('hidden');
-          if (wrapper) wrapper.classList.remove('ring-1');
-        }
-      });
+      const menu = document.getElementById('note-overflow-menu');
+      const wrapper = document.getElementById('note-overflow-wrapper');
+      if (menu && !menu.classList.contains('hidden') && wrapper && !wrapper.contains(e.target)) {
+        menu.classList.add('hidden');
+        if (wrapper) wrapper.classList.remove('ring-1');
+      }
 
       if (popover && !popover.classList.contains('hidden') && !popover.contains(e.target) && e.target.id !== 'note-content-input') {
         popover.classList.add('hidden');
