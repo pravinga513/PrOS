@@ -10695,6 +10695,7 @@ html, body {
   (function() {
     let editorMode = 'edit';
     let isUnsaved = false;
+    let autosaveTimer = null;
     let activeTagFilter = '';
     let isZenModeActive = false;
     let voiceRecognitionInstance = null;
@@ -10777,7 +10778,72 @@ html, body {
       if (statusEl) {
         statusEl.innerHTML = `<span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span> <span class="text-amber-300">Unsaved changes</span>`;
       }
+      scheduleNoteAutosave();
     };
+
+    /* ---------------- Autosave Engine (prevents lost edits) ---------------- */
+    function setNoteStatusIndicator(state) {
+      const statusEl = document.getElementById('note-status-indicator');
+      if (!statusEl) return;
+      if (state === 'saving') {
+        statusEl.innerHTML = `<span class="w-2 h-2 rounded-full bg-sky-400 animate-pulse"></span> <span class="text-sky-300">Saving...</span>`;
+      } else if (state === 'unsaved') {
+        statusEl.innerHTML = `<span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span> <span class="text-amber-300">Unsaved changes</span>`;
+      } else {
+        statusEl.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-400"></span> Saved`;
+      }
+    }
+
+    function scheduleNoteAutosave() {
+      if (autosaveTimer) clearTimeout(autosaveTimer);
+      autosaveTimer = setTimeout(() => {
+        window.flushNoteAutosave();
+      }, 900);
+    }
+
+    window.flushNoteAutosave = function(silent) {
+      if (autosaveTimer) { clearTimeout(autosaveTimer); autosaveTimer = null; }
+      if (!isUnsaved) return false;
+
+      const note = (window.appState.notes || []).find(n => n.id === window.appState.activeNoteId);
+      if (!note) return false;
+
+      const titleInput = document.getElementById('note-title-input');
+      const folderSelect = document.getElementById('note-folder-select');
+      const contentInput = document.getElementById('note-content-input');
+
+      if (titleInput) note.title = titleInput.value.trim() || 'Untitled Note';
+      if (folderSelect && folderSelect.value) note.folderId = folderSelect.value;
+      if (contentInput) note.content = contentInput.value;
+      note.updatedAt = new Date().toISOString();
+
+      isUnsaved = false;
+      setNoteStatusIndicator('saved');
+
+      try { if (window.Store && window.appState.notes) window.Store.set('pros_notes', JSON.stringify(window.appState.notes)); } catch (e) {}
+      if (window.saveCloudData) window.saveCloudData();
+      if (!silent) window.renderNotesList();
+      if (typeof window.renderNoteFoldersNav === 'function') window.renderNoteFoldersNav();
+      return true;
+    };
+
+    // Flush pending edits when the app is backgrounded or closed
+    document.addEventListener('visibilitychange', function() {
+      if (document.visibilityState === 'hidden') window.flushNoteAutosave(true);
+    });
+    window.addEventListener('pagehide', function() { window.flushNoteAutosave(true); });
+    window.addEventListener('beforeunload', function() { window.flushNoteAutosave(true); });
+
+    // Ctrl/Cmd + S saves the active note
+    document.addEventListener('keydown', function(e) {
+      if ((e.ctrlKey || e.metaKey) && (e.key === 's' || e.key === 'S')) {
+        const notesView = document.getElementById('view-notes');
+        if (notesView && !notesView.classList.contains('hidden')) {
+          e.preventDefault();
+          window.saveCurrentNote();
+        }
+      }
+    });
 
     window.clearNoteSearch = function() {
       const searchInput = document.getElementById('note-search-input');
@@ -11029,6 +11095,19 @@ html, body {
       if (el) el.classList.toggle('hidden');
     };
 
+    /* Blocks javascript:/vbscript:/data: payloads inside rendered markdown */
+    function sanitizeNoteUrl(url) {
+      const raw = String(url || '').trim();
+      if (!raw) return '';
+      const cleaned = raw.replace(/&amp;/g, '&').replace(/&#39;/g, "'").replace(/&quot;/g, '"').replace(/&lt;/g, '<').replace(/&gt;/g, '>');
+      const schemeMatch = cleaned.match(/^([a-z0-9+.-]+):/i);
+      const scheme = schemeMatch ? schemeMatch[1].toLowerCase() : '';
+      const blocked = ['javascript', 'vbscript', 'data', 'file'];
+      if (scheme && blocked.includes(scheme)) return '';
+      if (cleaned.startsWith('//')) return '';
+      return raw;
+    }
+
     /* Full Markdown to HTML Parser */
     window.parseMarkdownToHtml = function(md) {
       if (!md || !md.trim()) {
@@ -11105,9 +11184,13 @@ html, body {
       });
 
       html = html.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, function(match, alt, url) {
+        const safeUrl = sanitizeNoteUrl(url);
+        if (!safeUrl) {
+          return `<div class="my-2 text-[11px] text-slate-500 bg-slate-950 border border-slate-800 rounded-xl p-2">Blocked unsafe image URL</div>`;
+        }
         return `
           <div class="my-3 space-y-1">
-            <img src="${url}" alt="${alt}" class="rounded-xl border border-slate-800 max-h-96 w-auto object-cover shadow-lg hover:border-amber-500/50 transition cursor-pointer" onclick="window.open('${url}', '_blank')" />
+            <img src="${safeUrl}" alt="${alt}" class="rounded-xl border border-slate-800 max-h-96 w-auto object-cover shadow-lg hover:border-amber-500/50 transition cursor-pointer" onclick="window.open('${safeUrl}', '_blank')" />
             ${alt ? `<p class="text-[10px] text-slate-400 italic">${alt}</p>` : ''}
           </div>
         `;
@@ -11126,7 +11209,13 @@ html, body {
       html = html.replace(/==([^=]+)==/g, '<mark class="bg-amber-500/30 text-amber-200 px-1 py-0.5 rounded border border-amber-500/40">$1</mark>');
       html = html.replace(/\*\*([^\*]+)\*\*/g, '<strong class="font-bold text-white">$1</strong>');
       html = html.replace(/\*([^\*]+)\*/g, '<em class="italic text-slate-200">$1</em>');
-      html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer" class="text-amber-400 hover:underline font-semibold">$1 ↗</a>');
+      html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, function(match, label, url) {
+        const safeUrl = sanitizeNoteUrl(url);
+        if (!safeUrl) {
+          return `<span class="text-slate-500 line-through">${label}</span>`;
+        }
+        return `<a href="${safeUrl}" target="_blank" rel="noopener noreferrer" class="text-amber-400 hover:underline font-semibold">${label} ↗</a>`;
+      });
       html = html.replace(/\n/g, '<br/>');
 
       return frontmatterHtml + html;
@@ -11290,6 +11379,38 @@ html, body {
       });
     }
 
+    /* Ensures every note belongs to a valid folder (repairs legacy notes with no folderId) */
+    function ensureNoteFolderAssignments() {
+      const folders = window.appState.noteFolders || [];
+      const notes = window.appState.notes || [];
+      if (!folders.length || !notes.length) return false;
+
+      let changed = false;
+      notes.forEach(n => {
+        if (n.folderId && folders.some(f => f.id === n.folderId)) return;
+
+        const haystack = `${n.title || ''} ${n.content || ''}`.toLowerCase();
+        let matched = null;
+
+        folders.forEach(f => {
+          if (matched) return;
+          const name = (f.name || '').toLowerCase();
+          if (f.nodeTag && haystack.includes((f.nodeTag || '').toLowerCase())) { matched = f; return; }
+          const words = name.replace(/[^a-z0-9]+/g, ' ').trim().split(' ').filter(w => w.length >= 3);
+          if (words.some(w => haystack.includes(w))) matched = f;
+        });
+
+        n.folderId = matched ? matched.id : folders[0].id;
+        changed = true;
+      });
+
+      if (changed) {
+        try { if (window.Store && window.appState.notes) window.Store.set('pros_notes', JSON.stringify(window.appState.notes)); } catch (e) {}
+        if (window.saveCloudData) window.saveCloudData();
+      }
+      return changed;
+    }
+
     window.renderNoteFoldersNav = function() {
       const container = document.getElementById('note-folders-nav');
       const filterSelect = document.getElementById('notes-folder-filter');
@@ -11301,6 +11422,8 @@ html, body {
           { id: 'nf_default', name: 'General Notes', createdAt: new Date().toISOString() }
         ];
       }
+
+      ensureNoteFolderAssignments();
 
       const folders = window.appState.noteFolders;
 
@@ -11349,7 +11472,7 @@ html, body {
             <div class="flex items-center gap-1 shrink-0">
               ${isNode ? '<span class="text-[9px] px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-mono font-bold border border-emerald-500/30">NODE</span>' : ''}
               <span class="text-[10px] font-mono text-slate-500 group-hover:text-slate-300">${noteCount}</span>
-              ${f.id !== 'nf_default' ? `<button type="button" onclick="event.stopPropagation(); deleteNoteFolder('${f.id}')" class="opacity-0 group-hover:opacity-100 text-slate-500 hover:text-rose-400 text-xs px-1">✕</button>` : ''}
+              ${f.id !== 'nf_default' ? `<button type="button" onclick="event.stopPropagation(); deleteNoteFolder('${f.id}')" class="opacity-100 sm:opacity-0 sm:group-hover:opacity-100 text-slate-500 hover:text-rose-400 text-xs px-1 shrink-0">✕</button>` : ''}
             </div>
           `;
 
@@ -11375,11 +11498,9 @@ html, body {
         folders.forEach(f => {
           const isNode = f.isNodeFolder || !!f.nodeTag;
           const noteCount = (window.appState.notes || []).filter(n => n.folderId === f.id).length;
-          if (isNode && noteCount === 0) return;
-
           const opt = document.createElement('option');
           opt.value = f.id;
-          opt.textContent = `${isNode ? '🧠 ' : '📁 '}${f.name}`;
+          opt.textContent = `${isNode ? '🧠 ' : '📁 '}${f.name}${noteCount ? ` (${noteCount})` : ''}`;
           filterSelect.appendChild(opt);
         });
         filterSelect.value = cur || window.appState.activeNoteFolderFilter || 'ALL';
@@ -11505,6 +11626,10 @@ html, body {
     };
 
     window.loadNoteIntoEditor = function(id) {
+      // Persist pending edits on the note we are leaving before switching away
+      if (window.appState.activeNoteId && window.appState.activeNoteId !== id) {
+        window.flushNoteAutosave(true);
+      }
       window.appState.activeNoteId = id;
       const note = (window.appState.notes || []).find(n => n.id === id);
       if (note) {
@@ -11513,14 +11638,29 @@ html, body {
         document.getElementById('note-folder-select').value = note.folderId || (window.appState.noteFolders?.[0]?.id || '');
         document.getElementById('note-created-log').textContent = note.createdAt ? new Date(note.createdAt).toLocaleDateString() : '--';
         document.getElementById('note-updated-log').textContent = note.updatedAt ? new Date(note.updatedAt).toLocaleDateString() : '--';
-        
+
         const pinBtn = document.getElementById('note-pin-btn');
         if (pinBtn) pinBtn.className = `p-2 rounded-xl bg-slate-950 border transition ${note.pinned ? 'border-amber-400 text-amber-400' : 'border-slate-800 text-slate-400 hover:text-amber-400'}`;
 
         isUnsaved = false;
-        const statusEl = document.getElementById('note-status-indicator');
-        if (statusEl) {
-          statusEl.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-400"></span> Saved`;
+        setNoteStatusIndicator('saved');
+
+        // Keep the live preview canvas in sync with the loaded note
+        const preview = document.getElementById('note-markdown-preview');
+        if (preview && editorMode !== 'edit' && !preview.classList.contains('hidden')) {
+          preview.innerHTML = window.parseMarkdownToHtml(note.content || '');
+        }
+
+        // On mobile, jump straight to the editor when a note is opened (wiki links, backlinks)
+        if (window.innerWidth < 1024) {
+          const sidebarPanel = document.getElementById('notes-sidebar-panel');
+          const editorPanel = document.getElementById('notes-editor-panel');
+          const toggleText = document.getElementById('mobile-toggle-btn-text');
+          if (sidebarPanel && editorPanel) {
+            sidebarPanel.classList.add('hidden');
+            editorPanel.classList.remove('hidden');
+            if (toggleText) toggleText.textContent = 'Notes List';
+          }
         }
 
         window.updateNoteWordCount();
@@ -11902,14 +12042,14 @@ html, body {
         note.updatedAt = new Date().toISOString();
 
         isUnsaved = false;
-        const statusEl = document.getElementById('note-status-indicator');
-        if (statusEl) {
-          statusEl.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-400"></span> Saved`;
-        }
+        if (autosaveTimer) { clearTimeout(autosaveTimer); autosaveTimer = null; }
+        setNoteStatusIndicator('saved');
 
         if (window.saveCloudData) window.saveCloudData();
+        try { if (window.Store && window.appState.notes) window.Store.set('pros_notes', JSON.stringify(window.appState.notes)); } catch (e) {}
         if (window.showToast) window.showToast('Note saved successfully!', 'success');
         window.renderNotesList();
+        if (typeof window.renderNoteFoldersNav === 'function') window.renderNoteFoldersNav();
         updateTOCAndBacklinks();
       }
     };
@@ -11918,13 +12058,20 @@ html, body {
       const note = (window.appState.notes || []).find(n => n.id === window.appState.activeNoteId);
       if (!note) return;
 
+      if (!confirm(`Delete "${note.title || 'Untitled Note'}"? This cannot be undone.`)) return;
+
+      window.flushNoteAutosave(true);
       window.appState.notes = (window.appState.notes || []).filter(n => n.id !== window.appState.activeNoteId);
+      window.appState.activeNoteId = null;
       if (window.saveCloudData) window.saveCloudData();
       if (window.appState.notes.length > 0) {
         window.loadNoteIntoEditor(window.appState.notes[0].id);
       } else {
         document.getElementById('note-title-input').value = '';
         document.getElementById('note-content-input').value = '';
+        document.getElementById('note-folder-select').value = '';
+        document.getElementById('note-created-log').textContent = '--';
+        document.getElementById('note-updated-log').textContent = '--';
       }
       window.renderNotesList();
       if (window.showToast) window.showToast('Note deleted.', 'info');
@@ -12051,9 +12198,18 @@ html, body {
 
     window.deleteNoteFolder = function(id) {
       if (id === 'nf_default') return;
+      const folder = (window.appState.noteFolders || []).find(f => f.id === id);
+      const affected = (window.appState.notes || []).filter(n => n.folderId === id).length;
+
+      if (!confirm(`Delete folder "${folder ? folder.name : id}"?${affected ? ` ${affected} note(s) will be moved to another folder.` : ''}`)) return;
+
       window.appState.noteFolders = (window.appState.noteFolders || []).filter(f => f.id !== id);
+
+      // Move orphaned notes to a folder that actually exists
+      const remaining = window.appState.noteFolders || [];
+      const fallbackId = remaining.length ? remaining[0].id : 'nf_default';
       (window.appState.notes || []).forEach(n => {
-        if (n.folderId === id) n.folderId = 'nf_default';
+        if (n.folderId === id) n.folderId = fallbackId;
       });
 
       if (window.appState.activeNoteFolderFilter === id) {
@@ -19524,6 +19680,11 @@ html, body {
       if (!viewId) return;
       if (!window.appState) window.appState = {};
 
+      // Persist any pending Knowledge Base edits before leaving the section
+      if (typeof window.flushNoteAutosave === 'function') {
+        try { window.flushNoteAutosave(true); } catch (e) {}
+      }
+
       const targetViewId = CANON_VIEW_ALIASES[viewId] || viewId;
       const currentViewId = window.appState.currentView || 'dashboard';
       const currentViewEl = document.getElementById(`view-${currentViewId}`) || document.getElementById(currentViewId);
@@ -19599,7 +19760,7 @@ html, body {
           case 'calendar': window.renderCalendarView?.(); break;
           case 'time': window.renderTimeTrackerView?.(); break;
           case 'logbook': window.renderLogbookTimeline?.(true); break;
-          case 'notes': window.renderNotesList?.(); break;
+          case 'notes': window.renderNoteFoldersNav?.(); window.renderNotesList?.(); break;
           case 'habits':
             if (typeof window.renderHabitsView === 'function') window.renderHabitsView();
             else window.renderHabitsMatrix?.();
@@ -21963,6 +22124,8 @@ html, body {
           if (parsed.goals) window.appState.goals = parsed.goals;
           if (parsed.timeLogs) window.appState.timeLogs = parsed.timeLogs;
           if (parsed.notes) window.appState.notes = parsed.notes;
+          if (parsed.noteFolders) window.appState.noteFolders = parsed.noteFolders;
+          if (parsed.goalFolders) window.appState.goalFolders = parsed.goalFolders;
           if (parsed.habits) window.appState.habits = parsed.habits;
           if (parsed.categories) window.appState.categories = parsed.categories;
           if (parsed.categoryBudgets) window.appState.categoryBudgets = parsed.categoryBudgets;
@@ -22070,6 +22233,9 @@ html, body {
           goals: window.appState.goals,
           timeLogs: window.appState.timeLogs,
           notes: window.appState.notes,
+          noteFolders: window.appState.noteFolders,
+          goalFolders: window.appState.goalFolders,
+          mindmaps: window.appState.mindmaps,
           habits: window.appState.habits,
           categories: window.appState.categories,
           categoryBudgets: window.appState.categoryBudgets,
