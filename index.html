@@ -689,10 +689,10 @@ html, body {
     <!-- Period Filter Bar & Fast Refresh -->
     <div class="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-end">
       <div class="flex items-center bg-slate-950 p-1 rounded-xl border border-slate-800 text-xs font-medium overflow-x-auto">
-        <button type="button" onclick="setDashboardPeriod('month')" id="dash-filter-month" class="dash-period-btn bg-emerald-600 text-slate-950 font-bold px-3 py-1.5 rounded-lg shadow transition">This Month</button>
-        <button type="button" onclick="setDashboardPeriod('week')" id="dash-filter-week" class="dash-period-btn px-3 py-1.5 rounded-lg text-slate-400 hover:text-white transition">This Week</button>
-        <button type="button" onclick="setDashboardPeriod('year')" id="dash-filter-year" class="dash-period-btn px-3 py-1.5 rounded-lg text-slate-400 hover:text-white transition">This Year</button>
-        <button type="button" onclick="setDashboardPeriod('all')" id="dash-filter-all" class="dash-period-btn px-3 py-1.5 rounded-lg text-slate-400 hover:text-white transition">All Time</button>
+        <button type="button" onclick="setDashboardPeriod('month')" id="dash-filter-month" class="dash-period-btn shrink-0 whitespace-nowrap bg-emerald-600 text-slate-950 font-bold px-3 py-1.5 rounded-lg shadow transition">This Month</button>
+        <button type="button" onclick="setDashboardPeriod('week')" id="dash-filter-week" class="dash-period-btn shrink-0 whitespace-nowrap px-3 py-1.5 rounded-lg text-slate-400 hover:text-white transition">This Week</button>
+        <button type="button" onclick="setDashboardPeriod('year')" id="dash-filter-year" class="dash-period-btn shrink-0 whitespace-nowrap px-3 py-1.5 rounded-lg text-slate-400 hover:text-white transition">This Year</button>
+        <button type="button" onclick="setDashboardPeriod('all')" id="dash-filter-all" class="dash-period-btn shrink-0 whitespace-nowrap px-3 py-1.5 rounded-lg text-slate-400 hover:text-white transition">All Time</button>
       </div>
       <button type="button" onclick="renderDashboard()" class="p-2 bg-slate-950 hover:bg-slate-900 border border-slate-800 rounded-xl text-slate-400 hover:text-white transition shrink-0 active:scale-90" title="Refresh Live Widgets">
         <i data-lucide="rotate-cw" class="w-4 h-4"></i>
