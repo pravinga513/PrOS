@@ -825,7 +825,7 @@ html, body {
           <h3 class="text-xs font-extrabold text-cyan-300 uppercase tracking-wider flex items-center gap-2">
             <i data-lucide="calendar" class="w-4 h-4 text-cyan-400"></i> Events &amp; Celebrations Radar
           </h3>
-          <span id="dash-radar-count-badge" class="text-[10px] px-2 py-0.5 rounded-full bg-slate-800 text-slate-400 font-mono">0 events</span>
+          <span id="dash-radar-count-badge" class="shrink-0 whitespace-nowrap text-[10px] px-2 py-0.5 rounded-full bg-slate-800 text-slate-400 font-mono">0 events</span>
         </div>
         
         <div class="flex items-center gap-2">
@@ -1053,7 +1053,7 @@ html, body {
           <h3 class="text-xs font-extrabold text-white uppercase tracking-wider flex items-center gap-2">
             <i data-lucide="pie-chart" class="w-4 h-4 text-emerald-400"></i> Expense Category Allocation
           </h3>
-          <span id="chart-period-badge" class="text-[10px] bg-slate-950 text-slate-400 border border-slate-800 px-2 py-0.5 rounded font-mono">This Month</span>
+          <span id="chart-period-badge" class="shrink-0 whitespace-nowrap text-[10px] bg-slate-950 text-slate-400 border border-slate-800 px-2 py-0.5 rounded font-mono">This Month</span>
         </div>
         <div class="h-44 relative flex items-center justify-center">
           <canvas id="financeCategoryChart"></canvas>
@@ -1941,11 +1941,13 @@ html, body {
 
   <!-- Upcoming Celebrations & Events Spotlight -->
   <div id="upcoming-events-wrapper" class="glass-card rounded-2xl p-3.5 border border-pink-500/20 bg-pink-500/5 space-y-2.5">
-    <div class="flex justify-between items-center px-0.5">
-      <h3 class="text-xs font-extrabold text-pink-300 uppercase tracking-wider flex items-center gap-1.5">
-        <i data-lucide="cake" class="w-3.5 h-3.5 text-pink-400"></i> Upcoming Celebrations &amp; Milestones
+    <div class="flex justify-between items-center gap-2 px-0.5">
+      <h3 class="min-w-0 text-xs font-extrabold text-pink-300 uppercase tracking-wider flex items-center gap-1.5 truncate">
+        <i data-lucide="cake" class="w-3.5 h-3.5 text-pink-400 shrink-0"></i>
+        <span class="truncate sm:hidden">Upcoming Events</span>
+        <span class="hidden sm:inline truncate">Upcoming Celebrations &amp; Milestones</span>
       </h3>
-      <span id="upcoming-events-badge" class="text-[10px] bg-pink-500/20 text-pink-300 border border-pink-500/30 px-2 py-0.5 rounded font-mono font-bold">0 Upcoming</span>
+      <span id="upcoming-events-badge" class="shrink-0 whitespace-nowrap text-[10px] bg-pink-500/20 text-pink-300 border border-pink-500/30 px-2 py-0.5 rounded font-mono font-bold">0 Upcoming</span>
     </div>
 
     <div id="upcoming-events-container" class="flex flex-nowrap gap-2.5 overflow-x-auto pb-1 text-xs no-scrollbar">
@@ -9109,7 +9111,7 @@ html, body {
             </select>
           </div>
 
-          <span id="time-filtered-count-badge" class="text-[10px] text-slate-400 font-mono">0 sessions</span>
+          <span id="time-filtered-count-badge" class="shrink-0 whitespace-nowrap text-[10px] text-slate-400 font-mono">0 sessions</span>
         </div>
 
         <!-- History Items Stream -->
