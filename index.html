@@ -6933,7 +6933,7 @@ html, body {
       <!-- Search Bar -->
       <div class="relative flex-1 sm:flex-none sm:w-48 min-w-[140px]">
         <i data-lucide="search" class="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none"></i>
-        <input id="goal-search-input" type="text" onkeyup="searchGoals(this.value)" placeholder="Search targets &amp; OKRs..." class="w-full bg-slate-950 border border-slate-800 rounded-xl pl-8 pr-7 py-2 text-xs text-slate-200 outline-none focus:border-rose-400 transition" />
+        <input id="goal-search-input" type="text" onkeyup="searchGoals(this.value)" onkeydown="goalSearchKeydown(event, this)" placeholder="Search targets &amp; OKRs..." class="w-full bg-slate-950 border border-slate-800 rounded-xl pl-8 pr-7 py-2 text-xs text-slate-200 outline-none focus:border-rose-400 transition" />
         <button type="button" onclick="clearGoalSearchQuery()" id="goal-search-clear-btn" class="hidden absolute right-2 top-1/2 -translate-y-1/2 text-slate-500 hover:text-white p-0.5 text-xs">✕</button>
       </div>
 
@@ -6977,7 +6977,7 @@ html, body {
       <p class="text-[10px] text-slate-500 font-mono">Overall OKR progress</p>
     </div>
 
-    <div onclick="goalKpiJump('COMPLETED')" class="glass-card p-3 sm:p-4 rounded-2xl border border-rose-500/20 bg-rose-500/[0.03] space-y-1 hover:border-rose-500/40 transition cursor-pointer active:scale-[0.98]">
+    <div onclick="goalKpiJump('COMPLETED')" data-goal-kpi="COMPLETED" class="glass-card p-3 sm:p-4 rounded-2xl border border-rose-500/20 bg-rose-500/[0.03] space-y-1 hover:border-rose-500/40 transition cursor-pointer active:scale-[0.98]">
       <div class="flex justify-between items-center text-xs font-bold text-slate-400">
         <span class="uppercase tracking-wider text-[9px]">Completed</span>
         <div class="p-1 bg-rose-500/10 text-rose-400 rounded-lg shrink-0">
@@ -6988,7 +6988,7 @@ html, body {
       <p class="text-[10px] text-slate-500 font-mono">Targets achieved</p>
     </div>
 
-    <div onclick="goalKpiJump('URGENT')" class="glass-card p-3 sm:p-4 rounded-2xl border border-rose-500/20 bg-rose-500/[0.03] space-y-1 hover:border-amber-500/40 transition cursor-pointer active:scale-[0.98]">
+    <div onclick="goalKpiJump('URGENT')" data-goal-kpi="URGENT" class="glass-card p-3 sm:p-4 rounded-2xl border border-rose-500/20 bg-rose-500/[0.03] space-y-1 hover:border-amber-500/40 transition cursor-pointer active:scale-[0.98]">
       <div class="flex justify-between items-center text-xs font-bold text-slate-400">
         <span class="uppercase tracking-wider text-[9px]">Near Deadline</span>
         <div class="p-1 bg-amber-500/10 text-amber-400 rounded-lg shrink-0">
@@ -7214,7 +7214,7 @@ html, body {
   </div>
 
   <!-- MODAL 2: MANAGE & CREATE CUSTOM GOAL CATEGORIES -->
-  <div id="manage-goal-categories-modal" class="hidden fixed inset-0 z-50 modal-backdrop flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
+  <div id="manage-goal-categories-modal" style="z-index: 60" class="hidden fixed inset-0 z-50 modal-backdrop flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
     <div class="w-full max-w-md bg-slate-900 border border-slate-800 rounded-2xl sm:rounded-3xl p-4 sm:p-6 shadow-2xl space-y-3.5 max-h-[88vh] overflow-y-auto my-auto relative box-border">
       <div class="flex justify-between items-center border-b border-slate-800 pb-2.5">
         <h3 class="text-sm font-bold text-white flex items-center gap-2 truncate">
@@ -7272,11 +7272,9 @@ html, body {
           <button type="button" onclick="selectAllRadarCategories(false)" class="flex-1 py-1.5 bg-slate-800 text-slate-300 rounded-xl text-[11px] font-semibold hover:bg-slate-700 transition">Clear All</button>
         </div>
 
-        <div class="pt-1 text-center">
-          <button type="button" onclick="openManageGoalCategoriesModal()" class="text-[11px] text-rose-400 hover:underline font-bold">
-            + New Category
-          </button>
-        </div>
+        <button type="button" onclick="openManageGoalCategoriesModal()" class="w-full py-2 bg-slate-950 border border-dashed border-slate-700 rounded-xl text-[11px] font-bold text-rose-400 hover:text-rose-300 hover:border-rose-500/40 flex items-center justify-center gap-1.5 transition active:scale-[0.98]">
+          <i data-lucide="tag" class="w-3.5 h-3.5 shrink-0"></i> New Category
+        </button>
       </div>
     </div>
   </div>
@@ -8025,6 +8023,13 @@ html, body {
         activeBtn.className = 'goal-pill-btn bg-rose-600 text-white font-bold px-2.5 py-1 rounded-lg transition touch-manipulation shadow-sm';
       }
 
+      document.querySelectorAll('[data-goal-kpi]').forEach(card => {
+        const isActive = card.getAttribute('data-goal-kpi') === filterKey;
+        card.classList.toggle('ring-2', isActive);
+        card.classList.toggle('ring-rose-400/70', isActive);
+        card.classList.toggle('ring-amber-400/70', isActive);
+      });
+
       window.renderGoalsView();
       window.scrollToGoalsCards();
     };
@@ -8037,13 +8042,20 @@ html, body {
         else clearBtn.classList.add('hidden');
       }
       window.renderGoalsView();
-      if (goalSearchQuery) window.scrollToGoalsCards();
     };
 
     window.clearGoalSearchQuery = function() {
       const input = document.getElementById('goal-search-input');
       if (input) input.value = '';
       window.searchGoals('');
+    };
+
+    window.goalSearchKeydown = function(e, input) {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        input.blur();
+        if ((input.value || '').trim()) window.scrollToGoalsCards();
+      }
     };
 
     /* Goal Folders Nav Renderer with Smart Empty-Node Filtering */
@@ -8076,7 +8088,7 @@ html, body {
         };
         container.appendChild(allBtn);
 
-        let visibleFoldersCount = 1;
+        let visibleFoldersCount = 0;
 
         folders.forEach(f => {
           const fNameLower = (f.name || '').toLowerCase().trim();
@@ -8253,6 +8265,24 @@ html, body {
       const statTotal = document.getElementById('goal-stat-total');
       if (statTotal) statTotal.textContent = totalCount;
 
+      const statTotalSub = document.getElementById('goal-stat-total-sub');
+      if (statTotalSub) {
+        const folders = window.appState.goalFolders || [];
+        const activeFolderCount = folders.filter(f => {
+          const fNameLower = (f.name || '').toLowerCase().trim();
+          const fTagLower = (f.nodeTag || '').toLowerCase().trim();
+          const isNode = f.isNodeFolder || !!f.nodeTag || (window.appState.mindmapNodes || []).some(n => {
+            const tag = (n.entityTag || '').toLowerCase().trim();
+            const txt = (n.text || '').toLowerCase().trim();
+            return tag && (fNameLower === tag || fTagLower === tag);
+          });
+          const linkedGoals = (window.appState.goals || []).filter(g => (g.folderId || 'gf_default') === f.id);
+          if (isNode && linkedGoals.length === 0 && f.id !== 'gf_default') return false;
+          return true;
+        }).length;
+        statTotalSub.textContent = `${activeFolderCount} Collection${activeFolderCount === 1 ? '' : 's'} active`;
+      }
+
       const statAvg = document.getElementById('goal-stat-avg');
       if (statAvg) statAvg.textContent = `${avgProgress}%`;
 
@@ -8263,7 +8293,13 @@ html, body {
       if (statUrgent) statUrgent.textContent = urgentCount;
 
       if (goals.length === 0) {
-        container.innerHTML = `<div class="col-span-full p-8 text-center text-xs text-slate-500 bg-slate-950 rounded-2xl border border-slate-800">No target goals found matching current view. Click "+ Set Goal" to start tracking!</div>`;
+        let emptyMsg = 'No target goals found matching current view. Click "+ Set Goal" to start tracking!';
+        if (statusFilter === 'COMPLETED') emptyMsg = 'No completed targets yet — push a goal to 100% to see it here.';
+        else if (statusFilter === 'URGENT') emptyMsg = 'Nothing is due in the next 14 days.';
+        else if (statusFilter === 'ARCHIVED') emptyMsg = 'No archived goals yet.';
+        else if (goalSearchQuery) emptyMsg = `No goals match "${goalSearchQuery}".`;
+        else if (catFilter !== 'ALL') emptyMsg = 'No goals in this category yet.';
+        container.innerHTML = `<div class="col-span-full p-8 text-center text-xs text-slate-500 bg-slate-950 rounded-2xl border border-slate-800">${emptyMsg}</div>`;
         return;
       }
 
