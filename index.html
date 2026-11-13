@@ -7223,7 +7223,14 @@ html, body {
           <i data-lucide="target" class="w-4 h-4 text-rose-400 shrink-0"></i>
           <span class="truncate">Set Target Goal &amp; OKRs</span>
         </h3>
-        <button type="button" onclick="closeModalDirect('create-goal-modal')" class="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-slate-800 transition"><i data-lucide="x" class="w-5 h-5"></i></button>
+        <div class="flex items-center gap-1.5">
+          <button type="button" id="goal-editor-mode-btn" onclick="toggleGoalEditorMode()"
+            class="flex items-center gap-1 text-[10px] px-2 py-1 rounded-lg font-bold bg-rose-500/10 text-rose-300 border border-rose-500/30 hover:bg-rose-500/20 transition">
+            <i data-lucide="sliders-horizontal" class="w-3 h-3"></i>
+            <span id="goal-editor-mode-label">Simple</span>
+          </button>
+          <button type="button" onclick="closeModalDirect('create-goal-modal')" class="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-slate-800 transition"><i data-lucide="x" class="w-5 h-5"></i></button>
+        </div>
       </div>
 
       <form id="full-goal-form" onsubmit="submitGoalForm(event)" class="space-y-3 text-xs">
@@ -7248,22 +7255,22 @@ html, body {
           </div>
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-          <div>
-            <div class="flex justify-between items-center mb-1">
-              <label class="block text-slate-400 font-semibold">Category</label>
-              <button type="button" onclick="openManageGoalCategoriesModal()" class="text-[10px] text-amber-400 hover:underline font-bold">+ New Category</button>
-            </div>
-            <select id="goal-category-select" onchange="toggleFinancialLedgerLinkFields()" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 sm:p-3 text-slate-100 outline-none focus:border-rose-400 transition text-xs font-semibold">
-              <!-- Dynamically populated -->
-            </select>
+        <div>
+          <div class="flex justify-between items-center mb-1">
+            <label class="block text-slate-400 font-semibold">Category</label>
+            <button type="button" onclick="openManageGoalCategoriesModal()" class="text-[10px] text-amber-400 hover:underline font-bold">+ New Category</button>
           </div>
+          <select id="goal-category-select" onchange="toggleFinancialLedgerLinkFields()" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 sm:p-3 text-slate-100 outline-none focus:border-rose-400 transition text-xs font-semibold">
+            <!-- Dynamically populated -->
+          </select>
+        </div>
 
+        <!-- ADVANCED: vision, ledger sync, measurement model, milestones, notes (toggleable, choice remembered) -->
+        <div id="goal-editor-advanced" class="hidden space-y-3">
           <div>
             <label class="block text-slate-400 mb-1 font-semibold">Vision Board Image URL (Optional)</label>
             <input id="goal-vision-image" type="url" placeholder="https://images.unsplash.com/..." class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 sm:p-3 text-slate-100 outline-none focus:border-rose-400 transition font-mono text-xs" />
           </div>
-        </div>
 
         <!-- Financial Ledger Sync Configuration -->
         <div id="goal-financial-link-box" class="hidden p-3 bg-rose-950/20 border border-rose-500/30 rounded-xl space-y-2">
@@ -7340,6 +7347,7 @@ html, body {
           <label class="block text-slate-400 mb-1 font-semibold">Motivations, 'Why' &amp; Strategy (Optional)</label>
           <textarea id="goal-input-notes" rows="2" placeholder="Why does this target matter? What is the execution strategy?" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 sm:p-3 text-slate-100 outline-none focus:border-rose-400 transition text-xs resize-none"></textarea>
         </div>
+        </div><!-- /goal-editor-advanced -->
 
         <div class="flex gap-2 pt-2 border-t border-slate-800">
           <button type="button" onclick="closeModalDirect('create-goal-modal')" class="flex-1 py-2.5 sm:py-3 bg-slate-800 text-slate-300 font-semibold rounded-xl hover:bg-slate-700 transition active:scale-98">Cancel</button>
@@ -8673,6 +8681,24 @@ html, body {
     };
 
     /* Goal Modal Openers with List Dropdowns and Milestones Preloaded */
+    /* Goal Editor Mode: Simple vs Advanced (choice remembered via localStorage) */
+    function goalEditorIsAdvanced() {
+      try { return window.localStorage.getItem('pros_goal_editor_advanced') === '1'; } catch (e) { return false; }
+    }
+
+    window.applyGoalEditorMode = function() {
+      const panel = document.getElementById('goal-editor-advanced');
+      const label = document.getElementById('goal-editor-mode-label');
+      const advanced = goalEditorIsAdvanced();
+      if (panel) panel.classList.toggle('hidden', !advanced);
+      if (label) label.textContent = advanced ? 'Advanced' : 'Simple';
+    };
+
+    window.toggleGoalEditorMode = function() {
+      try { window.localStorage.setItem('pros_goal_editor_advanced', goalEditorIsAdvanced() ? '0' : '1'); } catch (e) {}
+      window.applyGoalEditorMode();
+    };
+
     window.openCreateGoalModal = function(defaultTitle = '', defaultFolderId = '') {
       ensureGoalsInitialized();
       modalTempMilestones = [];
@@ -8703,6 +8729,7 @@ html, body {
       
       renderModalMilestones();
       
+      window.applyGoalEditorMode();
       showModalDirect('create-goal-modal');
       refreshIconsScoped(document.getElementById('create-goal-modal'));
     };
@@ -8754,6 +8781,7 @@ html, body {
 
       renderModalMilestones();
 
+      window.applyGoalEditorMode();
       showModalDirect('create-goal-modal');
       refreshIconsScoped(document.getElementById('create-goal-modal'));
     };
@@ -15075,33 +15103,15 @@ html, body {
     /* Quick Note: the REAL notes editor in full-screen mode, layered above
        the inspector. Nothing leaves Mindmap; back restores this exact spot. */
     window.__notesOverlayRestore = null;
-    window.addNoteFromInspector = function() {
-      const tag = window.getCurrentInspectorTag();
-      const nodeTitle = window.getCurrentInspectorTitle();
-      const activeNode = (window.appState?.mindmapNodes || []).find(n => n.id === currentInspectorNodeId);
-      if (activeNode) ensureNodeFoldersRegistered(activeNode);
+    window.openNotesEditorOverlay = function(noteId, mode) {
+      const note = (window.appState?.notes || []).find(n => n.id === noteId);
+      if (!note) return;
       const section = document.getElementById('view-notes');
       if (!section) return;
       const wasHidden = section.classList.contains('hidden');
       if (wasHidden) section.classList.remove('hidden');
 
-      const id = 'n_' + Date.now();
-      const newNote = {
-        id,
-        folderId: 'nf_node_' + (currentInspectorNodeId || tag),
-        title: `[${tag}] `,
-        topic: tag,
-        content: `# Notes for ${nodeTitle}\n\n- Start typing documentation here...`,
-        pinned: false,
-        revisions: [],
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString()
-      };
-      if (!window.appState.notes) window.appState.notes = [];
-      window.appState.notes.unshift(newNote);
-      if (window.saveCloudData) window.saveCloudData();
-
-      window.loadNoteIntoEditor(id, { mode: 'edit' });
+      window.loadNoteIntoEditor(noteId, { mode: mode || 'preview' });
       const panel = document.getElementById('notes-editor-panel');
       if (panel && !panel.classList.contains('note-fullscreen') && typeof window.toggleNoteFullscreen === 'function') {
         window.toggleNoteFullscreen();
@@ -15118,6 +15128,30 @@ html, body {
         if (wasHidden) section.classList.add('hidden');
         window.renderNodeInspectorContent();
       };
+    };
+
+    window.addNoteFromInspector = function() {
+      const tag = window.getCurrentInspectorTag();
+      const nodeTitle = window.getCurrentInspectorTitle();
+      const activeNode = (window.appState?.mindmapNodes || []).find(n => n.id === currentInspectorNodeId);
+      if (activeNode) ensureNodeFoldersRegistered(activeNode);
+
+      const id = 'n_' + Date.now();
+      const newNote = {
+        id,
+        folderId: 'nf_node_' + (currentInspectorNodeId || tag),
+        title: `[${tag}] `,
+        topic: tag,
+        content: `# Notes for ${nodeTitle}\n\n- Start typing documentation here...`,
+        pinned: false,
+        revisions: [],
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      };
+      if (!window.appState.notes) window.appState.notes = [];
+      window.appState.notes.unshift(newNote);
+      if (window.saveCloudData) window.saveCloudData();
+      window.openNotesEditorOverlay(id, 'edit');
     };
 
     /* Hooks: the notes overlay restores itself via the back button and the
@@ -15296,14 +15330,17 @@ html, body {
 
         <!-- Knowledge Notes Subsystem -->
         <div class="space-y-2">
-          <div class="space-y-1.5 max-h-48 overflow-y-auto pr-1 text-xs">
+          <div class="space-y-1.5 max-h-48 overflow-y-auto p-2 bg-slate-950/40 rounded-xl border border-slate-800/70">
             ${linkedNotes.map(n => `
-              <div class="p-2 bg-slate-950 rounded-xl border border-slate-800 space-y-1 hover:border-yellow-500/40 transition cursor-pointer" onclick="openDedicatedNoteModal('${n.id}')">
+              <div class="p-2.5 bg-slate-950 rounded-xl border border-slate-800 space-y-1.5 hover:border-yellow-500/40 transition cursor-pointer" onclick="openNotesEditorOverlay('${n.id}', 'preview')">
                 <div class="flex items-center justify-between gap-2">
-                  <span class="truncate font-extrabold text-slate-200">${escapeHtml(n.title)}</span>
-                  <button type="button" class="text-[10px] text-yellow-400 hover:underline">Edit</button>
+                  <span class="flex items-center gap-2 truncate min-w-0">
+                    <span class="w-6 h-6 rounded-lg bg-yellow-500/15 flex items-center justify-center shrink-0"><i data-lucide="file-text" class="w-3 h-3 text-yellow-300"></i></span>
+                    <span class="truncate font-extrabold text-slate-200">${escapeHtml(n.title)}</span>
+                  </span>
+                  <button type="button" onclick="event.stopPropagation(); openNotesEditorOverlay('${n.id}', 'edit')" title="Edit in fullscreen" class="p-1 rounded-md text-yellow-400/80 hover:text-yellow-300 hover:bg-yellow-500/10 transition shrink-0"><i data-lucide="edit-3" class="w-3.5 h-3.5"></i></button>
                 </div>
-                <p class="text-[11px] text-slate-400 line-clamp-2 leading-relaxed font-sans">${escapeHtml(n.content || 'Empty note...')}</p>
+                <p class="text-[11px] text-slate-400 line-clamp-2 leading-relaxed font-sans pl-8">${escapeHtml(n.content || 'Empty note...')}</p>
               </div>
             `).join('')}
             ${linkedNotes.length === 0 ? '<p class="text-slate-500 italic text-[11px] text-center py-3">No notes linked yet — use <span class="text-yellow-300 font-bold">+ Note</span> above.</p>' : ''}
