@@ -15030,73 +15030,68 @@ html, body {
       refreshIconsScoped(document.getElementById('node-inspector-modal'));
     };
 
-    /* Launch the REAL section creators, pre-targeted at this node's folders.
-       The section modals live inside their (usually hidden) views, so we
-       switch to the section first — otherwise the modal can't display. */
+    /* Launch the REAL section modals ABOVE the inspector (no module switch).
+       They live inside their (usually hidden) view sections, so we briefly
+       unhide the view, raise the modal above the inspector (z-[60]), and
+       restore everything when the modal closes. */
     window.addTaskFromInspector = function() {
-      closeModalDirect('node-inspector-modal');
       const tag = window.getCurrentInspectorTag();
       const activeNode = (window.appState?.mindmapNodes || []).find(n => n.id === currentInspectorNodeId);
       if (activeNode) ensureNodeFoldersRegistered(activeNode);
-      if (window.switchAppView) window.switchAppView('tasks');
+      const section = document.getElementById('view-tasks');
+      const modal = document.getElementById('task-editor-modal');
+      if (!section || !modal) return;
+      const wasHidden = section.classList.contains('hidden');
+      if (wasHidden) section.classList.remove('hidden');
+      modal.style.zIndex = '70';
+      watchModalClose(modal, () => {
+        modal.style.zIndex = '';
+        if (wasHidden) section.classList.add('hidden');
+      });
       if (typeof window.openAddTaskModal === 'function') {
         window.openAddTaskModal(`[${tag}] `, 'list_node_' + (currentInspectorNodeId || tag));
       }
     };
 
     window.addGoalFromInspector = function() {
-      closeModalDirect('node-inspector-modal');
       const tag = window.getCurrentInspectorTag();
       const activeNode = (window.appState?.mindmapNodes || []).find(n => n.id === currentInspectorNodeId);
       if (activeNode) ensureNodeFoldersRegistered(activeNode);
-      if (window.switchAppView) window.switchAppView('goals');
+      const section = document.getElementById('view-goals');
+      const modal = document.getElementById('create-goal-modal');
+      if (!section || !modal) return;
+      const wasHidden = section.classList.contains('hidden');
+      if (wasHidden) section.classList.remove('hidden');
+      modal.style.zIndex = '70';
+      watchModalClose(modal, () => {
+        modal.style.zIndex = '';
+        if (wasHidden) section.classList.add('hidden');
+      });
       if (typeof window.openCreateGoalModal === 'function') {
         window.openCreateGoalModal(`[${tag}] `, 'gf_node_' + (currentInspectorNodeId || tag));
       }
     };
 
-    /* Quick Note: opens an in-place full-screen editor ABOVE the inspector.
-       Nothing is created until Save; Back discards. */
+    /* Quick Note: the REAL notes editor in full-screen mode, layered above
+       the inspector. Nothing leaves Mindmap; back restores this exact spot. */
+    window.__notesOverlayRestore = null;
     window.addNoteFromInspector = function() {
-      const nodeTitle = window.getCurrentInspectorTitle();
-      const nameEl = document.getElementById('quick-note-node-name');
-      if (nameEl) nameEl.textContent = nodeTitle || window.getCurrentInspectorTag() || 'Node';
-      const titleEl = document.getElementById('quick-note-title');
-      const contentEl = document.getElementById('quick-note-content');
-      if (titleEl) titleEl.value = '';
-      if (contentEl) contentEl.value = '';
-      const overlay = document.getElementById('node-quick-note-overlay');
-      if (overlay) {
-        overlay.classList.remove('hidden');
-        refreshIconsScoped(overlay);
-        setTimeout(() => titleEl && titleEl.focus(), 60);
-      }
-    };
-
-    window.closeQuickNoteOverlay = function() {
-      const overlay = document.getElementById('node-quick-note-overlay');
-      if (overlay) overlay.classList.add('hidden');
-    };
-
-    window.saveQuickNoteFromOverlay = function() {
       const tag = window.getCurrentInspectorTag();
       const nodeTitle = window.getCurrentInspectorTitle();
-      const title = (document.getElementById('quick-note-title')?.value || '').trim();
-      const content = document.getElementById('quick-note-content')?.value || '';
-      if (!title && !content.trim()) {
-        if (window.showToast) window.showToast('Write something first!', 'info');
-        return;
-      }
       const activeNode = (window.appState?.mindmapNodes || []).find(n => n.id === currentInspectorNodeId);
       if (activeNode) ensureNodeFoldersRegistered(activeNode);
+      const section = document.getElementById('view-notes');
+      if (!section) return;
+      const wasHidden = section.classList.contains('hidden');
+      if (wasHidden) section.classList.remove('hidden');
 
       const id = 'n_' + Date.now();
       const newNote = {
         id,
         folderId: 'nf_node_' + (currentInspectorNodeId || tag),
-        title: title || `Note — ${nodeTitle || tag}`,
+        title: `[${tag}] `,
         topic: tag,
-        content: content || `# Notes for ${nodeTitle}`,
+        content: `# Notes for ${nodeTitle}\n\n- Start typing documentation here...`,
         pinned: false,
         revisions: [],
         createdAt: new Date().toISOString(),
@@ -15105,11 +15100,59 @@ html, body {
       if (!window.appState.notes) window.appState.notes = [];
       window.appState.notes.unshift(newNote);
       if (window.saveCloudData) window.saveCloudData();
-      if (window.renderNotesList) window.renderNotesList();
-      window.closeQuickNoteOverlay();
-      window.renderNodeInspectorContent();
-      if (window.showToast) window.showToast('Note saved to this node!', 'success');
+
+      window.loadNoteIntoEditor(id, { mode: 'edit' });
+      const panel = document.getElementById('notes-editor-panel');
+      if (panel && !panel.classList.contains('note-fullscreen') && typeof window.toggleNoteFullscreen === 'function') {
+        window.toggleNoteFullscreen();
+      }
+      if (panel) panel.style.zIndex = '70';
+
+      window.__notesOverlayRestore = () => {
+        window.__notesOverlayRestore = null;
+        const p = document.getElementById('notes-editor-panel');
+        if (p && p.classList.contains('note-fullscreen') && typeof window.toggleNoteFullscreen === 'function') {
+          window.toggleNoteFullscreen();
+        }
+        if (typeof window.showMobileNotesListPanel === 'function') window.showMobileNotesListPanel();
+        if (wasHidden) section.classList.add('hidden');
+        window.renderNodeInspectorContent();
+      };
     };
+
+    /* Hooks: the notes overlay restores itself via the back button and the
+       fullscreen toggle (patched below — each is defined exactly once).
+       The task/goal modals restore via class MutationObservers so every
+       close path (X, Cancel, Save, backdrop) is covered. */
+    if (!window.__inspectorOverlayHooks) {
+      window.__inspectorOverlayHooks = true;
+      const origBack = window.showMobileNotesListPanel;
+      window.showMobileNotesListPanel = function() {
+        if (origBack) origBack();
+        const r = window.__notesOverlayRestore;
+        if (r) { window.__notesOverlayRestore = null; r(); }
+      };
+      const origFs = window.toggleNoteFullscreen;
+      window.toggleNoteFullscreen = function() {
+        if (origFs) origFs();
+        const p = document.getElementById('notes-editor-panel');
+        if (window.__notesOverlayRestore && p && !p.classList.contains('note-fullscreen')) {
+          const r = window.__notesOverlayRestore;
+          window.__notesOverlayRestore = null;
+          r();
+        }
+      };
+    }
+
+    function watchModalClose(modal, onClosed) {
+      const obs = new MutationObserver(() => {
+        if (modal.classList.contains('hidden')) {
+          obs.disconnect();
+          onClosed();
+        }
+      });
+      obs.observe(modal, { attributes: true, attributeFilter: ['class'] });
+    }
 
     window.startFocusTimerForNode = function() {
       closeModalDirect('node-inspector-modal');
@@ -22040,19 +22083,6 @@ html, body {
 
         <!-- Subsystems Cards -->
         <div id="inspector-content-grid" class="space-y-3"></div>
-      </div>
-
-      <!-- In-place Quick Note editor (opens above the inspector, returns here on back) -->
-      <div id="node-quick-note-overlay" class="hidden absolute inset-0 z-[70] bg-slate-950 rounded-t-3xl sm:rounded-3xl flex flex-col overflow-hidden">
-        <div class="flex items-center justify-between gap-2 px-3.5 pt-3.5 pb-2.5 border-b border-slate-800">
-          <button type="button" onclick="closeQuickNoteOverlay()" title="Back (discard)" class="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition shrink-0"><i data-lucide="arrow-left" class="w-4 h-4"></i></button>
-          <span class="text-[11px] font-extrabold text-white flex items-center gap-1.5 min-w-0"><i data-lucide="file-text" class="w-3.5 h-3.5 text-yellow-400 shrink-0"></i><span class="truncate">Quick Note — <span id="quick-note-node-name" class="text-slate-300"></span></span></span>
-          <button type="button" onclick="saveQuickNoteFromOverlay()" class="px-3 h-7 rounded-lg bg-yellow-500 hover:bg-yellow-400 text-slate-950 text-[11px] font-extrabold transition active:scale-95 shrink-0">Save Note</button>
-        </div>
-        <div class="flex-1 overflow-y-auto p-3.5 space-y-2.5">
-          <input id="quick-note-title" type="text" placeholder="Note title" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-slate-100 font-bold text-xs outline-none focus:border-yellow-400 transition" />
-          <textarea id="quick-note-content" rows="10" placeholder="# Start writing..." class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2.5 text-slate-200 text-xs font-mono leading-relaxed outline-none focus:border-yellow-400 transition resize-none" style="min-height: 55%"></textarea>
-        </div>
       </div>
     </div>
   </div>
