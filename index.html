@@ -15791,6 +15791,7 @@ html, body {
           <button type="button" onclick="setInspectorTab('${s.tab}')" class="py-2 rounded-xl border flex flex-col items-center justify-center gap-1 transition active:scale-95 ${s.tab === activeTab ? inspectorTabTint(s.tab) : 'bg-slate-950 border-slate-800 hover:border-slate-600'}">
             <span class="text-base font-black font-mono leading-none ${s.cls}">${s.count}</span>
             <span class="text-[9px] font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1"><i data-lucide="${s.icon}" class="w-2.5 h-2.5"></i>${s.label}</span>
+            <span class="tab-underline h-0.5 w-7 rounded-full transition ${s.tab === activeTab ? inspectorTabBar(s.tab) : 'bg-transparent'}"></span>
           </button>`).join('');
       }
 
@@ -15942,6 +15943,8 @@ html, body {
         [...statsEl.children].forEach((tile, i) => {
           const active = ids[i] === tab;
           tile.className = `py-2 rounded-xl border flex flex-col items-center justify-center gap-1 transition active:scale-95 ${active ? inspectorTabTint(ids[i]) : 'bg-slate-950 border-slate-800 hover:border-slate-600'}`;
+          const bar = tile.querySelector('.tab-underline');
+          if (bar) bar.className = 'tab-underline h-0.5 w-7 rounded-full transition ' + (active ? inspectorTabBar(ids[i]) : 'bg-transparent');
         });
       }
     };
@@ -15954,6 +15957,16 @@ html, body {
         goals: 'bg-rose-500/10 border-rose-500/40',
         links: 'bg-emerald-500/10 border-emerald-500/40'
       }[tab] || 'bg-slate-950 border-slate-600';
+    }
+
+    /* The little underline bar that marks the active tab */
+    function inspectorTabBar(tab) {
+      return {
+        tasks: 'bg-purple-400',
+        notes: 'bg-yellow-400',
+        goals: 'bg-rose-400',
+        links: 'bg-emerald-400'
+      }[tab] || 'bg-slate-400';
     }
 
     // Auto-boot on load
@@ -22634,14 +22647,14 @@ html, body {
         <!-- Add Inside This Node — opens the real section modals -->
         <div class="flex items-center gap-1.5 flex-wrap">
           <span class="text-slate-500 font-black text-[9px] uppercase tracking-[0.14em] shrink-0 mr-1">Add</span>
-          <button type="button" onclick="addTaskFromInspector()" class="px-3 py-1.5 bg-purple-500/10 border border-purple-500/25 hover:bg-purple-500/20 hover:border-purple-500/50 text-purple-300 font-bold rounded-xl transition flex items-center gap-1.5 text-[11px] active:scale-95 shadow-sm">
-            <i data-lucide="check-square" class="w-3.5 h-3.5"></i> Task
+          <button type="button" onclick="addTaskFromInspector()" class="px-3 py-1.5 bg-purple-500/10 border border-purple-500/25 hover:bg-purple-500/20 hover:border-purple-500/50 text-purple-300 font-bold rounded-xl transition flex items-center gap-1 text-[11px] active:scale-95 shadow-sm">
+            <i data-lucide="plus" class="w-3.5 h-3.5"></i> Task
           </button>
-          <button type="button" onclick="addNoteFromInspector()" class="px-3 py-1.5 bg-yellow-500/10 border border-yellow-500/25 hover:bg-yellow-500/20 hover:border-yellow-500/50 text-yellow-300 font-bold rounded-xl transition flex items-center gap-1.5 text-[11px] active:scale-95 shadow-sm">
-            <i data-lucide="file-text" class="w-3.5 h-3.5"></i> Note
+          <button type="button" onclick="addNoteFromInspector()" class="px-3 py-1.5 bg-yellow-500/10 border border-yellow-500/25 hover:bg-yellow-500/20 hover:border-yellow-500/50 text-yellow-300 font-bold rounded-xl transition flex items-center gap-1 text-[11px] active:scale-95 shadow-sm">
+            <i data-lucide="plus" class="w-3.5 h-3.5"></i> Note
           </button>
-          <button type="button" onclick="addGoalFromInspector()" class="px-3 py-1.5 bg-rose-500/10 border border-rose-500/25 hover:bg-rose-500/20 hover:border-rose-500/50 text-rose-300 font-bold rounded-xl transition flex items-center gap-1.5 text-[11px] active:scale-95 shadow-sm">
-            <i data-lucide="target" class="w-3.5 h-3.5"></i> Goal
+          <button type="button" onclick="addGoalFromInspector()" class="px-3 py-1.5 bg-rose-500/10 border border-rose-500/25 hover:bg-rose-500/20 hover:border-rose-500/50 text-rose-300 font-bold rounded-xl transition flex items-center gap-1 text-[11px] active:scale-95 shadow-sm">
+            <i data-lucide="plus" class="w-3.5 h-3.5"></i> Goal
           </button>
         </div>
 
