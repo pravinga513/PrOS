@@ -14501,15 +14501,6 @@ html, body {
       };
 
       const content = 'q ' + w.toFixed(2) + ' 0 0 ' + h.toFixed(2) + ' ' + x.toFixed(2) + ' ' + y.toFixed(2) + ' cm /Im0 Do Q';
-      const objects = [
-        '1 0 obj\n<< /Type /Catalog /Pages 2 0 R >>\nendobj\n',
-        '2 0 obj\n<< /Type /Pages /Kids [3 0 R] /Count 1 >>\nendobj\n',
-        '3 0 obj\n<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ' + PW.toFixed(2) + ' ' + PH.toFixed(2) + '] /Resources << /XObject << /Im0 4 0 R >> >> /Contents 5 0 R >> >>\nendobj\n',
-        '4 0 obj\n<< /Type /XObject /Subtype /Image /Width ' + iw + ' /Height ' + ih + ' /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ' + imgBytes.length + ' >>\nstream\n',
-        imgBytes,
-        '\nendstream\nendobj\n',
-        '5 0 obj\n<< /Length ' + content.length + ' >>\nstream\n' + content + '\nendstream\nendobj\n'
-      ];
 
       const chunks = [];
       let offset = 0;
@@ -14519,13 +14510,33 @@ html, body {
         offset += c.length;
       };
 
+      // Offsets must be recorded per object NUMBER — the image object is
+      // streamed in several chunks, so offsets can't be derived from a
+      // flat objects array (that produced a blank page before).
+      const offsets = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
       push('%PDF-1.4\n%\xE2\xE3\xCF\xD3\n');
-      const offsets = [];
-      objects.forEach(obj => { offsets.push(offset); push(obj); });
+
+      offsets[1] = offset;
+      push('1 0 obj\n<< /Type /Catalog /Pages 2 0 R >>\nendobj\n');
+
+      offsets[2] = offset;
+      push('2 0 obj\n<< /Type /Pages /Kids [3 0 R] /Count 1 >>\nendobj\n');
+
+      offsets[3] = offset;
+      push('3 0 obj\n<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ' + PW.toFixed(2) + ' ' + PH.toFixed(2) + '] /Resources << /XObject << /Im0 4 0 R >> >> /Contents 5 0 R >> >>\nendobj\n');
+
+      offsets[4] = offset;
+      push('4 0 obj\n<< /Type /XObject /Subtype /Image /Width ' + iw + ' /Height ' + ih + ' /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ' + imgBytes.length + ' >>\nstream\n');
+      push(imgBytes);
+      push('\nendstream\nendobj\n');
+
+      offsets[5] = offset;
+      push('5 0 obj\n<< /Length ' + content.length + ' >>\nstream\n' + content + '\nendstream\nendobj\n');
+
       const xrefStart = offset;
-      let xref = 'xref\n0 ' + (objects.length + 1) + '\n0000000000 65535 f \n';
-      offsets.forEach(o => { xref += String(o).padStart(10, '0') + ' 00000 n \n'; });
-      xref += 'trailer\n<< /Size ' + (objects.length + 1) + ' /Root 1 0 R >>\nstartxref\n' + xrefStart + '\n%%EOF';
+      let xref = 'xref\n0 6\n0000000000 65535 f \n';
+      [1, 2, 3, 4, 5].forEach(num => { xref += String(offsets[num]).padStart(10, '0') + ' 00000 n \n'; });
+      xref += 'trailer\n<< /Size 6 /Root 1 0 R >>\nstartxref\n' + xrefStart + '\n%%EOF';
       push(xref);
 
       const total = chunks.reduce((s, c) => s + c.length, 0);
@@ -14642,31 +14653,32 @@ html, body {
           ctx.fillRect(p.x, p.y, CARD_W, 5);
           ctx.restore();
 
+          // #tag pill (centered, like the live card)
+          ctx.font = '700 9px ui-monospace, monospace';
+          const tagText = '#' + String(tag).toLowerCase().slice(0, 14);
+          const tagW = ctx.measureText(tagText).width + 14;
+          rr(p.x + (CARD_W - tagW) / 2, p.y + 11, tagW, 15, 7);
+          ctx.fillStyle = '#1e293b';
+          ctx.fill();
+          ctx.fillStyle = '#cbd5e1';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillText(tagText, p.x + CARD_W / 2, p.y + 19);
+
           // Icon tile with the node's initial
-          rr(p.x + 10, p.y + 14, 30, 30, 9);
+          rr(p.x + 12, p.y + 34, 30, 30, 9);
           ctx.fillStyle = color;
           ctx.fill();
           ctx.fillStyle = '#ffffff';
           ctx.font = '800 14px system-ui, sans-serif';
           ctx.textAlign = 'center';
-          ctx.textBaseline = 'middle';
-          ctx.fillText((title || tag).charAt(0).toUpperCase(), p.x + 25, p.y + 30);
+          ctx.fillText((title || tag).charAt(0).toUpperCase(), p.x + 27, p.y + 50);
 
-          // #tag pill (top right)
-          ctx.font = '700 9px ui-monospace, monospace';
-          const tagText = '#' + String(tag).toLowerCase().slice(0, 12);
-          const tagW = ctx.measureText(tagText).width + 12;
-          rr(p.x + CARD_W - 10 - tagW, p.y + 12, tagW, 15, 6);
-          ctx.fillStyle = '#1e293b';
-          ctx.fill();
-          ctx.fillStyle = '#cbd5e1';
-          ctx.fillText(tagText, p.x + CARD_W - 10 - tagW / 2, p.y + 20);
-
-          // Title (max 2 lines)
+          // Title (max 2 lines, beside the icon)
           ctx.font = '800 11px system-ui, sans-serif';
           ctx.fillStyle = '#ffffff';
           ctx.textAlign = 'left';
-          const maxW = CARD_W - 48 - 10;
+          const maxW = CARD_W - 50 - 12;
           const words = String(title).split(/\s+/).filter(Boolean);
           let line = '', lines = [];
           for (const wd of words) {
@@ -14678,7 +14690,7 @@ html, body {
           }
           if (lines.length < 2 && line) lines.push(line);
           if (lines.length === 2) lines[1] += '…';
-          lines.forEach((ln, i) => ctx.fillText(ln, p.x + 48, p.y + 22 + i * 13));
+          lines.forEach((ln, i) => ctx.fillText(ln, p.x + 50, p.y + 42 + i * 14));
 
           // Divider
           ctx.strokeStyle = 'rgba(30,41,59,1)';
@@ -15599,7 +15611,7 @@ html, body {
       grid.innerHTML = `
         <!-- Tasks Subsystem -->
         <div class="space-y-2">
-          <div class="space-y-1.5 h-52 overflow-y-auto p-2 bg-slate-950/40 rounded-xl border border-slate-800/70">
+          <div class="space-y-1.5 h-72 overflow-y-auto p-2 bg-slate-950/40 rounded-xl border border-slate-800/70">
             ${linkedTasks.map(t => {
               const subtasks = Array.isArray(t.subtasks) ? t.subtasks : [];
               const completedSubtasks = subtasks.filter(s => s.completed).length;
@@ -15647,7 +15659,7 @@ html, body {
 
         <!-- Knowledge Notes Subsystem -->
         <div class="space-y-2">
-          <div class="space-y-1.5 h-52 overflow-y-auto p-2 bg-slate-950/40 rounded-xl border border-slate-800/70">
+          <div class="space-y-1.5 h-72 overflow-y-auto p-2 bg-slate-950/40 rounded-xl border border-slate-800/70">
             ${linkedNotes.map(n => `
               <div class="p-2.5 bg-slate-950 rounded-xl border border-slate-800 space-y-1.5 hover:border-yellow-500/40 transition cursor-pointer" onclick="openNotesEditorOverlay('${n.id}', 'preview')">
                 <div class="flex items-center justify-between gap-2">
@@ -15667,7 +15679,7 @@ html, body {
 
         <!-- Goals & OKRs Subsystem -->
         <div class="space-y-2">
-          <div class="space-y-1.5 h-52 overflow-y-auto p-2 bg-slate-950/40 rounded-xl border border-slate-800/70">
+          <div class="space-y-1.5 h-72 overflow-y-auto p-2 bg-slate-950/40 rounded-xl border border-slate-800/70">
             ${linkedGoals.map(g => {
               const krs = g.keyResults || [];
               return `
