@@ -15030,33 +15030,73 @@ html, body {
       refreshIconsScoped(document.getElementById('node-inspector-modal'));
     };
 
-    /* Launch the REAL section creators, pre-targeted at this node's folders */
+    /* Launch the REAL section creators, pre-targeted at this node's folders.
+       The section modals live inside their (usually hidden) views, so we
+       switch to the section first — otherwise the modal can't display. */
     window.addTaskFromInspector = function() {
       closeModalDirect('node-inspector-modal');
       const tag = window.getCurrentInspectorTag();
       const activeNode = (window.appState?.mindmapNodes || []).find(n => n.id === currentInspectorNodeId);
       if (activeNode) ensureNodeFoldersRegistered(activeNode);
+      if (window.switchAppView) window.switchAppView('tasks');
       if (typeof window.openAddTaskModal === 'function') {
         window.openAddTaskModal(`[${tag}] `, 'list_node_' + (currentInspectorNodeId || tag));
       }
     };
 
-    window.addNoteFromInspector = function() {
+    window.addGoalFromInspector = function() {
       closeModalDirect('node-inspector-modal');
       const tag = window.getCurrentInspectorTag();
+      const activeNode = (window.appState?.mindmapNodes || []).find(n => n.id === currentInspectorNodeId);
+      if (activeNode) ensureNodeFoldersRegistered(activeNode);
+      if (window.switchAppView) window.switchAppView('goals');
+      if (typeof window.openCreateGoalModal === 'function') {
+        window.openCreateGoalModal(`[${tag}] `, 'gf_node_' + (currentInspectorNodeId || tag));
+      }
+    };
+
+    /* Quick Note: opens an in-place full-screen editor ABOVE the inspector.
+       Nothing is created until Save; Back discards. */
+    window.addNoteFromInspector = function() {
       const nodeTitle = window.getCurrentInspectorTitle();
+      const nameEl = document.getElementById('quick-note-node-name');
+      if (nameEl) nameEl.textContent = nodeTitle || window.getCurrentInspectorTag() || 'Node';
+      const titleEl = document.getElementById('quick-note-title');
+      const contentEl = document.getElementById('quick-note-content');
+      if (titleEl) titleEl.value = '';
+      if (contentEl) contentEl.value = '';
+      const overlay = document.getElementById('node-quick-note-overlay');
+      if (overlay) {
+        overlay.classList.remove('hidden');
+        refreshIconsScoped(overlay);
+        setTimeout(() => titleEl && titleEl.focus(), 60);
+      }
+    };
+
+    window.closeQuickNoteOverlay = function() {
+      const overlay = document.getElementById('node-quick-note-overlay');
+      if (overlay) overlay.classList.add('hidden');
+    };
+
+    window.saveQuickNoteFromOverlay = function() {
+      const tag = window.getCurrentInspectorTag();
+      const nodeTitle = window.getCurrentInspectorTitle();
+      const title = (document.getElementById('quick-note-title')?.value || '').trim();
+      const content = document.getElementById('quick-note-content')?.value || '';
+      if (!title && !content.trim()) {
+        if (window.showToast) window.showToast('Write something first!', 'info');
+        return;
+      }
       const activeNode = (window.appState?.mindmapNodes || []).find(n => n.id === currentInspectorNodeId);
       if (activeNode) ensureNodeFoldersRegistered(activeNode);
 
-      // Create the note directly (like the Notes section's new-note flow)
-      // and open it in the full-screen editor, targeting this node's folder
       const id = 'n_' + Date.now();
       const newNote = {
         id,
         folderId: 'nf_node_' + (currentInspectorNodeId || tag),
-        title: `[${tag}] `,
+        title: title || `Note — ${nodeTitle || tag}`,
         topic: tag,
-        content: `# Notes for ${nodeTitle}\n\n- Start typing documentation here...`,
+        content: content || `# Notes for ${nodeTitle}`,
         pinned: false,
         revisions: [],
         createdAt: new Date().toISOString(),
@@ -15065,25 +15105,10 @@ html, body {
       if (!window.appState.notes) window.appState.notes = [];
       window.appState.notes.unshift(newNote);
       if (window.saveCloudData) window.saveCloudData();
-      if (window.switchAppView) window.switchAppView('notes');
-      window.loadNoteIntoEditor(id, { mode: 'edit' });
-
-      // Enter the notes editor's full-screen mode
-      const panel = document.getElementById('notes-editor-panel');
-      if (panel && !panel.classList.contains('note-fullscreen') && typeof window.toggleNoteFullscreen === 'function') {
-        window.toggleNoteFullscreen();
-      }
-      if (window.showToast) window.showToast('New note created — write away!', 'success');
-    };
-
-    window.addGoalFromInspector = function() {
-      closeModalDirect('node-inspector-modal');
-      const tag = window.getCurrentInspectorTag();
-      const activeNode = (window.appState?.mindmapNodes || []).find(n => n.id === currentInspectorNodeId);
-      if (activeNode) ensureNodeFoldersRegistered(activeNode);
-      if (typeof window.openCreateGoalModal === 'function') {
-        window.openCreateGoalModal(`[${tag}] `, 'gf_node_' + (currentInspectorNodeId || tag));
-      }
+      if (window.renderNotesList) window.renderNotesList();
+      window.closeQuickNoteOverlay();
+      window.renderNodeInspectorContent();
+      if (window.showToast) window.showToast('Note saved to this node!', 'success');
     };
 
     window.startFocusTimerForNode = function() {
@@ -15160,16 +15185,16 @@ html, body {
         (g.nodeTag && g.nodeTag.toLowerCase().includes(tag))
       );
 
-      // Quick stats strip (tap a tile to jump to that tab)
+      // Quick stats strip (tap a tile to jump to that section)
       const statsEl = document.getElementById('inspector-stats');
       if (statsEl) {
         const stats = [
-          { label: 'Links', count: connectedNodesList.length, icon: 'git-branch', tab: 'links', cls: 'text-emerald-300' },
           { label: 'Tasks', count: linkedTasks.length, icon: 'check-square', tab: 'tasks', cls: 'text-purple-300' },
           { label: 'Notes', count: linkedNotes.length, icon: 'file-text', tab: 'notes', cls: 'text-yellow-300' },
-          { label: 'Goals', count: linkedGoals.length, icon: 'target', tab: 'goals', cls: 'text-rose-300' }
+          { label: 'Goals', count: linkedGoals.length, icon: 'target', tab: 'goals', cls: 'text-rose-300' },
+          { label: 'Links', count: connectedNodesList.length, icon: 'git-branch', tab: 'links', cls: 'text-emerald-300' }
         ];
-        const activeTab = (window.__inspectorTab && ['links', 'tasks', 'notes', 'goals'].includes(window.__inspectorTab)) ? window.__inspectorTab : 'links';
+        const activeTab = (window.__inspectorTab && ['links', 'tasks', 'notes', 'goals'].includes(window.__inspectorTab)) ? window.__inspectorTab : 'tasks';
         statsEl.innerHTML = stats.map(s => `
           <button type="button" onclick="setInspectorTab('${s.tab}')" class="py-2 rounded-xl bg-slate-950 border ${s.tab === activeTab ? 'border-slate-600' : 'border-slate-800 hover:border-slate-600'} flex flex-col items-center justify-center gap-0.5 transition active:scale-95">
             <span class="text-sm font-black font-mono leading-none ${s.cls}">${s.count}</span>
@@ -15178,21 +15203,6 @@ html, body {
       }
 
       grid.innerHTML = `
-        <!-- Connected Branch Lines -->
-        <div class="space-y-2">
-          <div class="flex flex-wrap gap-1.5">
-            ${connectedNodesList.map(cn => `
-              <button type="button" onclick="openNodeInspectorPopup('${cn.id}', '${escapeHtml(cn.entityTag || cn.text)}', '${escapeHtml(cn.text)}')" class="px-2.5 py-1.5 rounded-full bg-slate-950 border border-slate-800 text-slate-200 text-xs font-bold flex items-center gap-1.5 hover:border-emerald-500/40 transition">
-                <span class="w-2 h-2 rounded-full ${cn.color || 'bg-emerald-500'}"></span>${escapeHtml(cn.text)}
-              </button>
-            `).join('')}
-            ${connectedNodesList.length === 0 ? '<p class="text-slate-500 italic text-[11px] text-center py-3">No connections yet.</p>' : ''}
-          </div>
-          <button type="button" onclick="openNodeModal('${currentInspectorNodeId}')" class="w-full h-8 rounded-xl bg-slate-950 border border-slate-800 text-[11px] font-bold text-emerald-300 hover:border-emerald-500/40 transition flex items-center justify-center gap-1">
-            <i data-lucide="git-branch" class="w-3 h-3"></i> Link / Unlink nodes
-          </button>
-        </div>
-
         <!-- Tasks Subsystem -->
         <div class="space-y-2">
           <div class="space-y-2 max-h-48 overflow-y-auto pr-1 text-xs">
@@ -15292,18 +15302,26 @@ html, body {
           </div>
           ${linkedGoals.length > 0 ? `<button type="button" onclick="openNodeFolderInView('goals')" class="w-full h-8 rounded-xl bg-slate-950 border border-slate-800 text-[11px] font-bold text-rose-300 hover:border-rose-500/40 transition flex items-center justify-center gap-1">Show all in Goals <i data-lucide="arrow-right" class="w-3 h-3"></i></button>` : ''}
         </div>
+
+        <!-- Connected Branch Lines -->
+        <div class="space-y-2">
+          <div class="flex flex-wrap gap-1.5">
+            ${connectedNodesList.map(cn => `
+              <button type="button" onclick="openNodeInspectorPopup('${cn.id}', '${escapeHtml(cn.entityTag || cn.text)}', '${escapeHtml(cn.text)}')" class="px-2.5 py-1.5 rounded-full bg-slate-950 border border-slate-800 text-slate-200 text-xs font-bold flex items-center gap-1.5 hover:border-emerald-500/40 transition">
+                <span class="w-2 h-2 rounded-full ${cn.color || 'bg-emerald-500'}"></span>${escapeHtml(cn.text)}
+              </button>
+            `).join('')}
+            ${connectedNodesList.length === 0 ? '<p class="text-slate-500 italic text-[11px] text-center py-3">No connections yet.</p>' : ''}
+          </div>
+          <button type="button" onclick="openNodeModal('${currentInspectorNodeId}')" class="w-full h-8 rounded-xl bg-slate-950 border border-slate-800 text-[11px] font-bold text-emerald-300 hover:border-emerald-500/40 transition flex items-center justify-center gap-1">
+            <i data-lucide="git-branch" class="w-3 h-3"></i> Link / Unlink nodes
+          </button>
+        </div>
       `;
 
-      // One panel at a time (tabs) keeps the inspector readable on a phone
-      const tabOrder = ['links', 'tasks', 'notes', 'goals'];
-      const tabMeta = [
-        { label: 'Links', count: connectedNodesList.length, active: 'bg-emerald-500/15 text-emerald-300' },
-        { label: 'Tasks', count: linkedTasks.length, active: 'bg-purple-500/15 text-purple-300' },
-        { label: 'Notes', count: linkedNotes.length, active: 'bg-yellow-500/15 text-yellow-300' },
-        { label: 'Goals', count: linkedGoals.length, active: 'bg-rose-500/15 text-rose-300' }
-      ];
-      const idleTab = 'text-slate-400 hover:text-slate-200';
-      const activeTab = (window.__inspectorTab && tabOrder.includes(window.__inspectorTab)) ? window.__inspectorTab : 'links';
+      // One panel at a time — the stats tiles at the top act as the switcher
+      const tabOrder = ['tasks', 'notes', 'goals', 'links'];
+      const activeTab = (window.__inspectorTab && ['tasks', 'notes', 'goals', 'links'].includes(window.__inspectorTab)) ? window.__inspectorTab : 'tasks';
 
       const cards = Array.from(grid.children);
       cards.forEach((card, i) => {
@@ -15315,15 +15333,6 @@ html, body {
         wrap.appendChild(card);
       });
 
-      const tabBar = document.getElementById('inspector-tab-bar');
-      if (tabBar) {
-        tabBar.innerHTML = tabMeta.map((t, i) => `
-          <button type="button" data-tab-id="${tabOrder[i]}" onclick="setInspectorTab('${tabOrder[i]}')" class="flex-1 min-h-[30px] px-2 py-1.5 rounded-lg text-[11px] font-bold transition text-center ${tabOrder[i] === activeTab ? t.active : idleTab}">
-            ${t.label} <span class="font-mono opacity-70">${t.count}</span>
-          </button>
-        `).join('');
-      }
-
       refreshIconsScoped(grid);
     };
 
@@ -15334,24 +15343,9 @@ html, body {
       });
       const statsEl = document.getElementById('inspector-stats');
       if (statsEl) {
-        const ids = ['links', 'tasks', 'notes', 'goals'];
+        const ids = ['tasks', 'notes', 'goals', 'links'];
         [...statsEl.children].forEach((tile, i) => {
           tile.className = `py-2 rounded-xl bg-slate-950 border ${ids[i] === tab ? 'border-slate-600' : 'border-slate-800 hover:border-slate-600'} flex flex-col items-center justify-center gap-0.5 transition active:scale-95`;
-        });
-      }
-      const tabBar = document.getElementById('inspector-tab-bar');
-      if (tabBar) {
-        const activeCls = {
-          links: 'bg-emerald-500/15 text-emerald-300',
-          tasks: 'bg-purple-500/15 text-purple-300',
-          notes: 'bg-yellow-500/15 text-yellow-300',
-          goals: 'bg-rose-500/15 text-rose-300'
-        };
-        [...tabBar.children].forEach(btn => {
-          const id = btn.getAttribute('data-tab-id');
-          const isActive = id === tab;
-          btn.className = 'flex-1 min-h-[30px] px-2 py-1.5 rounded-lg text-[11px] font-bold transition text-center ' +
-            (isActive ? activeCls[id] : 'text-slate-400 hover:text-slate-200');
         });
       }
     };
@@ -22042,16 +22036,23 @@ html, body {
           <button type="button" onclick="addGoalFromInspector()" class="px-2.5 py-1 bg-rose-600/15 border border-rose-500/30 hover:bg-rose-600/25 text-rose-300 font-bold rounded-full transition flex items-center gap-1 text-[11px] active:scale-95">
             <i data-lucide="target" class="w-3 h-3"></i> Goal
           </button>
-          <button type="button" onclick="startFocusTimerForNode()" class="px-2.5 py-1 bg-indigo-600/15 border border-indigo-500/30 hover:bg-indigo-600/25 text-indigo-300 font-bold rounded-full transition flex items-center gap-1 text-[11px] active:scale-95">
-            <i data-lucide="timer" class="w-3 h-3"></i> Timer
-          </button>
         </div>
 
         <!-- Subsystems Cards -->
         <div id="inspector-content-grid" class="space-y-3"></div>
+      </div>
 
-        <!-- Tabs (last, as a footer switcher) -->
-        <div id="inspector-tab-bar" class="flex items-center gap-1 p-1 bg-slate-950 border border-slate-800 rounded-xl overflow-x-auto"></div>
+      <!-- In-place Quick Note editor (opens above the inspector, returns here on back) -->
+      <div id="node-quick-note-overlay" class="hidden absolute inset-0 z-[70] bg-slate-950 rounded-t-3xl sm:rounded-3xl flex flex-col overflow-hidden">
+        <div class="flex items-center justify-between gap-2 px-3.5 pt-3.5 pb-2.5 border-b border-slate-800">
+          <button type="button" onclick="closeQuickNoteOverlay()" title="Back (discard)" class="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition shrink-0"><i data-lucide="arrow-left" class="w-4 h-4"></i></button>
+          <span class="text-[11px] font-extrabold text-white flex items-center gap-1.5 min-w-0"><i data-lucide="file-text" class="w-3.5 h-3.5 text-yellow-400 shrink-0"></i><span class="truncate">Quick Note — <span id="quick-note-node-name" class="text-slate-300"></span></span></span>
+          <button type="button" onclick="saveQuickNoteFromOverlay()" class="px-3 h-7 rounded-lg bg-yellow-500 hover:bg-yellow-400 text-slate-950 text-[11px] font-extrabold transition active:scale-95 shrink-0">Save Note</button>
+        </div>
+        <div class="flex-1 overflow-y-auto p-3.5 space-y-2.5">
+          <input id="quick-note-title" type="text" placeholder="Note title" class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-slate-100 font-bold text-xs outline-none focus:border-yellow-400 transition" />
+          <textarea id="quick-note-content" rows="10" placeholder="# Start writing..." class="w-full bg-slate-900 border border-slate-800 rounded-xl px-3 py-2.5 text-slate-200 text-xs font-mono leading-relaxed outline-none focus:border-yellow-400 transition resize-none" style="min-height: 55%"></textarea>
+        </div>
       </div>
     </div>
   </div>
