@@ -1793,12 +1793,12 @@ html, body {
         }
 
         html += `
-          <div class="glass-card p-2.5 sm:p-3 rounded-2xl border transition space-y-2 ${isDone ? 'border-rose-500/40 bg-rose-500/10' : 'border-slate-800 hover:border-rose-500/40'}">
+          <div class="glass-card p-2.5 sm:p-3 rounded-2xl border transition space-y-1.5 ${isDone ? 'border-rose-500/40 bg-rose-500/10' : 'border-slate-800 hover:border-rose-500/40'}">
             <div class="flex items-center justify-between gap-2">
               <div class="flex items-center gap-2.5 truncate min-w-0">
-                <span class="w-8 h-8 text-base shrink-0 flex items-center justify-center rounded-xl border transition ${isDone ? 'bg-rose-500/15 border-rose-500/30' : 'bg-slate-900 border-slate-800'}">${escapeHtml(h.icon || '🔥')}</span>
+                <span class="w-7 h-7 text-sm shrink-0 flex items-center justify-center rounded-lg border transition ${isDone ? 'bg-rose-500/15 border-rose-500/30' : 'bg-slate-900 border-slate-800'}">${escapeHtml(h.icon || '🔥')}</span>
                 <div class="truncate min-w-0">
-                  <h4 class="font-extrabold text-white text-xs sm:text-sm truncate leading-snug ${isDone ? 'line-through text-slate-400' : ''}">${escapeHtml(h.name)}</h4>
+                  <h4 class="font-extrabold text-white text-xs sm:text-sm truncate leading-tight ${isDone ? 'line-through text-slate-400' : ''}">${escapeHtml(h.name)}</h4>
                   <div class="flex items-center gap-1.5 mt-0.5 min-w-0">
                     <span class="text-[9px] px-2 py-0.5 rounded bg-slate-900 text-slate-300 font-bold uppercase tracking-wider border border-slate-800 truncate">${escapeHtml(h.category || 'General')}</span>
                     <span class="text-[9px] font-mono text-amber-400/90 font-bold shrink-0" title="Current streak">🔥 ${streak}d</span>
@@ -1810,12 +1810,12 @@ html, body {
               </button>
             </div>
 
-            <div class="space-y-1">
-              <div class="flex justify-between items-center text-[10px] font-mono">
-                <span class="text-slate-500">${flowEmoji[h.timeOfDay] || '⚡'} ${(h.timeOfDay || 'Anytime')} flow</span>
-                <span class="${isDone ? 'text-rose-400 font-bold' : 'text-slate-400'}">${isDone ? '✓ done today' : weekDone + '/7 this week'}</span>
-              </div>
-              <div class="flex items-center gap-1.5 pt-0.5" title="Last 7 days">${weekDots.join('')}</div>
+            <div class="flex justify-between items-center gap-2 text-[10px] font-mono">
+              <span class="flex items-center gap-2 min-w-0">
+                <span class="text-slate-500 shrink-0">${flowEmoji[h.timeOfDay] || '⚡'} ${(h.timeOfDay || 'Anytime')}</span>
+                <span class="flex items-center gap-1.5 shrink-0" title="Last 7 days">${weekDots.join('')}</span>
+              </span>
+              <span class="${isDone ? 'text-rose-400 font-bold' : 'text-slate-400'} shrink-0">${isDone ? '✓ done today' : weekDone + '/7 this week'}</span>
             </div>
           </div>`;
       }
