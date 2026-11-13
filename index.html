@@ -8286,45 +8286,63 @@ html, body {
       let pinned = getPinnedRadarCategories();
 
       pinned = pinned.filter(p => allCategories.some(c => c.toLowerCase() === p.toLowerCase()));
-      if (pinnedCountBadge) pinnedCountBadge.textContent = pinned.length;
+      const allGoals = (window.appState.goals || []).filter(g => !g.isArchived);
 
-      if (pinned.length === 0) {
+      // only categories that actually have goals — empty pins are just noise
+      let populated = pinned
+        .map(catName => {
+          const matching = allGoals.filter(g => (g.category || '').toLowerCase() === catName.toLowerCase());
+          const avg = matching.length > 0 ? Math.round(matching.reduce((acc, curr) => acc + (curr.progress || 0), 0) / matching.length) : 0;
+          return { catName, count: matching.length, avg };
+        })
+        .filter(c => c.count > 0);
+
+      if (pinnedCountBadge) pinnedCountBadge.textContent = populated.length;
+
+      // nothing pinned has goals yet — fall back to categories that do, so the
+      // panel is never just an empty box
+      let fallbackNote = '';
+      if (populated.length === 0) {
+        populated = allCategories
+          .map(catName => {
+            const matching = allGoals.filter(g => (g.category || '').toLowerCase() === catName.toLowerCase());
+            const avg = matching.length > 0 ? Math.round(matching.reduce((acc, curr) => acc + (curr.progress || 0), 0) / matching.length) : 0;
+            return { catName, count: matching.length, avg };
+          })
+          .filter(c => c.count > 0);
+        if (populated.length > 0) fallbackNote = `<div class="col-span-full text-[9px] text-slate-500 font-mono">showing categories with goals — pin yours via Select Cards</div>`;
+      }
+
+      if (populated.length === 0) {
         container.innerHTML = `
           <div class="col-span-full p-4 text-center text-xs text-slate-500 bg-slate-950/60 rounded-xl border border-slate-800">
-            No categories pinned. Click <button type="button" onclick="openRadarFilterModal()" class="text-rose-400 underline font-semibold">Select Cards</button> to pin only the categories you want to track here.
+            No categories with goals yet. Pin categories via <button type="button" onclick="openRadarFilterModal()" class="text-rose-400 underline font-semibold">Select Cards</button> — they appear here once goals exist.
           </div>
         `;
         return;
       }
 
-      const allGoals = (window.appState.goals || []).filter(g => !g.isArchived);
-
-      pinned.forEach(catName => {
-        const matching = allGoals.filter(g => (g.category || '').toLowerCase() === catName.toLowerCase());
-        const count = matching.length;
-        const avg = count > 0 ? Math.round(matching.reduce((acc, curr) => acc + (curr.progress || 0), 0) / count) : 0;
-
-        const card = document.createElement('div');
-        card.className = 'p-2.5 rounded-xl bg-slate-950/90 border border-slate-800 space-y-1.5 min-w-0';
+      populated.forEach(({ catName, count, avg }) => {
+        const card = document.createElement('div');        card.className = 'p-2.5 sm:p-3 rounded-xl bg-slate-950/90 border border-slate-800 hover:border-rose-500/30 transition space-y-2 min-w-0';
         card.innerHTML = `
-          <div class="flex justify-between items-center min-w-0 gap-1">
-            <span class="text-[11px] font-bold text-slate-200 truncate flex items-center gap-1 min-w-0">
+          <div class="flex justify-between items-center min-w-0 gap-1.5">
+            <span class="text-[11px] font-bold text-slate-200 truncate flex items-center gap-1.5 min-w-0">
               <i data-lucide="tag" class="w-3 h-3 text-rose-400 shrink-0"></i>
               <span class="truncate">${escapeHtml(catName)}</span>
             </span>
-            <span class="text-[10px] font-mono font-bold text-rose-400 shrink-0">${avg}%</span>
+            <span class="text-[9px] px-1.5 py-0.5 rounded-md bg-rose-500/15 text-rose-300 font-mono font-bold border border-rose-500/25 shrink-0" title="Goals in this category">${count}</span>
           </div>
-          <div class="w-full bg-slate-900 h-1.5 rounded-full overflow-hidden">
-            <div class="bg-rose-500 h-full transition-all duration-300" style="width: ${avg}%"></div>
-          </div>
-          <div class="flex justify-between text-[9px] font-mono text-slate-500">
-            <span>${count} Goal${count === 1 ? '' : 's'}</span>
-            <span>Avg Progress</span>
+          <div class="flex items-center gap-2">
+            <div class="flex-1 bg-slate-900 h-1.5 rounded-full overflow-hidden">
+              <div class="${avg >= 100 ? 'bg-emerald-500' : 'bg-rose-500'} h-full transition-all duration-300" style="width: ${avg}%"></div>
+            </div>
+            <span class="text-[10px] font-mono font-extrabold ${avg >= 100 ? 'text-emerald-400' : 'text-rose-400'} shrink-0 w-9 text-right">${avg}%</span>
           </div>
         `;
         container.appendChild(card);
       });
 
+      if (fallbackNote) container.insertAdjacentHTML('beforeend', fallbackNote);
       refreshIconsScoped(container);
     }
 
@@ -8536,8 +8554,9 @@ html, body {
               <div class="space-y-1 truncate flex-1 min-w-0">
                 <div class="flex flex-wrap items-center gap-1.5">
                   <span class="text-[9px] px-2 py-0.5 rounded bg-slate-900 text-slate-300 font-bold uppercase tracking-wider border border-slate-800">${escapeHtml(g.category || 'General')}</span>
-                  ${isSequentialGoal ? `<span class="text-[9px] px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-300 font-mono font-bold border border-amber-500/20 flex items-center gap-0.5"><i data-lucide="lock" class="w-2.5 h-2.5"></i> SEQUENTIAL</span>` : ''}
-                  ${g.autoSyncLedger ? `<span class="text-[9px] px-1.5 py-0.5 rounded bg-rose-500/20 text-rose-300 font-mono font-bold border border-rose-500/30">⚡ LEDGER LINK</span>` : ''}
+                  <span class="text-[9px] px-2 py-0.5 rounded bg-slate-950 text-slate-400 font-mono font-semibold border border-slate-800/80 truncate max-w-[120px]">${folder ? escapeHtml(folder.name) : 'General'}</span>
+                  ${isSequentialGoal ? `<span class="text-[9px] px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-300 font-mono font-bold border border-amber-500/20 flex items-center gap-0.5"><i data-lucide="lock" class="w-2.5 h-2.5"></i> SEQ</span>` : ''}
+                  ${g.autoSyncLedger ? `<span class="text-[9px] px-1.5 py-0.5 rounded bg-rose-500/20 text-rose-300 font-mono font-bold border border-rose-500/30">⚡ LEDGER</span>` : ''}
                   ${isNodeFolder ? `<span class="text-[9px] px-1.5 py-0.5 rounded bg-rose-500/20 text-rose-300 font-mono font-bold border border-rose-500/30 flex items-center gap-1"><i data-lucide="brain-circuit" class="w-3 h-3"></i> NODE</span>` : ''}
                 </div>
                 <h4 class="font-extrabold text-white text-sm sm:text-base truncate leading-snug ${isAchieved ? 'line-through text-slate-400' : ''}">${escapeHtml(g.title)}</h4>
@@ -8560,29 +8579,28 @@ html, body {
             ${retroHtml}
             ${metricDetailHtml}
 
-            <div class="space-y-1 pt-1">
-              <div class="flex justify-between items-center text-xs font-semibold">
-                <span class="text-slate-400 flex items-center gap-1"><i data-lucide="calendar" class="w-3.5 h-3.5 text-amber-400"></i> ${g.targetDate || 'TBD'}</span>
-                <span class="font-extrabold font-mono text-rose-400">${g.progress || 0}%</span>
-              </div>
-              
-              <div class="w-full bg-slate-950 h-2 rounded-full overflow-hidden border border-slate-800">
-                <div class="bg-rose-500 h-full transition-all duration-300" style="width: ${g.progress || 0}%"></div>
+            <div class="space-y-1.5 pt-1">
+              <div class="flex justify-between items-center gap-2 text-xs font-semibold">
+                <span class="text-slate-400 flex items-center gap-1.5 min-w-0">
+                  <i data-lucide="calendar" class="w-3.5 h-3.5 text-amber-400 shrink-0"></i> <span class="truncate">${g.targetDate || 'TBD'}</span>
+                  ${deadlineBadge}
+                </span>
+                <span class="font-extrabold font-mono text-rose-400 shrink-0">${g.progress || 0}%</span>
               </div>
 
-              <div class="flex justify-between items-center pt-0.5">
-                <span class="text-[10px] text-slate-500">${folder ? escapeHtml(folder.name) : 'General Goals'}</span>
-                ${deadlineBadge}
+              <div class="w-full bg-slate-950 h-2 rounded-full overflow-hidden border border-slate-800">
+                <div class="${isAchieved ? 'bg-emerald-500' : 'bg-rose-500'} h-full transition-all duration-300" style="width: ${g.progress || 0}%"></div>
+              </div>
+
+              <div class="flex justify-between items-center pt-0.5 text-[10px]">
+                <span class="text-slate-500 font-mono">Slide to update</span>
+                <input type="range" min="0" max="100" value="${g.progress || 0}" oninput="updateGoalProgress('${g.id}', this.value)" class="w-32 accent-rose-500 cursor-pointer" />
               </div>
             </div>
 
             ${krHtml}
           </div>
 
-          <div class="pt-2 border-t border-slate-800/60 flex items-center justify-between text-xs">
-            <span class="text-[10px] text-slate-500">Progress Slider</span>
-            <input type="range" min="0" max="100" value="${g.progress || 0}" oninput="updateGoalProgress('${g.id}', this.value)" class="w-28 accent-rose-500 cursor-pointer" />
-          </div>
         `;
 
         fragment.appendChild(card);
@@ -12968,7 +12986,7 @@ html, body {
       </div>
 
       <div class="flex items-center gap-1.5 justify-end sm:justify-start">
-        <button type="button" onclick="autoLayoutMindmapNodes()" class="p-2 bg-emerald-950/40 border border-emerald-500/30 hover:border-emerald-500/60 text-emerald-300 text-xs font-bold rounded-xl transition flex items-center justify-center active:scale-95 shadow-sm shrink-0" title="Arrange nodes hierarchically">
+        <button type="button" onclick="autoLayoutMindmapNodes()" class="p-2 bg-emerald-950/40 border border-emerald-500/30 hover:border-emerald-500/60 text-emerald-300 text-xs font-bold rounded-xl transition flex items-center justify-center active:scale-95 shadow-sm shrink-0" title="Cycle hierarchy layouts (click again for next pattern)">
           <i data-lucide="git-merge" class="w-4 h-4 text-emerald-400"></i>
         </button>
 
@@ -13844,8 +13862,10 @@ html, body {
       window.renderMindmapNodes();
     };
 
-    /* Arranges the map as a proper tree: roots on the left, children to the
-       right of their parent, each branch centred under its parent. */
+    /* Arranges the map as a tree from the connections. Clicking again cycles
+       through three hierarchy patterns: left-to-right, top-down, radial. */
+    /* starts at 2 so the first click lands on the Left-to-Right pattern */
+    window.__mindmapLayoutIndex = 2;
     window.autoLayoutMindmapNodes = function() {
       const curMapId = window.appState?.activeMindmapId || 'map_main';
       const nodes = (window.appState?.mindmapNodes || []).filter(n => (n.mapId || 'map_main') === curMapId);
@@ -13882,6 +13902,7 @@ html, body {
       const isMobile = window.innerWidth < 640;
       const gapX = isMobile ? 230 : 270;   // level spacing
       const gapY = isMobile ? 112 : 126;   // sibling spacing
+      const gapR = isMobile ? 170 : 200;   // ring spacing (radial)
 
       // group by depth
       const byDepth = {};
@@ -13921,17 +13942,51 @@ html, body {
       const minY = Math.min(...Object.values(yPos));
       Object.keys(yPos).forEach(id => { yPos[id] -= minY; });
 
-      nodes.forEach(n => {
-        const d = depth[n.id] || 0;
-        n.x = 40 + d * gapX;
-        n.y = Math.round(40 + (yPos[n.id] || 0));
-      });
+      // cycle the pattern on every click
+      window.__mindmapLayoutIndex = (window.__mindmapLayoutIndex + 1) % 3;
+      const layoutNames = ['Left to Right', 'Top to Bottom', 'Radial'];
+
+      if (window.__mindmapLayoutIndex === 2) {
+        // radial: roots in the centre, each depth on a ring around them
+        const cx = 0, cy = 0;
+        nodes.forEach(n => {
+          const d = depth[n.id] || 0;
+          const ring = byDepth[d] || [];
+          const idx = ring.indexOf(n.id);
+          const count = Math.max(ring.length, 1);
+          const angle = (idx / count) * Math.PI * 2 + (d % 2) * (Math.PI / count);
+          const r = d * gapR;
+          n.x = Math.round(cx + r * Math.cos(angle));
+          n.y = Math.round(cy + r * Math.sin(angle));
+        });
+      } else if (window.__mindmapLayoutIndex === 1) {
+        // top to bottom: depth flows downward, branches spread horizontally
+        nodes.forEach(n => {
+          const d = depth[n.id] || 0;
+          n.x = Math.round(40 + (yPos[n.id] || 0));
+          n.y = 40 + d * gapX;
+        });
+      } else {
+        // left to right: depth flows rightward, branches stack vertically
+        nodes.forEach(n => {
+          const d = depth[n.id] || 0;
+          n.x = 40 + d * gapX;
+          n.y = Math.round(40 + (yPos[n.id] || 0));
+        });
+      }
+
+      // radial can go negative — shift everything back into the positive quadrant
+      const minX = Math.min(...nodes.map(n => n.x));
+      const minY2 = Math.min(...nodes.map(n => n.y));
+      if (minX < 40 || minY2 < 40) {
+        nodes.forEach(n => { n.x += (40 - minX); n.y += (40 - minY2); });
+      }
 
       persistMindmapAndSync();
       window.renderMindmapNodes();
       // make sure the whole tree is on screen after rearranging
       setTimeout(() => window.fitMindmapToScreen && window.fitMindmapToScreen(), 60);
-      if (window.showToast) window.showToast('Arranged into a hierarchy from your connections', 'success');
+      if (window.showToast) window.showToast(`Arranged: ${layoutNames[window.__mindmapLayoutIndex]} — click again for the next pattern`, 'success');
     };
 
     window.openCreateMapModal = function() {
@@ -14072,13 +14127,13 @@ html, body {
         }
       }
 
-      // Editing opens the extra options, creating keeps them collapsed
+      // extras always start collapsed — open via "More options"
       const extras = document.getElementById('node-form-extras');
       const extrasBtn = document.getElementById('node-form-extras-toggle');
-      if (extras) extras.classList.toggle('hidden', !nodeId);
+      if (extras) extras.classList.add('hidden');
       if (extrasBtn) {
         const label = extrasBtn.querySelector('span');
-        if (label) label.textContent = nodeId ? 'Fewer options' : 'More options';
+        if (label) label.textContent = 'More options';
       }
 
       showModalDirect('node-form-modal');
@@ -14996,7 +15051,10 @@ html, body {
       if (titleEl) titleEl.textContent = title || tag;
       if (badgeEl) badgeEl.textContent = `#${tag}`;
       if (statusEl && node) statusEl.textContent = `${node.status || 'Active'}`;
-      if (notesEl && node) notesEl.textContent = node.notes || 'Full cross-system connected data matrix.';
+      if (notesEl && node) {
+        notesEl.textContent = node.notes || '';
+        notesEl.classList.toggle('hidden', !node.notes);
+      }
 
       window.renderNodeInspectorContent();
       showModalDirect('node-inspector-modal');
@@ -15232,7 +15290,7 @@ html, body {
       const tabBar = document.getElementById('inspector-tab-bar');
       if (tabBar) {
         tabBar.innerHTML = tabMeta.map((t, i) => `
-          <button type="button" data-tab-id="${tabOrder[i]}" onclick="setInspectorTab('${tabOrder[i]}')" class="shrink-0 px-2.5 py-1.5 rounded-xl text-[11px] font-bold transition border ${tabOrder[i] === activeTab ? t.active : idleTab}">
+          <button type="button" data-tab-id="${tabOrder[i]}" onclick="setInspectorTab('${tabOrder[i]}')" class="flex-1 sm:flex-none min-h-[34px] px-2.5 py-1.5 rounded-xl text-[11px] font-bold transition border text-center ${tabOrder[i] === activeTab ? t.active : idleTab}">
             ${t.label} <span class="font-mono opacity-70">${t.count}</span>
           </button>
         `).join('');
@@ -15250,7 +15308,7 @@ html, body {
       if (tabBar) {
         [...tabBar.children].forEach(btn => {
           const isActive = btn.getAttribute('data-tab-id') === tab;
-          btn.className = 'shrink-0 px-2.5 py-1.5 rounded-xl text-[11px] font-bold transition border ' +
+          btn.className = 'flex-1 sm:flex-none min-h-[34px] px-2.5 py-1.5 rounded-xl text-[11px] font-bold transition border text-center ' +
             (isActive
               ? (btn.getAttribute('data-tab-id') === 'links' ? 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30'
                 : btn.getAttribute('data-tab-id') === 'tasks' ? 'bg-purple-500/15 text-purple-300 border-purple-500/30'
@@ -21926,6 +21984,9 @@ html, body {
           <button type="button" onclick="closeModalDirect('node-inspector-modal')" class="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-slate-800 transition"><i data-lucide="x" class="w-5 h-5"></i></button>
         </div>
       </div>
+
+      <!-- About this node (only when the node has a description) -->
+      <div id="inspector-notes-preview" class="hidden px-3 py-2.5 bg-slate-950 rounded-2xl border border-slate-800 text-[11px] text-slate-300 leading-relaxed whitespace-pre-wrap break-words"></div>
 
       <!-- Add Inside This Node (Global launcher buttons) -->
       <div class="flex items-center gap-2 p-2 bg-slate-950 rounded-2xl border border-slate-800 text-xs">
