@@ -14559,6 +14559,8 @@ html, body {
         }
 
         const CARD_W = 190, CARD_H = 104, PAD = 80, SCALE = 2;
+        // Extra headroom above the map for a document-style header
+        const HEADER_H = 64;
         let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
         nodes.forEach(n => {
           const x = typeof n.x === 'number' ? n.x : 100;
@@ -14566,7 +14568,7 @@ html, body {
           minX = Math.min(minX, x); minY = Math.min(minY, y);
           maxX = Math.max(maxX, x + CARD_W); maxY = Math.max(maxY, y + CARD_H);
         });
-        const W = (maxX - minX) + PAD * 2, H = (maxY - minY) + PAD * 2;
+        const W = (maxX - minX) + PAD * 2, H = (maxY - minY) + PAD * 2 + HEADER_H;
 
         const canvas = document.createElement('canvas');
         canvas.width = Math.round(W * SCALE);
@@ -14578,11 +14580,28 @@ html, body {
         ctx.fillStyle = '#020617';
         ctx.fillRect(0, 0, W, H);
 
+        // Document header: map name, node count, generated date
+        const mapName = ((window.appState.mindmaps || []).find(m => m.id === curMapId) || {}).name || 'Mindmap';
+        ctx.textBaseline = 'alphabetic';
+        ctx.textAlign = 'left';
+        ctx.fillStyle = '#ffffff';
+        ctx.font = '800 20px system-ui, sans-serif';
+        ctx.fillText(mapName, PAD, HEADER_H - 26);
+        ctx.fillStyle = '#64748b';
+        ctx.font = '600 12px ui-monospace, monospace';
+        ctx.fillText(nodes.length + ' nodes · generated ' + new Date().toLocaleDateString(), PAD, HEADER_H - 8);
+        ctx.strokeStyle = 'rgba(30,41,59,1)';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(PAD, HEADER_H);
+        ctx.lineTo(W - PAD, HEADER_H);
+        ctx.stroke();
+
         const pos = {};
         nodes.forEach(n => {
           const x = typeof n.x === 'number' ? n.x : 100;
           const y = typeof n.y === 'number' ? n.y : 100;
-          pos[n.id] = { x: x - minX + PAD, y: y - minY + PAD };
+          pos[n.id] = { x: x - minX + PAD, y: y - minY + PAD + HEADER_H };
         });
         const byId = {};
         nodes.forEach(n => { byId[n.id] = n; });
@@ -14653,9 +14672,9 @@ html, body {
           ctx.fillRect(p.x, p.y, CARD_W, 5);
           ctx.restore();
 
-          // #tag pill (centered, like the live card)
+          // #tag pill (uppercase, centered, like the live card)
           ctx.font = '700 9px ui-monospace, monospace';
-          const tagText = '#' + String(tag).toLowerCase().slice(0, 14);
+          const tagText = '#' + String(tag).toUpperCase().slice(0, 14);
           const tagW = ctx.measureText(tagText).width + 14;
           rr(p.x + (CARD_W - tagW) / 2, p.y + 11, tagW, 15, 7);
           ctx.fillStyle = '#1e293b';
@@ -14665,14 +14684,17 @@ html, body {
           ctx.textBaseline = 'middle';
           ctx.fillText(tagText, p.x + CARD_W / 2, p.y + 19);
 
-          // Icon tile with the node's initial
+          // Icon tile with the node's initial (first ASCII letter — canvas
+          // fonts can't render emoji, which showed as "?" boxes before)
+          const initial = (String(tag || title).match(/[a-z0-9]/i) || ['?'])[0].toUpperCase();
           rr(p.x + 12, p.y + 34, 30, 30, 9);
           ctx.fillStyle = color;
           ctx.fill();
           ctx.fillStyle = '#ffffff';
           ctx.font = '800 14px system-ui, sans-serif';
           ctx.textAlign = 'center';
-          ctx.fillText((title || tag).charAt(0).toUpperCase(), p.x + 27, p.y + 50);
+          ctx.textBaseline = 'middle';
+          ctx.fillText(initial, p.x + 27, p.y + 50);
 
           // Title (max 2 lines, beside the icon)
           ctx.font = '800 11px system-ui, sans-serif';
@@ -14721,7 +14743,6 @@ html, body {
         });
 
         const dataUrl = canvas.toDataURL('image/png');
-        const mapName = ((window.appState.mindmaps || []).find(m => m.id === curMapId) || {}).name || 'mindmap';
         const fileName = String(mapName).replace(/[^a-z0-9_-]+/gi, '_').toLowerCase() + '_' + new Date().toISOString().slice(0, 10);
 
         if (kind === 'pdf') {
@@ -15611,7 +15632,7 @@ html, body {
       grid.innerHTML = `
         <!-- Tasks Subsystem -->
         <div class="space-y-2">
-          <div class="space-y-1.5 h-72 overflow-y-auto p-2 bg-slate-950/40 rounded-xl border border-slate-800/70">
+          <div class="space-y-1.5 h-96 overflow-y-auto p-2 bg-slate-950/40 rounded-xl border border-slate-800/70">
             ${linkedTasks.map(t => {
               const subtasks = Array.isArray(t.subtasks) ? t.subtasks : [];
               const completedSubtasks = subtasks.filter(s => s.completed).length;
@@ -15659,7 +15680,7 @@ html, body {
 
         <!-- Knowledge Notes Subsystem -->
         <div class="space-y-2">
-          <div class="space-y-1.5 h-72 overflow-y-auto p-2 bg-slate-950/40 rounded-xl border border-slate-800/70">
+          <div class="space-y-1.5 h-96 overflow-y-auto p-2 bg-slate-950/40 rounded-xl border border-slate-800/70">
             ${linkedNotes.map(n => `
               <div class="p-2.5 bg-slate-950 rounded-xl border border-slate-800 space-y-1.5 hover:border-yellow-500/40 transition cursor-pointer" onclick="openNotesEditorOverlay('${n.id}', 'preview')">
                 <div class="flex items-center justify-between gap-2">
@@ -15679,7 +15700,7 @@ html, body {
 
         <!-- Goals & OKRs Subsystem -->
         <div class="space-y-2">
-          <div class="space-y-1.5 h-72 overflow-y-auto p-2 bg-slate-950/40 rounded-xl border border-slate-800/70">
+          <div class="space-y-1.5 h-96 overflow-y-auto p-2 bg-slate-950/40 rounded-xl border border-slate-800/70">
             ${linkedGoals.map(g => {
               const krs = g.keyResults || [];
               return `
