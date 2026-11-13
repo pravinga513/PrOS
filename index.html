@@ -13055,15 +13055,15 @@ html, body {
       </div>
 
       <div class="flex items-center gap-1.5 justify-end sm:justify-start">
-        <button type="button" onclick="autoLayoutMindmapNodes()" class="p-2 bg-emerald-950/40 border border-emerald-500/30 hover:border-emerald-500/60 text-emerald-300 text-xs font-bold rounded-xl transition flex items-center justify-center active:scale-95 shadow-sm shrink-0" title="Cycle hierarchy layouts (click again for next pattern)">
+        <button type="button" onclick="autoLayoutMindmapNodes()" class="p-2 bg-emerald-950/40 border border-emerald-500/30 hover:border-emerald-500/60 text-emerald-300 text-xs font-bold rounded-xl transition flex items-center justify-center active:scale-95 shadow-sm shrink-0" title="Auto-arrange all nodes — click again to cycle: Left→Right, Top→Bottom, Radial">
           <i data-lucide="git-merge" class="w-4 h-4 text-emerald-400"></i>
         </button>
 
-        <button type="button" onclick="openConnectModal()" class="p-2 bg-slate-900 border border-slate-800 hover:border-emerald-500/40 text-emerald-300 text-xs font-bold rounded-xl transition flex items-center justify-center active:scale-95 shadow-sm shrink-0" title="Connect two nodes">
-          <i data-lucide="git-commit" class="w-4 h-4 text-emerald-400"></i>
+        <button type="button" onclick="openConnectModal()" class="p-2 bg-sky-950/40 border border-sky-500/30 hover:border-sky-500/60 text-sky-300 text-xs font-bold rounded-xl transition flex items-center justify-center active:scale-95 shadow-sm shrink-0" title="Connect two nodes — pick a source and a target to draw a link">
+          <i data-lucide="git-commit" class="w-4 h-4 text-sky-400"></i>
         </button>
 
-        <button type="button" onclick="openCreateMapModal()" class="p-2 bg-slate-900 border border-slate-800 hover:border-emerald-500/40 text-slate-300 text-xs font-semibold rounded-xl transition flex items-center justify-center active:scale-95 shadow-sm shrink-0" title="Create a new map">
+        <button type="button" onclick="openCreateMapModal()" class="p-2 bg-slate-900 border border-slate-800 hover:border-emerald-500/40 text-slate-300 text-xs font-semibold rounded-xl transition flex items-center justify-center active:scale-95 shadow-sm shrink-0" title="Create a new empty mindmap">
           <i data-lucide="folder-plus" class="w-4 h-4 text-emerald-400"></i>
         </button>
 
@@ -14022,6 +14022,29 @@ html, body {
           n.x = Math.round(cx + r * Math.cos(angle));
           n.y = Math.round(cy + r * Math.sin(angle));
         });
+
+        // Multiple roots all get radius 0 and stack dead-centre, and small
+        // rings can crowd — iteratively push any two cards closer than a
+        // card's footprint apart until nothing overlaps.
+        const minDist = 210;
+        for (let iter = 0; iter < 80; iter++) {
+          let moved = false;
+          for (let i = 0; i < nodes.length; i++) {
+            for (let j = i + 1; j < nodes.length; j++) {
+              const a = nodes[i], b = nodes[j];
+              let dx = b.x - a.x, dy = b.y - a.y;
+              let dist = Math.hypot(dx, dy);
+              if (dist >= minDist) continue;
+              if (dist < 0.01) { dx = (i % 2 === 0) ? 1 : -1; dy = ((i + j) % 2 === 0) ? 0.5 : -0.5; dist = Math.hypot(dx, dy); }
+              const push = (minDist - dist) / 2;
+              const ux = dx / dist, uy = dy / dist;
+              a.x = Math.round(a.x - ux * push); a.y = Math.round(a.y - uy * push);
+              b.x = Math.round(b.x + ux * push); b.y = Math.round(b.y + uy * push);
+              moved = true;
+            }
+          }
+          if (!moved) break;
+        }
       } else if (window.__mindmapLayoutIndex === 1) {
         // top to bottom: depth flows downward, branches spread horizontally
         nodes.forEach(n => {
@@ -14916,7 +14939,7 @@ html, body {
         const pendingTasks = linkedTasks.filter(t => !t.completed && t.status !== 'completed' && t.status !== 'done').length;
 
         const card = document.createElement('div');
-        card.className = `absolute pointer-events-auto w-44 sm:w-48 rounded-2xl bg-slate-950/95 backdrop-blur-md border border-slate-700/50 shadow-xl shadow-black/40 select-none flex flex-col overflow-hidden transition hover:border-slate-500/70 hover:shadow-2xl`;
+        card.className = `absolute pointer-events-auto w-44 sm:w-48 rounded-2xl bg-slate-950/95 backdrop-blur-md border border-slate-700/50 shadow-xl shadow-black/40 select-none flex flex-col overflow-hidden transition cursor-default hover:border-slate-500/70 hover:shadow-2xl`;
         card.style.left = posX + 'px';
         card.style.top = posY + 'px';
 
@@ -14924,7 +14947,7 @@ html, body {
           <div class="h-1 ${node.color || 'bg-emerald-600'} shrink-0"></div>
           <div class="p-2.5 flex flex-col gap-2">
             <div class="flex items-center gap-1.5">
-              <div class="drag-handle cursor-grab active:cursor-grabbing text-slate-500 hover:text-slate-200 transition shrink-0" title="Drag Anywhere">
+              <div class="drag-handle cursor-grab active:cursor-grabbing text-slate-500 hover:text-slate-200 transition shrink-0" title="Drag node (from here)">
                 <i data-lucide="grip-vertical" class="w-3.5 h-3.5"></i>
               </div>
               <span class="flex-1 min-w-0 px-1.5 py-0.5 rounded-md bg-slate-800 text-[9px] font-mono font-bold uppercase tracking-wider text-slate-300 truncate text-center">#${escapeHtml(node.entityTag || node.text)}</span>
@@ -15658,7 +15681,7 @@ html, body {
       grid.innerHTML = `
         <!-- Tasks Subsystem -->
         <div class="space-y-2">
-          <div class="space-y-1.5 h-[352px] overflow-y-auto p-2 bg-slate-950/40 rounded-xl border border-slate-800/70">
+          <div class="space-y-1.5 h-[345px] overflow-y-auto p-2 bg-slate-950/40 rounded-xl border border-slate-800/70">
             ${linkedTasks.map(t => {
               const subtasks = Array.isArray(t.subtasks) ? t.subtasks : [];
               const completedSubtasks = subtasks.filter(s => s.completed).length;
@@ -15706,7 +15729,7 @@ html, body {
 
         <!-- Knowledge Notes Subsystem -->
         <div class="space-y-2">
-          <div class="space-y-1.5 h-[352px] overflow-y-auto p-2 bg-slate-950/40 rounded-xl border border-slate-800/70">
+          <div class="space-y-1.5 h-[345px] overflow-y-auto p-2 bg-slate-950/40 rounded-xl border border-slate-800/70">
             ${linkedNotes.map(n => `
               <div class="p-2.5 bg-slate-950 rounded-xl border border-slate-800 space-y-1.5 hover:border-yellow-500/40 transition cursor-pointer" onclick="openNotesEditorOverlay('${n.id}', 'preview')">
                 <div class="flex items-center justify-between gap-2">
@@ -15726,7 +15749,7 @@ html, body {
 
         <!-- Goals & OKRs Subsystem -->
         <div class="space-y-2">
-          <div class="space-y-1.5 h-[352px] overflow-y-auto p-2 bg-slate-950/40 rounded-xl border border-slate-800/70">
+          <div class="space-y-1.5 h-[345px] overflow-y-auto p-2 bg-slate-950/40 rounded-xl border border-slate-800/70">
             ${linkedGoals.map(g => {
               const krs = g.keyResults || [];
               return `
