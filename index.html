@@ -14944,7 +14944,7 @@ html, body {
               </span>
               <span class="flex items-center gap-1 shrink-0">
                 <span class="flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-slate-800 font-mono font-bold text-slate-300"><i data-lucide="list-checks" class="w-2.5 h-2.5"></i>${pendingTasks}/${linkedTasks.length}</span>
-                ${node.url ? `<a href="${escapeHtml(node.url)}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()" title="Open Link" class="px-1.5 py-0.5 rounded-md bg-emerald-600/20 text-emerald-300 hover:bg-emerald-600/30 font-bold transition">↗</a>` : ''}
+                ${node.url ? `<a href="${escapeHtml(node.url)}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()" title="Open Link" class="flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-emerald-600/20 text-emerald-300 hover:bg-emerald-600/40 hover:text-emerald-200 border border-emerald-500/30 font-bold transition"><i data-lucide="external-link" class="w-2.5 h-2.5"></i>Link</a>` : ''}
               </span>
             </div>
           </div>
@@ -15658,7 +15658,7 @@ html, body {
       grid.innerHTML = `
         <!-- Tasks Subsystem -->
         <div class="space-y-2">
-          <div class="space-y-1.5 h-[368px] overflow-y-auto p-2 bg-slate-950/40 rounded-xl border border-slate-800/70">
+          <div class="space-y-1.5 h-[352px] overflow-y-auto p-2 bg-slate-950/40 rounded-xl border border-slate-800/70">
             ${linkedTasks.map(t => {
               const subtasks = Array.isArray(t.subtasks) ? t.subtasks : [];
               const completedSubtasks = subtasks.filter(s => s.completed).length;
@@ -15706,7 +15706,7 @@ html, body {
 
         <!-- Knowledge Notes Subsystem -->
         <div class="space-y-2">
-          <div class="space-y-1.5 h-[368px] overflow-y-auto p-2 bg-slate-950/40 rounded-xl border border-slate-800/70">
+          <div class="space-y-1.5 h-[352px] overflow-y-auto p-2 bg-slate-950/40 rounded-xl border border-slate-800/70">
             ${linkedNotes.map(n => `
               <div class="p-2.5 bg-slate-950 rounded-xl border border-slate-800 space-y-1.5 hover:border-yellow-500/40 transition cursor-pointer" onclick="openNotesEditorOverlay('${n.id}', 'preview')">
                 <div class="flex items-center justify-between gap-2">
@@ -15726,7 +15726,7 @@ html, body {
 
         <!-- Goals & OKRs Subsystem -->
         <div class="space-y-2">
-          <div class="space-y-1.5 h-[368px] overflow-y-auto p-2 bg-slate-950/40 rounded-xl border border-slate-800/70">
+          <div class="space-y-1.5 h-[352px] overflow-y-auto p-2 bg-slate-950/40 rounded-xl border border-slate-800/70">
             ${linkedGoals.map(g => {
               const krs = g.keyResults || [];
               return `
