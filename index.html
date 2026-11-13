@@ -14843,51 +14843,29 @@ html, body {
 
     /* GOAL MODAL & KEY RESULTS ENGINE */
     window.openDedicatedGoalModal = function(goalId = null) {
-      const tag = window.getCurrentInspectorTag();
-      const nodeTitle = window.getCurrentInspectorTitle();
-      const targetFolderId = 'gf_node_' + (currentInspectorNodeId || tag);
-
+      // Editing always uses the REAL goal editor (create-goal-modal),
+      // layered above the inspector like the + Goal flow.
+      if (!goalId) {
+        if (typeof window.addGoalFromInspector === 'function') window.addGoalFromInspector();
+        return;
+      }
       const activeNode = (window.appState?.mindmapNodes || []).find(n => n.id === currentInspectorNodeId);
       if (activeNode) ensureNodeFoldersRegistered(activeNode);
 
-      const folderSelect = document.getElementById('mm-goal-folder-select');
-      if (folderSelect) {
-        folderSelect.innerHTML = '';
-        (window.appState?.goalFolders || []).forEach(f => {
-          const opt = document.createElement('option');
-          opt.value = f.id;
-          opt.textContent = f.name;
-          folderSelect.appendChild(opt);
-        });
-        folderSelect.value = targetFolderId;
+      const section = document.getElementById('view-goals');
+      const modal = document.getElementById('create-goal-modal');
+      if (!section || !modal) return;
+      const wasHidden = section.classList.contains('hidden');
+      if (wasHidden) section.classList.remove('hidden');
+      modal.style.zIndex = '70';
+      watchModalClose(modal, () => {
+        modal.style.zIndex = '';
+        if (wasHidden) section.classList.add('hidden');
+        window.renderNodeInspectorContent();
+      });
+      if (typeof window.editGoalTarget === 'function') {
+        window.editGoalTarget(goalId);
       }
-
-      const krContainer = document.getElementById('mm-goal-modal-key-results-list');
-      if (krContainer) krContainer.innerHTML = '';
-
-      if (goalId) {
-        const goal = (window.appState?.goals || []).find(g => g.id === goalId);
-        if (!goal) return;
-        document.getElementById('mm-goal-edit-id').value = goal.id;
-        document.getElementById('mm-goal-title-input').value = goal.title || '';
-        document.getElementById('mm-goal-category-select').value = goal.category || 'Personal Project';
-        document.getElementById('mm-goal-target-date').value = goal.targetDate || new Date().toISOString().split('T')[0];
-        document.getElementById('mm-goal-vision-image').value = goal.visionImage || '';
-        document.getElementById('mm-goal-input-notes').value = goal.notes || '';
-        if (folderSelect && goal.folderId) folderSelect.value = goal.folderId;
-        (goal.keyResults || []).forEach(kr => addKeyResultRow(kr.text));
-      } else {
-        document.getElementById('mm-goal-edit-id').value = '';
-        document.getElementById('mm-goal-title-input').value = `[${tag}] `;
-        document.getElementById('mm-goal-category-select').value = 'Personal Project';
-        document.getElementById('mm-goal-target-date').value = new Date().toISOString().split('T')[0];
-        document.getElementById('mm-goal-vision-image').value = '';
-        document.getElementById('mm-goal-input-notes').value = `#${tag} #node`;
-        addKeyResultRow('');
-      }
-
-      showModalDirect('mindmap-goal-modal');
-      refreshIconsScoped(document.getElementById('mindmap-goal-modal'));
     };
 
     window.addKeyResultRow = function(defaultText = '') {
@@ -15376,7 +15354,7 @@ html, body {
             }).join('')}
             ${linkedTasks.length === 0 ? '<p class="text-slate-500 italic text-[11px] text-center py-3">No tasks linked yet — use <span class="text-purple-300 font-bold">+ Task</span> above.</p>' : ''}
           </div>
-          ${linkedTasks.length > 0 ? `<button type="button" onclick="openNodeFolderInView('tasks')" class="w-full h-8 rounded-xl bg-slate-950 border border-slate-800 text-[11px] font-bold text-purple-300 hover:border-purple-500/40 transition flex items-center justify-center gap-1">Show all in Tasks <i data-lucide="arrow-right" class="w-3 h-3"></i></button>` : ''}
+          <button type="button" onclick="openNodeFolderInView('tasks')" class="w-full h-8 rounded-xl bg-slate-950 border border-slate-800 text-[11px] font-bold text-purple-300 hover:border-purple-500/40 transition flex items-center justify-center gap-1">${linkedTasks.length > 0 ? 'Show all in Tasks' : 'Open in Tasks'} <i data-lucide="arrow-right" class="w-3 h-3"></i></button>
         </div>
 
         <!-- Knowledge Notes Subsystem -->
@@ -15396,12 +15374,12 @@ html, body {
             `).join('')}
             ${linkedNotes.length === 0 ? '<p class="text-slate-500 italic text-[11px] text-center py-3">No notes linked yet — use <span class="text-yellow-300 font-bold">+ Note</span> above.</p>' : ''}
           </div>
-          ${linkedNotes.length > 0 ? `<button type="button" onclick="openNodeFolderInView('notes')" class="w-full h-8 rounded-xl bg-slate-950 border border-slate-800 text-[11px] font-bold text-yellow-300 hover:border-yellow-500/40 transition flex items-center justify-center gap-1">Show all in Notes <i data-lucide="arrow-right" class="w-3 h-3"></i></button>` : ''}
+          <button type="button" onclick="openNodeFolderInView('notes')" class="w-full h-8 rounded-xl bg-slate-950 border border-slate-800 text-[11px] font-bold text-yellow-300 hover:border-yellow-500/40 transition flex items-center justify-center gap-1">${linkedNotes.length > 0 ? 'Show all in Notes' : 'Open in Notes'} <i data-lucide="arrow-right" class="w-3 h-3"></i></button>
         </div>
 
         <!-- Goals & OKRs Subsystem -->
         <div class="space-y-2">
-          <div class="space-y-2 max-h-48 overflow-y-auto pr-1 text-xs">
+          <div class="space-y-1.5 max-h-48 overflow-y-auto p-2 bg-slate-950/40 rounded-xl border border-slate-800/70">
             ${linkedGoals.map(g => {
               const krs = g.keyResults || [];
               return `
@@ -15417,7 +15395,7 @@ html, body {
                     <div class="bg-rose-500 h-full transition-all duration-300" style="width: ${g.progress || 0}%"></div>
                   </div>
                   ${krs.length > 0 ? `
-                    <div class="space-y-1 pt-1 border-t border-slate-900 text-[11px]">
+                    <div class="space-y-1 pt-1 border-t border-slate-900 text-[11px] max-h-24 overflow-y-auto pr-1">
                       ${krs.map((k, kIdx) => `
                         <label class="flex items-center gap-1.5 cursor-pointer text-slate-400 hover:text-slate-200">
                           <input type="checkbox" ${k.completed ? 'checked' : ''} onchange="toggleGoalKRDirect('${g.id}', ${kIdx})" class="w-3 h-3 rounded accent-rose-500 cursor-pointer shrink-0" />
@@ -15431,7 +15409,7 @@ html, body {
             }).join('')}
             ${linkedGoals.length === 0 ? '<p class="text-slate-500 italic text-[11px] text-center py-3">No goals linked yet — use <span class="text-rose-300 font-bold">+ Goal</span> above.</p>' : ''}
           </div>
-          ${linkedGoals.length > 0 ? `<button type="button" onclick="openNodeFolderInView('goals')" class="w-full h-8 rounded-xl bg-slate-950 border border-slate-800 text-[11px] font-bold text-rose-300 hover:border-rose-500/40 transition flex items-center justify-center gap-1">Show all in Goals <i data-lucide="arrow-right" class="w-3 h-3"></i></button>` : ''}
+          <button type="button" onclick="openNodeFolderInView('goals')" class="w-full h-8 rounded-xl bg-slate-950 border border-slate-800 text-[11px] font-bold text-rose-300 hover:border-rose-500/40 transition flex items-center justify-center gap-1">${linkedGoals.length > 0 ? 'Show all in Goals' : 'Open in Goals'} <i data-lucide="arrow-right" class="w-3 h-3"></i></button>
         </div>
 
         <!-- Connected Branch Lines -->
@@ -22120,8 +22098,8 @@ html, body {
   </div>
 
   <!-- MODAL 4: 360° CROSS-SYSTEM ENTITY INSPECTOR DECK -->
-  <div id="node-inspector-modal" class="hidden fixed inset-0 z-[60] modal-backdrop flex items-end sm:items-center justify-center p-0 sm:p-4 overflow-y-auto">
-    <div class="w-full max-w-4xl bg-slate-900 border border-slate-800 rounded-3xl shadow-2xl max-h-[92vh] overflow-y-auto my-auto relative box-border mb-3 sm:mb-0">
+  <div id="node-inspector-modal" class="hidden fixed inset-0 z-[60] modal-backdrop flex items-center justify-center p-2 sm:p-4 overflow-y-auto">
+    <div class="w-full max-w-4xl bg-slate-900 border border-slate-800 rounded-3xl shadow-2xl max-h-[92vh] overflow-y-auto my-auto relative box-border">
 
       <!-- Inspector Hero — colour carries over from the node itself -->
       <div id="inspector-hero" class="relative px-3.5 sm:px-5 pt-3.5 pb-3 border-b border-black/20 bg-emerald-600">
