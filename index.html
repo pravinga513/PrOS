@@ -13069,8 +13069,8 @@ html, body {
   <div id="node-form-modal" class="hidden fixed inset-0 z-[100] modal-backdrop flex items-end sm:items-center justify-center p-0 sm:p-4 overflow-y-auto">
     <div class="w-full max-w-xl bg-slate-900 border border-slate-800 rounded-t-3xl sm:rounded-3xl px-3.5 pt-3 pb-3.5 sm:p-5 shadow-2xl space-y-2.5 max-h-[92vh] overflow-y-auto my-auto relative box-border">
 
-      <div class="flex justify-between items-center border-b border-slate-800 pb-2">
-        <h3 id="node-form-modal-title" class="text-xs font-extrabold text-white truncate">Node Studio</h3>
+      <div class="flex justify-between items-center border-b border-slate-800 pb-2 gap-2">
+        <h3 id="node-form-modal-title" class="flex items-center gap-1.5 min-w-0 text-xs font-extrabold text-white truncate">Node Studio</h3>
         <button type="button" onclick="closeModalDirect('node-form-modal')" class="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-slate-800 transition shrink-0"><i data-lucide="x" class="w-4 h-4"></i></button>
       </div>
 
@@ -13098,48 +13098,41 @@ html, body {
           </div>
         </div>
 
-        <!-- Extra options (collapsed by default) -->
-        <div>
-          <button type="button" onclick="toggleNodeFormExtras()" id="node-form-extras-toggle" class="inline-flex items-center gap-1.5 h-7 px-2 rounded-lg bg-slate-900 border border-slate-800 text-slate-400 hover:text-slate-200 hover:border-emerald-500/30 transition text-[11px] font-semibold">
-            <i data-lucide="sliders-horizontal" class="w-3 h-3"></i> <span>More options</span>
-          </button>
+        <!-- Details: always visible, kept compact -->
+        <div class="space-y-2 pt-1.5 border-t border-slate-800">
+          <div>
+            <label class="block text-[9px] text-slate-500 font-bold uppercase tracking-wider mb-0.5">Link</label>
+            <input id="node-form-url" type="url" placeholder="https://..." class="w-full bg-slate-950 border border-slate-800 rounded-xl px-2.5 py-2 text-slate-100 outline-none focus:border-emerald-400 font-mono text-xs transition" />
+          </div>
 
-          <div id="node-form-extras" class="hidden space-y-3 mt-3 pt-3 border-t border-slate-800">
-            <div>
-              <label class="block text-slate-400 mb-1 font-semibold">Link</label>
-              <input id="node-form-url" type="url" placeholder="https://..." class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-slate-100 outline-none focus:border-emerald-400 font-mono text-xs transition" />
-            </div>
+          <div>
+            <label class="block text-[9px] text-slate-500 font-bold uppercase tracking-wider mb-0.5">Description</label>
+            <textarea id="node-form-notes" rows="1" placeholder="Key objectives, tech stack..." class="w-full bg-slate-950 border border-slate-800 rounded-xl px-2.5 py-2 text-slate-100 outline-none focus:border-emerald-400 leading-relaxed font-sans resize-none text-xs"></textarea>
+          </div>
 
-            <div>
-              <label class="block text-slate-400 mb-1 font-semibold">Description</label>
-              <textarea id="node-form-notes" rows="2" placeholder="Key objectives, tech stack..." class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-slate-100 outline-none focus:border-emerald-400 transition leading-relaxed font-sans resize-none text-xs"></textarea>
+          <div>
+            <label class="block text-[9px] text-slate-500 font-bold uppercase tracking-wider mb-1">Colour</label>
+            <div class="flex flex-wrap gap-1.5" id="node-form-color-picker">
+              <button type="button" onclick="selectNodeFormColor('bg-emerald-600')" class="w-4 h-4 rounded-full bg-emerald-600 ring-2 ring-white transition" title="Emerald"></button>
+              <button type="button" onclick="selectNodeFormColor('bg-cyan-600')" class="w-4 h-4 rounded-full bg-cyan-600 ring-1 ring-slate-700/60 transition hover:scale-125" title="Cyan"></button>
+              <button type="button" onclick="selectNodeFormColor('bg-sky-600')" class="w-4 h-4 rounded-full bg-sky-600 ring-1 ring-slate-700/60 transition hover:scale-125" title="Sky"></button>
+              <button type="button" onclick="selectNodeFormColor('bg-blue-600')" class="w-4 h-4 rounded-full bg-blue-600 ring-1 ring-slate-700/60 transition hover:scale-125" title="Blue"></button>
+              <button type="button" onclick="selectNodeFormColor('bg-indigo-600')" class="w-4 h-4 rounded-full bg-indigo-600 ring-1 ring-slate-700/60 transition hover:scale-125" title="Indigo"></button>
+              <button type="button" onclick="selectNodeFormColor('bg-purple-600')" class="w-4 h-4 rounded-full bg-purple-600 ring-1 ring-slate-700/60 transition hover:scale-125" title="Purple"></button>
+              <button type="button" onclick="selectNodeFormColor('bg-rose-600')" class="w-4 h-4 rounded-full bg-rose-600 ring-1 ring-slate-700/60 transition hover:scale-125" title="Rose"></button>
+              <button type="button" onclick="selectNodeFormColor('bg-red-600')" class="w-4 h-4 rounded-full bg-red-600 ring-1 ring-slate-700/60 transition hover:scale-125" title="Red"></button>
+              <button type="button" onclick="selectNodeFormColor('bg-amber-500')" class="w-4 h-4 rounded-full bg-amber-500 ring-1 ring-slate-700/60 transition hover:scale-125" title="Amber"></button>
+              <button type="button" onclick="selectNodeFormColor('bg-teal-600')" class="w-4 h-4 rounded-full bg-teal-600 ring-1 ring-slate-700/60 transition hover:scale-125" title="Teal"></button>
+              <button type="button" onclick="selectNodeFormColor('bg-slate-800')" class="w-4 h-4 rounded-full bg-slate-800 ring-1 ring-slate-700/60 transition hover:scale-125" title="Graphite"></button>
+              <button type="button" onclick="selectNodeFormColor('bg-gradient-to-r from-emerald-600 to-teal-500')" class="w-4 h-4 rounded-full bg-gradient-to-r from-emerald-600 to-teal-500 ring-1 ring-slate-700/60 transition hover:scale-125" title="Emerald Gradient"></button>
             </div>
+          </div>
 
-            <div class="space-y-1">
-              <label class="block text-[9px] text-slate-500 font-bold uppercase tracking-wider">Colour</label>
-              <div class="flex flex-wrap gap-1.5 pt-0.5" id="node-form-color-picker">
-                <button type="button" onclick="selectNodeFormColor('bg-emerald-600')" class="w-4 h-4 rounded-full bg-emerald-600 ring-2 ring-white transition" title="Emerald"></button>
-                <button type="button" onclick="selectNodeFormColor('bg-cyan-600')" class="w-4 h-4 rounded-full bg-cyan-600 ring-1 ring-slate-700/60 transition hover:scale-125" title="Cyan"></button>
-                <button type="button" onclick="selectNodeFormColor('bg-sky-600')" class="w-4 h-4 rounded-full bg-sky-600 ring-1 ring-slate-700/60 transition hover:scale-125" title="Sky"></button>
-                <button type="button" onclick="selectNodeFormColor('bg-blue-600')" class="w-4 h-4 rounded-full bg-blue-600 ring-1 ring-slate-700/60 transition hover:scale-125" title="Blue"></button>
-                <button type="button" onclick="selectNodeFormColor('bg-indigo-600')" class="w-4 h-4 rounded-full bg-indigo-600 ring-1 ring-slate-700/60 transition hover:scale-125" title="Indigo"></button>
-                <button type="button" onclick="selectNodeFormColor('bg-purple-600')" class="w-4 h-4 rounded-full bg-purple-600 ring-1 ring-slate-700/60 transition hover:scale-125" title="Purple"></button>
-                <button type="button" onclick="selectNodeFormColor('bg-rose-600')" class="w-4 h-4 rounded-full bg-rose-600 ring-1 ring-slate-700/60 transition hover:scale-125" title="Rose"></button>
-                <button type="button" onclick="selectNodeFormColor('bg-red-600')" class="w-4 h-4 rounded-full bg-red-600 ring-1 ring-slate-700/60 transition hover:scale-125" title="Red"></button>
-                <button type="button" onclick="selectNodeFormColor('bg-amber-500')" class="w-4 h-4 rounded-full bg-amber-500 ring-1 ring-slate-700/60 transition hover:scale-125" title="Amber"></button>
-                <button type="button" onclick="selectNodeFormColor('bg-teal-600')" class="w-4 h-4 rounded-full bg-teal-600 ring-1 ring-slate-700/60 transition hover:scale-125" title="Teal"></button>
-                <button type="button" onclick="selectNodeFormColor('bg-slate-800')" class="w-4 h-4 rounded-full bg-slate-800 ring-1 ring-slate-700/60 transition hover:scale-125" title="Graphite"></button>
-                <button type="button" onclick="selectNodeFormColor('bg-gradient-to-r from-emerald-600 to-teal-500')" class="w-4 h-4 rounded-full bg-gradient-to-r from-emerald-600 to-teal-500 ring-1 ring-slate-700/60 transition hover:scale-125" title="Emerald Gradient"></button>
-              </div>
-            </div>
-
-            <!-- Connection Checklist -->
-            <div class="space-y-1 pt-1.5 border-t border-slate-800">
-              <span class="text-[9px] text-slate-500 font-bold uppercase tracking-wider flex items-center gap-1">
-                <i data-lucide="git-branch" class="w-3 h-3 text-emerald-400"></i> Connections
-              </span>
-              <div id="node-modal-connections-checklist" class="space-y-1 max-h-24 overflow-y-auto p-1.5 bg-slate-950 rounded-xl border border-slate-800 text-xs"></div>
-            </div>
+          <div>
+            <span class="text-[9px] text-slate-500 font-bold uppercase tracking-wider flex items-center gap-1 mb-1">
+              <i data-lucide="git-branch" class="w-3 h-3 text-emerald-400"></i> Connections
+            </span>
+            <div id="node-modal-connections-checklist" class="space-y-1 max-h-24 overflow-y-auto p-1.5 bg-slate-950 rounded-xl border border-slate-800 text-xs"></div>
           </div>
         </div>
 
@@ -14021,19 +14014,6 @@ html, body {
       if (window.showToast) window.showToast(`Mindmap '${name}' created with a core node!`, 'success');
     };
 
-    /* Extra node options are collapsed by default */
-    window.toggleNodeFormExtras = function() {
-      const panel = document.getElementById('node-form-extras');
-      const btn = document.getElementById('node-form-extras-toggle');
-      if (!panel) return;
-      const willOpen = panel.classList.contains('hidden');
-      panel.classList.toggle('hidden', !willOpen);
-      if (btn) {
-        const label = btn.querySelector('span');
-        if (label) label.textContent = willOpen ? 'Fewer options' : 'More options';
-      }
-    };
-
     window.openNodeModal = function(nodeId = null, spot = null) {
       pendingNodeSpot = spot || null;
       const modalTitle = document.getElementById('node-form-modal-title');
@@ -14110,15 +14090,6 @@ html, body {
             });
           }
         }
-      }
-
-      // extras always start collapsed — open via "More options"
-      const extras = document.getElementById('node-form-extras');
-      const extrasBtn = document.getElementById('node-form-extras-toggle');
-      if (extras) extras.classList.add('hidden');
-      if (extrasBtn) {
-        const label = extrasBtn.querySelector('span');
-        if (label) label.textContent = 'More options';
       }
 
       showModalDirect('node-form-modal');
