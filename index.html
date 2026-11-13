@@ -1778,13 +1778,19 @@ html, body {
         const d = new Date();
         while (dashHabitDone(h, keyOf(d))) { streak++; d.setDate(d.getDate() - 1); }
 
-        // last-7-days completion -> drives the progress bar
+        // last-7-days dots (same tape as the habits module)
+        const weekDots = [];
         let weekDone = 0;
-        for (let k = 0; k < 7; k++) {
+        for (let k = 6; k >= 0; k--) {
           const dd = new Date(); dd.setDate(dd.getDate() - k);
-          if (dashHabitDone(h, keyOf(dd))) weekDone++;
+          const ds = keyOf(dd);
+          const doneDay = dashHabitDone(h, ds);
+          if (doneDay) weekDone++;
+          const dotCls = doneDay
+            ? (ds === todayStr ? 'bg-rose-400 ring-1 ring-rose-300/60' : 'bg-rose-500/80')
+            : (ds === todayStr ? 'bg-slate-500' : 'bg-slate-700/70');
+          weekDots.push(`<span title="${ds}" class="w-1.5 h-1.5 rounded-full shrink-0 ${dotCls}"></span>`);
         }
-        const weekPct = Math.round((weekDone / 7) * 100);
 
         html += `
           <div class="glass-card p-2.5 sm:p-3 rounded-2xl border transition space-y-2 ${isDone ? 'border-rose-500/40 bg-rose-500/10' : 'border-slate-800 hover:border-rose-500/40'}">
@@ -1807,11 +1813,9 @@ html, body {
             <div class="space-y-1">
               <div class="flex justify-between items-center text-[10px] font-mono">
                 <span class="text-slate-500">${flowEmoji[h.timeOfDay] || '⚡'} ${(h.timeOfDay || 'Anytime')} flow</span>
-                <span class="${isDone ? 'text-rose-400 font-bold' : 'text-slate-400'}">${isDone ? '✓ done today' : weekPct + '% this week'}</span>
+                <span class="${isDone ? 'text-rose-400 font-bold' : 'text-slate-400'}">${isDone ? '✓ done today' : weekDone + '/7 this week'}</span>
               </div>
-              <div class="w-full bg-slate-950 h-2 rounded-full overflow-hidden border border-slate-800">
-                <div class="${isDone ? 'bg-rose-500' : 'bg-rose-500/70'} h-full rounded-full transition-all duration-300" style="width: ${weekPct}%"></div>
-              </div>
+              <div class="flex items-center gap-1.5 pt-0.5" title="Last 7 days">${weekDots.join('')}</div>
             </div>
           </div>`;
       }
