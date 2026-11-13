@@ -13077,16 +13077,25 @@ html, body {
       <form onsubmit="saveUnifiedNodeForm(event)" class="space-y-2 text-xs">
         <input type="hidden" id="node-form-id" value="" />
 
-        <input id="node-form-title" type="text" placeholder="Node title — e.g. Flight Dispatch Automation" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-2.5 py-2 text-slate-100 outline-none focus:border-emerald-400 font-bold text-xs transition" />
+        <div>
+          <label class="block text-[9px] text-slate-500 font-bold uppercase tracking-wider mb-0.5">Title</label>
+          <input id="node-form-title" type="text" placeholder="e.g. Flight Dispatch Automation" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-2.5 py-2 text-slate-100 outline-none focus:border-emerald-400 font-bold text-xs transition" />
+        </div>
 
         <div class="grid grid-cols-2 gap-2">
-          <input id="node-form-tag" type="text" placeholder="#Tag" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-2.5 py-2 text-slate-100 outline-none focus:border-emerald-400 font-mono text-xs transition min-w-0" />
-          <select id="node-form-status" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-2.5 py-2 text-slate-100 outline-none focus:border-emerald-400 font-semibold text-xs transition min-w-0">
-            <option value="Active">🟢 Active</option>
-            <option value="In Progress">🟡 In Progress</option>
-            <option value="Completed">🔵 Completed</option>
-            <option value="Archived">⚪ Archived</option>
-          </select>
+          <div class="min-w-0">
+            <label class="block text-[9px] text-slate-500 font-bold uppercase tracking-wider mb-0.5">Tag</label>
+            <input id="node-form-tag" type="text" placeholder="e.g. Backend" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-2.5 py-2 text-slate-100 outline-none focus:border-emerald-400 font-mono text-xs transition min-w-0" />
+          </div>
+          <div class="min-w-0">
+            <label class="block text-[9px] text-slate-500 font-bold uppercase tracking-wider mb-0.5">Status</label>
+            <select id="node-form-status" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-2.5 py-2 text-slate-100 outline-none focus:border-emerald-400 font-semibold text-xs transition min-w-0">
+              <option value="Active">🟢 Active</option>
+              <option value="In Progress">🟡 In Progress</option>
+              <option value="Completed">🔵 Completed</option>
+              <option value="Archived">⚪ Archived</option>
+            </select>
+          </div>
         </div>
 
         <!-- Extra options (collapsed by default) -->
@@ -13106,33 +13115,30 @@ html, body {
               <textarea id="node-form-notes" rows="2" placeholder="Key objectives, tech stack..." class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-slate-100 outline-none focus:border-emerald-400 transition leading-relaxed font-sans resize-none text-xs"></textarea>
             </div>
 
-            <div class="space-y-1.5">
-              <label class="block text-slate-400 font-semibold text-[11px]">Colour</label>
-              <div class="grid grid-cols-6 sm:grid-cols-12 gap-1.5 pt-0.5" id="node-form-color-picker">
-                <button type="button" onclick="selectNodeFormColor('bg-emerald-600')" class="h-6 rounded-lg bg-emerald-600 border-2 border-white transition transform scale-110 shadow-sm" title="Emerald"></button>
-                <button type="button" onclick="selectNodeFormColor('bg-cyan-600')" class="h-6 rounded-lg bg-cyan-600 border-2 border-transparent transition transform hover:scale-110 shadow-sm" title="Cyan"></button>
-                <button type="button" onclick="selectNodeFormColor('bg-sky-600')" class="h-6 rounded-lg bg-sky-600 border-2 border-transparent transition transform hover:scale-110 shadow-sm" title="Sky"></button>
-                <button type="button" onclick="selectNodeFormColor('bg-blue-600')" class="h-6 rounded-lg bg-blue-600 border-2 border-transparent transition transform hover:scale-110 shadow-sm" title="Blue"></button>
-                <button type="button" onclick="selectNodeFormColor('bg-indigo-600')" class="h-6 rounded-lg bg-indigo-600 border-2 border-transparent transition transform hover:scale-110 shadow-sm" title="Indigo"></button>
-                <button type="button" onclick="selectNodeFormColor('bg-purple-600')" class="h-6 rounded-lg bg-purple-600 border-2 border-transparent transition transform hover:scale-110 shadow-sm" title="Purple"></button>
-                <button type="button" onclick="selectNodeFormColor('bg-rose-600')" class="h-6 rounded-lg bg-rose-600 border-2 border-transparent transition transform hover:scale-110 shadow-sm" title="Rose"></button>
-                <button type="button" onclick="selectNodeFormColor('bg-red-600')" class="h-6 rounded-lg bg-red-600 border-2 border-transparent transition transform hover:scale-110 shadow-sm" title="Red"></button>
-                <button type="button" onclick="selectNodeFormColor('bg-amber-500')" class="h-6 rounded-lg bg-amber-500 border-2 border-transparent transition transform hover:scale-110 shadow-sm" title="Amber"></button>
-                <button type="button" onclick="selectNodeFormColor('bg-teal-600')" class="h-6 rounded-lg bg-teal-600 border-2 border-transparent transition transform hover:scale-110 shadow-sm" title="Teal"></button>
-                <button type="button" onclick="selectNodeFormColor('bg-slate-800')" class="h-6 rounded-lg bg-slate-800 border-2 border-transparent transition transform hover:scale-110 shadow-sm" title="Graphite"></button>
-                <button type="button" onclick="selectNodeFormColor('bg-gradient-to-r from-emerald-600 to-teal-500')" class="h-6 rounded-lg bg-gradient-to-r from-emerald-600 to-teal-500 border-2 border-transparent transition transform hover:scale-110 shadow-sm" title="Emerald Gradient"></button>
+            <div class="space-y-1">
+              <label class="block text-[9px] text-slate-500 font-bold uppercase tracking-wider">Colour</label>
+              <div class="flex flex-wrap gap-1.5 pt-0.5" id="node-form-color-picker">
+                <button type="button" onclick="selectNodeFormColor('bg-emerald-600')" class="w-4 h-4 rounded-full bg-emerald-600 ring-2 ring-white transition" title="Emerald"></button>
+                <button type="button" onclick="selectNodeFormColor('bg-cyan-600')" class="w-4 h-4 rounded-full bg-cyan-600 ring-1 ring-slate-700/60 transition hover:scale-125" title="Cyan"></button>
+                <button type="button" onclick="selectNodeFormColor('bg-sky-600')" class="w-4 h-4 rounded-full bg-sky-600 ring-1 ring-slate-700/60 transition hover:scale-125" title="Sky"></button>
+                <button type="button" onclick="selectNodeFormColor('bg-blue-600')" class="w-4 h-4 rounded-full bg-blue-600 ring-1 ring-slate-700/60 transition hover:scale-125" title="Blue"></button>
+                <button type="button" onclick="selectNodeFormColor('bg-indigo-600')" class="w-4 h-4 rounded-full bg-indigo-600 ring-1 ring-slate-700/60 transition hover:scale-125" title="Indigo"></button>
+                <button type="button" onclick="selectNodeFormColor('bg-purple-600')" class="w-4 h-4 rounded-full bg-purple-600 ring-1 ring-slate-700/60 transition hover:scale-125" title="Purple"></button>
+                <button type="button" onclick="selectNodeFormColor('bg-rose-600')" class="w-4 h-4 rounded-full bg-rose-600 ring-1 ring-slate-700/60 transition hover:scale-125" title="Rose"></button>
+                <button type="button" onclick="selectNodeFormColor('bg-red-600')" class="w-4 h-4 rounded-full bg-red-600 ring-1 ring-slate-700/60 transition hover:scale-125" title="Red"></button>
+                <button type="button" onclick="selectNodeFormColor('bg-amber-500')" class="w-4 h-4 rounded-full bg-amber-500 ring-1 ring-slate-700/60 transition hover:scale-125" title="Amber"></button>
+                <button type="button" onclick="selectNodeFormColor('bg-teal-600')" class="w-4 h-4 rounded-full bg-teal-600 ring-1 ring-slate-700/60 transition hover:scale-125" title="Teal"></button>
+                <button type="button" onclick="selectNodeFormColor('bg-slate-800')" class="w-4 h-4 rounded-full bg-slate-800 ring-1 ring-slate-700/60 transition hover:scale-125" title="Graphite"></button>
+                <button type="button" onclick="selectNodeFormColor('bg-gradient-to-r from-emerald-600 to-teal-500')" class="w-4 h-4 rounded-full bg-gradient-to-r from-emerald-600 to-teal-500 ring-1 ring-slate-700/60 transition hover:scale-125" title="Emerald Gradient"></button>
               </div>
             </div>
 
             <!-- Connection Checklist -->
-            <div class="space-y-1.5 pt-2 border-t border-slate-800">
-              <div class="flex justify-between items-center">
-                <span class="text-[11px] font-bold text-slate-300 flex items-center gap-1.5">
-                  <i data-lucide="git-branch" class="w-3.5 h-3.5 text-emerald-400"></i> Connections
-                </span>
-                <span class="text-[10px] text-slate-500 font-mono">Toggle Links</span>
-              </div>
-              <div id="node-modal-connections-checklist" class="space-y-1.5 max-h-32 overflow-y-auto p-2 bg-slate-950 rounded-xl border border-slate-800 text-xs"></div>
+            <div class="space-y-1 pt-1.5 border-t border-slate-800">
+              <span class="text-[9px] text-slate-500 font-bold uppercase tracking-wider flex items-center gap-1">
+                <i data-lucide="git-branch" class="w-3 h-3 text-emerald-400"></i> Connections
+              </span>
+              <div id="node-modal-connections-checklist" class="space-y-1 max-h-24 overflow-y-auto p-1.5 bg-slate-950 rounded-xl border border-slate-800 text-xs"></div>
             </div>
           </div>
         </div>
@@ -14065,13 +14071,10 @@ html, body {
             otherNodes.forEach(other => {
               const isConnected = connections.some(c => (c.from === nodeId && c.to === other.id) || (c.from === other.id && c.to === nodeId));
               const item = document.createElement('label');
-              item.className = 'flex items-center justify-between p-1.5 rounded-lg bg-slate-900 border border-slate-800 cursor-pointer hover:border-slate-700';
+              item.className = 'flex items-center gap-2 px-1.5 py-1 rounded-lg bg-slate-900 border border-slate-800 cursor-pointer hover:border-slate-700';
               item.innerHTML = `
-                <div class="flex items-center gap-2 truncate pr-2">
-                  <input type="checkbox" value="${other.id}" ${isConnected ? 'checked' : ''} class="node-connect-checkbox w-3.5 h-3.5 rounded accent-emerald-500 cursor-pointer" />
-                  <span class="font-bold text-slate-200 truncate">${escapeHtml(other.text)}</span>
-                </div>
-                <span class="text-[9px] font-mono text-slate-500">#${escapeHtml(other.entityTag || other.text)}</span>
+                <input type="checkbox" value="${other.id}" ${isConnected ? 'checked' : ''} class="node-connect-checkbox w-3 h-3 rounded accent-emerald-500 cursor-pointer shrink-0" />
+                <span class="text-[11px] font-semibold text-slate-200 truncate">${escapeHtml(other.text)}</span>
               `;
               checklist.appendChild(item);
             });
@@ -14098,13 +14101,10 @@ html, body {
           } else {
             allNodesInMap.forEach(other => {
               const item = document.createElement('label');
-              item.className = 'flex items-center justify-between p-1.5 rounded-lg bg-slate-900 border border-slate-800 cursor-pointer hover:border-slate-700';
+              item.className = 'flex items-center gap-2 px-1.5 py-1 rounded-lg bg-slate-900 border border-slate-800 cursor-pointer hover:border-slate-700';
               item.innerHTML = `
-                <div class="flex items-center gap-2 truncate pr-2">
-                  <input type="checkbox" value="${other.id}" class="node-connect-checkbox w-3.5 h-3.5 rounded accent-emerald-500 cursor-pointer" />
-                  <span class="font-bold text-slate-200 truncate">${escapeHtml(other.text)}</span>
-                </div>
-                <span class="text-[9px] font-mono text-slate-500">#${escapeHtml(other.entityTag || other.text)}</span>
+                <input type="checkbox" value="${other.id}" class="node-connect-checkbox w-3 h-3 rounded accent-emerald-500 cursor-pointer shrink-0" />
+                <span class="text-[11px] font-semibold text-slate-200 truncate">${escapeHtml(other.text)}</span>
               `;
               checklist.appendChild(item);
             });
@@ -14130,13 +14130,12 @@ html, body {
       const picker = document.getElementById('node-form-color-picker');
       if (picker) {
         Array.from(picker.children).forEach(btn => {
-          if (btn.classList.contains(colorClass) || btn.getAttribute('onclick')?.includes(colorClass)) {
-            btn.className = `h-6 rounded-lg ${colorClass} border-2 border-white transition transform scale-110 shadow-sm`;
-          } else {
-            const rawClasses = btn.className.split(' ');
-            const bgToken = rawClasses.find(c => c.startsWith('bg-'));
-            btn.className = `h-6 rounded-lg ${bgToken || ''} border-2 border-transparent transition hover:scale-110 shadow-sm`;
-          }
+          const keep = btn.className.split(' ').filter(c =>
+            c.startsWith('bg-') || c.startsWith('from-') || c.startsWith('to-'));
+          const isSelected = keep.includes(colorClass) || (keep.length > 1 && colorClass.split(' ').every(c => keep.includes(c)));
+          btn.className = isSelected
+            ? `w-4 h-4 rounded-full ${colorClass} ring-2 ring-white transition`
+            : `w-4 h-4 rounded-full ${keep.join(' ')} ring-1 ring-slate-700/60 transition hover:scale-125`;
         });
       }
     };
