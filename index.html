@@ -14627,14 +14627,39 @@ html, body {
           ctx.closePath();
         }
 
-        // Connections first (behind the cards), same curve as the live SVG
+        // Connections first (behind the cards). Anchors sit on the card
+        // edge midpoints, chosen by the relative direction of the two
+        // nodes, so lines leave/enter cards cleanly instead of at the
+        // top-left corners.
         (window.appState.mindmapConnections || []).forEach(conn => {
           const p1 = pos[conn.from], p2 = pos[conn.to];
           if (!p1 || !p2) return;
-          const grad = ctx.createLinearGradient(p1.x, p1.y, p2.x, p2.y);
+          const c1x = p1.x + CARD_W / 2, c1y = p1.y + CARD_H / 2;
+          const c2x = p2.x + CARD_W / 2, c2y = p2.y + CARD_H / 2;
+          const ddx = c2x - c1x, ddy = c2y - c1y;
+          let ax, ay, bx, by, cpx1, cpy1, cpx2, cpy2;
+          if (Math.abs(ddx) >= Math.abs(ddy)) {
+            // horizontal link: right edge -> left edge
+            const sgn = ddx >= 0 ? 1 : -1;
+            ax = sgn > 0 ? p1.x + CARD_W : p1.x;
+            bx = sgn > 0 ? p2.x : p2.x + CARD_W;
+            ay = c1y; by = c2y;
+            const k = Math.max(24, Math.abs(bx - ax) * 0.5);
+            cpx1 = ax + k * sgn; cpy1 = ay;
+            cpx2 = bx - k * sgn; cpy2 = by;
+          } else {
+            // vertical link: bottom edge -> top edge
+            const sgn = ddy >= 0 ? 1 : -1;
+            ay = sgn > 0 ? p1.y + CARD_H : p1.y;
+            by = sgn > 0 ? p2.y : p2.y + CARD_H;
+            ax = c1x; bx = c2x;
+            const k = Math.max(24, Math.abs(by - ay) * 0.5);
+            cpx1 = ax; cpy1 = ay + k * sgn;
+            cpx2 = bx; cpy2 = by - k * sgn;
+          }
+          const grad = ctx.createLinearGradient(ax, ay, bx, by);
           grad.addColorStop(0, colorHex((byId[conn.from] || {}).color));
           grad.addColorStop(1, colorHex((byId[conn.to] || {}).color));
-          const dx = Math.abs(p2.x - p1.x) * 0.5;
           ctx.save();
           ctx.globalAlpha = 0.65;
           ctx.strokeStyle = grad;
@@ -14642,8 +14667,8 @@ html, body {
           ctx.setLineDash([5, 7]);
           ctx.lineCap = 'round';
           ctx.beginPath();
-          ctx.moveTo(p1.x, p1.y);
-          ctx.bezierCurveTo(p1.x + dx, p1.y, p2.x - dx, p2.y, p2.x, p2.y);
+          ctx.moveTo(ax, ay);
+          ctx.bezierCurveTo(cpx1, cpy1, cpx2, cpy2, bx, by);
           ctx.stroke();
           ctx.restore();
         });
@@ -14672,35 +14697,36 @@ html, body {
           ctx.fillRect(p.x, p.y, CARD_W, 5);
           ctx.restore();
 
-          // #tag pill (uppercase, centered, like the live card)
+          // Icon badge centred ON the card's top-left corner (half in,
+          // half out) with a dark ring for polish
+          const initial = (String(tag || title).match(/[a-z0-9]/i) || ['?'])[0].toUpperCase();
+          rr(p.x - 17, p.y - 17, 34, 34, 10);
+          ctx.fillStyle = color;
+          ctx.fill();
+          ctx.strokeStyle = '#020617';
+          ctx.lineWidth = 3;
+          ctx.stroke();
+          ctx.fillStyle = '#ffffff';
+          ctx.font = '800 15px system-ui, sans-serif';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillText(initial, p.x, p.y);
+
+          // #tag pill (uppercase, top-right)
           ctx.font = '700 9px ui-monospace, monospace';
           const tagText = '#' + String(tag).toUpperCase().slice(0, 14);
           const tagW = ctx.measureText(tagText).width + 14;
-          rr(p.x + (CARD_W - tagW) / 2, p.y + 11, tagW, 15, 7);
+          rr(p.x + CARD_W - 10 - tagW, p.y + 10, tagW, 15, 7);
           ctx.fillStyle = '#1e293b';
           ctx.fill();
           ctx.fillStyle = '#cbd5e1';
-          ctx.textAlign = 'center';
-          ctx.textBaseline = 'middle';
-          ctx.fillText(tagText, p.x + CARD_W / 2, p.y + 19);
+          ctx.fillText(tagText, p.x + CARD_W - 10 - tagW / 2, p.y + 18);
 
-          // Icon tile with the node's initial (first ASCII letter — canvas
-          // fonts can't render emoji, which showed as "?" boxes before)
-          const initial = (String(tag || title).match(/[a-z0-9]/i) || ['?'])[0].toUpperCase();
-          rr(p.x + 12, p.y + 34, 30, 30, 9);
-          ctx.fillStyle = color;
-          ctx.fill();
-          ctx.fillStyle = '#ffffff';
-          ctx.font = '800 14px system-ui, sans-serif';
-          ctx.textAlign = 'center';
-          ctx.textBaseline = 'middle';
-          ctx.fillText(initial, p.x + 27, p.y + 50);
-
-          // Title (max 2 lines, beside the icon)
+          // Title (max 2 lines, full card width — far less cropping)
           ctx.font = '800 11px system-ui, sans-serif';
           ctx.fillStyle = '#ffffff';
           ctx.textAlign = 'left';
-          const maxW = CARD_W - 50 - 12;
+          const maxW = CARD_W - 24;
           const words = String(title).split(/\s+/).filter(Boolean);
           let line = '', lines = [];
           for (const wd of words) {
@@ -14712,7 +14738,7 @@ html, body {
           }
           if (lines.length < 2 && line) lines.push(line);
           if (lines.length === 2) lines[1] += '…';
-          lines.forEach((ln, i) => ctx.fillText(ln, p.x + 50, p.y + 42 + i * 14));
+          lines.forEach((ln, i) => ctx.fillText(ln, p.x + 12, p.y + 43 + i * 14));
 
           // Divider
           ctx.strokeStyle = 'rgba(30,41,59,1)';
@@ -15632,7 +15658,7 @@ html, body {
       grid.innerHTML = `
         <!-- Tasks Subsystem -->
         <div class="space-y-2">
-          <div class="space-y-1.5 h-96 overflow-y-auto p-2 bg-slate-950/40 rounded-xl border border-slate-800/70">
+          <div class="space-y-1.5 h-[368px] overflow-y-auto p-2 bg-slate-950/40 rounded-xl border border-slate-800/70">
             ${linkedTasks.map(t => {
               const subtasks = Array.isArray(t.subtasks) ? t.subtasks : [];
               const completedSubtasks = subtasks.filter(s => s.completed).length;
@@ -15680,7 +15706,7 @@ html, body {
 
         <!-- Knowledge Notes Subsystem -->
         <div class="space-y-2">
-          <div class="space-y-1.5 h-96 overflow-y-auto p-2 bg-slate-950/40 rounded-xl border border-slate-800/70">
+          <div class="space-y-1.5 h-[368px] overflow-y-auto p-2 bg-slate-950/40 rounded-xl border border-slate-800/70">
             ${linkedNotes.map(n => `
               <div class="p-2.5 bg-slate-950 rounded-xl border border-slate-800 space-y-1.5 hover:border-yellow-500/40 transition cursor-pointer" onclick="openNotesEditorOverlay('${n.id}', 'preview')">
                 <div class="flex items-center justify-between gap-2">
@@ -15700,7 +15726,7 @@ html, body {
 
         <!-- Goals & OKRs Subsystem -->
         <div class="space-y-2">
-          <div class="space-y-1.5 h-96 overflow-y-auto p-2 bg-slate-950/40 rounded-xl border border-slate-800/70">
+          <div class="space-y-1.5 h-[368px] overflow-y-auto p-2 bg-slate-950/40 rounded-xl border border-slate-800/70">
             ${linkedGoals.map(g => {
               const krs = g.keyResults || [];
               return `
