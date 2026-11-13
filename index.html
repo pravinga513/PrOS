@@ -7944,22 +7944,26 @@ html, body {
       const input = document.getElementById('new-goal-category-name');
       if (input) input.value = '';
 
-      // When opened from Mindmap (e.g. via the goal editor over the node
-      // inspector), the goals view section is hidden — briefly unhide it and
-      // raise the modal above the goal editor (z-70), restoring on close.
+      // From Mindmap (goal editor over the inspector): the goals view section
+      // may be hidden (briefly unhide it) and the goal editor sits at z-70,
+      // so raise this modal above it (z-80); everything restores on close.
       const section = document.getElementById('view-goals');
       const modal = document.getElementById('manage-goal-categories-modal');
-      if (modal && section && section.classList.contains('hidden')) {
-        section.classList.remove('hidden');
-        modal.style.zIndex = '80';
-        const obs = new MutationObserver(() => {
-          if (modal.classList.contains('hidden')) {
-            obs.disconnect();
-            modal.style.zIndex = '';
-            section.classList.add('hidden');
-          }
-        });
-        obs.observe(modal, { attributes: true, attributeFilter: ['class'] });
+      if (modal && section) {
+        const wasHidden = section.classList.contains('hidden');
+        const goalEditorOpen = !document.getElementById('create-goal-modal').classList.contains('hidden');
+        if (wasHidden || goalEditorOpen) {
+          if (wasHidden) section.classList.remove('hidden');
+          modal.style.zIndex = '80';
+          const obs = new MutationObserver(() => {
+            if (modal.classList.contains('hidden')) {
+              obs.disconnect();
+              modal.style.zIndex = '';
+              if (wasHidden) section.classList.add('hidden');
+            }
+          });
+          obs.observe(modal, { attributes: true, attributeFilter: ['class'] });
+        }
       }
       showModalDirect('manage-goal-categories-modal');
     };
@@ -13063,6 +13067,14 @@ html, body {
           <i data-lucide="folder-plus" class="w-4 h-4 text-emerald-400"></i>
         </button>
 
+        <button type="button" onclick="exportMindmapImage('png')" class="p-2 bg-slate-900 border border-slate-800 hover:border-emerald-500/40 text-emerald-300 text-xs font-bold rounded-xl transition flex items-center justify-center active:scale-95 shadow-sm shrink-0" title="Download the full mindmap as a PNG image">
+          <i data-lucide="download" class="w-4 h-4 text-emerald-400"></i>
+        </button>
+
+        <button type="button" onclick="exportMindmapImage('pdf')" class="p-2 bg-slate-900 border border-slate-800 hover:border-emerald-500/40 text-emerald-300 text-xs font-bold rounded-xl transition flex items-center justify-center active:scale-95 shadow-sm shrink-0" title="Export the full mindmap as PDF (via the print dialog)">
+          <i data-lucide="printer" class="w-4 h-4 text-emerald-400"></i>
+        </button>
+
         <button type="button" onclick="openNodeModal(null)" class="hidden sm:flex px-3.5 py-2 bg-emerald-600 hover:bg-emerald-500 text-slate-950 font-black text-xs rounded-xl transition items-center gap-1.5 shadow-lg shadow-emerald-600/20 active:scale-95 touch-manipulation shrink-0">
           <i data-lucide="plus-circle" class="w-4 h-4 shrink-0"></i>
           <span>Add Node</span>
@@ -14451,6 +14463,206 @@ html, body {
       }
     }
 
+    /* Export the full mindmap (current map) as a PNG image or a PDF
+       (drawn onto a canvas from data — no external libraries needed) */
+    window.exportMindmapImage = function(kind) {
+      try {
+        const curMapId = window.appState.activeMindmapId || 'map_main';
+        const nodes = (window.appState.mindmapNodes || []).filter(n => (n.mapId || 'map_main') === curMapId);
+        if (!nodes.length) {
+          if (window.showToast) window.showToast('Nothing to export — add nodes first.', 'info');
+          return;
+        }
+
+        const CARD_W = 190, CARD_H = 104, PAD = 80, SCALE = 2;
+        let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+        nodes.forEach(n => {
+          const x = typeof n.x === 'number' ? n.x : 100;
+          const y = typeof n.y === 'number' ? n.y : 100;
+          minX = Math.min(minX, x); minY = Math.min(minY, y);
+          maxX = Math.max(maxX, x + CARD_W); maxY = Math.max(maxY, y + CARD_H);
+        });
+        const W = (maxX - minX) + PAD * 2, H = (maxY - minY) + PAD * 2;
+
+        const canvas = document.createElement('canvas');
+        canvas.width = Math.round(W * SCALE);
+        canvas.height = Math.round(H * SCALE);
+        const ctx = canvas.getContext('2d');
+        ctx.scale(SCALE, SCALE);
+
+        // Dark canvas backdrop
+        ctx.fillStyle = '#020617';
+        ctx.fillRect(0, 0, W, H);
+
+        const pos = {};
+        nodes.forEach(n => {
+          const x = typeof n.x === 'number' ? n.x : 100;
+          const y = typeof n.y === 'number' ? n.y : 100;
+          pos[n.id] = { x: x - minX + PAD, y: y - minY + PAD };
+        });
+        const byId = {};
+        nodes.forEach(n => { byId[n.id] = n; });
+
+        const palette = { emerald: '#059669', teal: '#0d9488', cyan: '#0891b2', sky: '#0284c7', blue: '#2563eb', indigo: '#4f46e5', violet: '#7c3aed', purple: '#9333ea', fuchsia: '#c026d3', pink: '#db2777', rose: '#e11d48', red: '#dc2626', orange: '#ea580c', amber: '#f59e0b', yellow: '#eab308', lime: '#65a30d', green: '#16a34a' };
+        const colorHex = (cls) => {
+          const tokens = (cls || '').split(' ');
+          for (const t of tokens) {
+            const name = t.replace(/^(bg|from|to|via)-/, '').replace(/-\d{3}$/, '');
+            if (palette[name]) return palette[name];
+          }
+          return '#10b981';
+        };
+
+        function rr(x, y, w, h, r) {
+          ctx.beginPath();
+          if (ctx.roundRect) { ctx.roundRect(x, y, w, h, r); return; }
+          ctx.moveTo(x + r, y);
+          ctx.arcTo(x + w, y, x + w, y + h, r);
+          ctx.arcTo(x + w, y + h, x, y + h, r);
+          ctx.arcTo(x, y + h, x, y, r);
+          ctx.arcTo(x, y, x + w, y, r);
+          ctx.closePath();
+        }
+
+        // Connections first (behind the cards), same curve as the live SVG
+        (window.appState.mindmapConnections || []).forEach(conn => {
+          const p1 = pos[conn.from], p2 = pos[conn.to];
+          if (!p1 || !p2) return;
+          const grad = ctx.createLinearGradient(p1.x, p1.y, p2.x, p2.y);
+          grad.addColorStop(0, colorHex((byId[conn.from] || {}).color));
+          grad.addColorStop(1, colorHex((byId[conn.to] || {}).color));
+          const dx = Math.abs(p2.x - p1.x) * 0.5;
+          ctx.save();
+          ctx.globalAlpha = 0.65;
+          ctx.strokeStyle = grad;
+          ctx.lineWidth = 2.5;
+          ctx.setLineDash([5, 7]);
+          ctx.lineCap = 'round';
+          ctx.beginPath();
+          ctx.moveTo(p1.x, p1.y);
+          ctx.bezierCurveTo(p1.x + dx, p1.y, p2.x - dx, p2.y, p2.x, p2.y);
+          ctx.stroke();
+          ctx.restore();
+        });
+
+        const statusHex = { 'Active': '#34d399', 'In Progress': '#fbbf24', 'Completed': '#38bdf8', 'Archived': '#94a3b8' };
+
+        // Cards
+        nodes.forEach(n => {
+          const p = pos[n.id];
+          const color = colorHex(n.color);
+          const tag = n.entityTag || n.text || 'node';
+          const title = n.text || '';
+
+          rr(p.x, p.y, CARD_W, CARD_H, 14);
+          ctx.fillStyle = 'rgba(2,6,23,0.97)';
+          ctx.fill();
+          ctx.strokeStyle = 'rgba(71,85,105,0.9)';
+          ctx.lineWidth = 1;
+          ctx.stroke();
+
+          // Colour spine (top bar)
+          ctx.save();
+          rr(p.x, p.y, CARD_W, CARD_H, 14);
+          ctx.clip();
+          ctx.fillStyle = color;
+          ctx.fillRect(p.x, p.y, CARD_W, 5);
+          ctx.restore();
+
+          // Icon tile with the node's initial
+          rr(p.x + 10, p.y + 14, 30, 30, 9);
+          ctx.fillStyle = color;
+          ctx.fill();
+          ctx.fillStyle = '#ffffff';
+          ctx.font = '800 14px system-ui, sans-serif';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillText((title || tag).charAt(0).toUpperCase(), p.x + 25, p.y + 30);
+
+          // #tag pill (top right)
+          ctx.font = '700 9px ui-monospace, monospace';
+          const tagText = '#' + String(tag).toLowerCase().slice(0, 12);
+          const tagW = ctx.measureText(tagText).width + 12;
+          rr(p.x + CARD_W - 10 - tagW, p.y + 12, tagW, 15, 6);
+          ctx.fillStyle = '#1e293b';
+          ctx.fill();
+          ctx.fillStyle = '#cbd5e1';
+          ctx.fillText(tagText, p.x + CARD_W - 10 - tagW / 2, p.y + 20);
+
+          // Title (max 2 lines)
+          ctx.font = '800 11px system-ui, sans-serif';
+          ctx.fillStyle = '#ffffff';
+          ctx.textAlign = 'left';
+          const maxW = CARD_W - 48 - 10;
+          const words = String(title).split(/\s+/).filter(Boolean);
+          let line = '', lines = [];
+          for (const wd of words) {
+            const test = line ? line + ' ' + wd : wd;
+            if (ctx.measureText(test).width > maxW && line) {
+              lines.push(line); line = wd;
+              if (lines.length === 2) break;
+            } else line = test;
+          }
+          if (lines.length < 2 && line) lines.push(line);
+          if (lines.length === 2) lines[1] += '…';
+          lines.forEach((ln, i) => ctx.fillText(ln, p.x + 48, p.y + 22 + i * 13));
+
+          // Divider
+          ctx.strokeStyle = 'rgba(30,41,59,1)';
+          ctx.beginPath();
+          ctx.moveTo(p.x + 10, p.y + CARD_H - 26);
+          ctx.lineTo(p.x + CARD_W - 10, p.y + CARD_H - 26);
+          ctx.stroke();
+
+          // Status dot + label
+          const meta = nodeStatusMeta(n.status);
+          ctx.fillStyle = statusHex[meta.label] || '#34d399';
+          ctx.beginPath(); ctx.arc(p.x + 13, p.y + CARD_H - 13, 3, 0, Math.PI * 2); ctx.fill();
+          ctx.fillStyle = '#94a3b8';
+          ctx.font = '700 9px ui-monospace, monospace';
+          ctx.fillText(meta.label, p.x + 20, p.y + CARD_H - 12);
+
+          // Task counter
+          const tagLower = String(tag).toLowerCase(), titleLower = String(title).toLowerCase();
+          const linked = (window.appState.tasks || []).filter(t =>
+            t.listId === 'list_node_' + n.id ||
+            (t.title && (t.title.toLowerCase().includes(tagLower) || t.title.toLowerCase().includes(titleLower)))
+          );
+          const pending = linked.filter(t => !t.completed && t.status !== 'completed' && t.status !== 'done').length;
+          ctx.fillStyle = '#cbd5e1';
+          ctx.textAlign = 'right';
+          ctx.fillText(pending + '/' + linked.length + ' tasks', p.x + CARD_W - 10, p.y + CARD_H - 12);
+          ctx.textAlign = 'left';
+        });
+
+        const dataUrl = canvas.toDataURL('image/png');
+        const mapName = ((window.appState.mindmaps || []).find(m => m.id === curMapId) || {}).name || 'mindmap';
+        const fileName = String(mapName).replace(/[^a-z0-9_-]+/gi, '_').toLowerCase() + '_' + new Date().toISOString().slice(0, 10);
+
+        if (kind === 'pdf') {
+          const w = window.open('', '_blank');
+          if (!w) {
+            if (window.showToast) window.showToast('Allow pop-ups to export as PDF.', 'error');
+            return;
+          }
+          w.document.write('<html><head><title>' + fileName + '</title><style>@page{size:A3 landscape;margin:8mm}html,body{margin:0;padding:0;background:#0b1220;height:100%}body{display:flex;align-items:center;justify-content:center}img{max-width:100%;max-height:98vh}</style></head><body><img src="' + dataUrl + '" onload="setTimeout(function(){window.print()},250)"></body></html>');
+          w.document.close();
+          if (window.showToast) window.showToast('Use "Save as PDF" in the print dialog.', 'info');
+        } else {
+          const a = document.createElement('a');
+          a.href = dataUrl;
+          a.download = fileName + '.png';
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+          if (window.showToast) window.showToast('Mindmap exported as PNG!', 'success');
+        }
+      } catch (err) {
+        console.error('Mindmap export failed:', err);
+        if (window.showToast) window.showToast('Export failed: ' + err.message, 'error');
+      }
+    };
+
     function nodeTagIcon(node) {
       const hay = ((node.entityTag || '') + ' ' + (node.text || '')).toLowerCase();
       if (/dev|code|api|tech|git|software/.test(hay)) return 'code';
@@ -15311,7 +15523,7 @@ html, body {
       grid.innerHTML = `
         <!-- Tasks Subsystem -->
         <div class="space-y-2">
-          <div class="space-y-1.5 max-h-48 overflow-y-auto p-2 bg-slate-950/40 rounded-xl border border-slate-800/70">
+          <div class="space-y-1.5 p-2 bg-slate-950/40 rounded-xl border border-slate-800/70">
             ${linkedTasks.map(t => {
               const subtasks = Array.isArray(t.subtasks) ? t.subtasks : [];
               const completedSubtasks = subtasks.filter(s => s.completed).length;
@@ -15359,7 +15571,7 @@ html, body {
 
         <!-- Knowledge Notes Subsystem -->
         <div class="space-y-2">
-          <div class="space-y-1.5 max-h-48 overflow-y-auto p-2 bg-slate-950/40 rounded-xl border border-slate-800/70">
+          <div class="space-y-1.5 p-2 bg-slate-950/40 rounded-xl border border-slate-800/70">
             ${linkedNotes.map(n => `
               <div class="p-2.5 bg-slate-950 rounded-xl border border-slate-800 space-y-1.5 hover:border-yellow-500/40 transition cursor-pointer" onclick="openNotesEditorOverlay('${n.id}', 'preview')">
                 <div class="flex items-center justify-between gap-2">
@@ -15379,7 +15591,7 @@ html, body {
 
         <!-- Goals & OKRs Subsystem -->
         <div class="space-y-2">
-          <div class="space-y-1.5 max-h-48 overflow-y-auto p-2 bg-slate-950/40 rounded-xl border border-slate-800/70">
+          <div class="space-y-1.5 p-2 bg-slate-950/40 rounded-xl border border-slate-800/70">
             ${linkedGoals.map(g => {
               const krs = g.keyResults || [];
               return `
