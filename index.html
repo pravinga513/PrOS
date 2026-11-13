@@ -14380,7 +14380,7 @@ html, body {
     function nodeStatusMeta(status) {
       switch (status) {
         case 'In Progress': return { dot: 'bg-amber-400', label: 'In Progress' };
-        case 'Completed': return { dot: 'bg-sky-400', label: 'Milestone' };
+        case 'Completed': return { dot: 'bg-sky-400', label: 'Completed' };
         case 'Archived': return { dot: 'bg-slate-400', label: 'Archived' };
         default: return { dot: 'bg-emerald-400', label: 'Active' };
       }
@@ -14510,28 +14510,28 @@ html, body {
 
         card.innerHTML = `
           <div class="h-1 ${node.color || 'bg-emerald-600'} shrink-0"></div>
-          <div class="p-2 flex flex-col gap-1.5">
-            <div class="flex items-center gap-1">
+          <div class="p-2.5 flex flex-col gap-2">
+            <div class="flex items-center gap-1.5">
               <div class="drag-handle cursor-grab active:cursor-grabbing text-slate-500 hover:text-slate-200 transition shrink-0" title="Drag Anywhere">
-                <i data-lucide="grip-vertical" class="w-3 h-3"></i>
+                <i data-lucide="grip-vertical" class="w-3.5 h-3.5"></i>
               </div>
-              <span class="flex-1 min-w-0 truncate text-[9px] font-mono font-bold uppercase tracking-wider text-slate-400">#${escapeHtml(node.entityTag || node.text)}</span>
+              <span class="flex-1 min-w-0 px-1.5 py-0.5 rounded-md bg-slate-800 text-[9px] font-mono font-bold uppercase tracking-wider text-slate-300 truncate text-center">#${escapeHtml(node.entityTag || node.text)}</span>
               <button type="button" onclick="openNodeModal('${node.id}')" class="text-slate-500 hover:text-emerald-300 transition shrink-0" title="Edit Node"><i data-lucide="edit-3" class="w-3.5 h-3.5"></i></button>
             </div>
 
-            <div class="flex items-center gap-2 cursor-pointer group" onclick="openNodeInspectorPopup('${node.id}', '${escapeHtml(node.entityTag || node.text)}', '${escapeHtml(node.text)}')">
-              <span class="w-7 h-7 rounded-lg ${node.color || 'bg-emerald-600'} flex items-center justify-center shrink-0 shadow">
-                <i data-lucide="${tagIcon}" class="w-3.5 h-3.5 text-white"></i>
+            <div class="flex items-center gap-2.5 cursor-pointer group" onclick="openNodeInspectorPopup('${node.id}', '${escapeHtml(node.entityTag || node.text)}', '${escapeHtml(node.text)}')">
+              <span class="w-9 h-9 rounded-xl ${node.color || 'bg-emerald-600'} flex items-center justify-center shrink-0 shadow-md">
+                <i data-lucide="${tagIcon}" class="w-4 h-4 text-white"></i>
               </span>
-              <span class="flex-1 min-w-0 text-[11px] leading-tight font-extrabold text-white group-hover:text-emerald-300 transition">${escapeHtml(node.text)}</span>
+              <span class="flex-1 min-w-0 text-xs leading-snug font-extrabold text-white line-clamp-2 group-hover:text-emerald-300 transition">${escapeHtml(node.text)}</span>
             </div>
 
-            <div class="flex items-center justify-between gap-1 text-[9px]">
+            <div class="flex items-center justify-between gap-1 pt-1.5 border-t border-slate-800 text-[9px]">
               <span class="flex items-center gap-1 font-mono font-bold text-slate-400 truncate min-w-0">
                 <span class="w-1.5 h-1.5 rounded-full ${statusMeta.dot} shrink-0"></span>${statusMeta.label}
               </span>
               <span class="flex items-center gap-1 shrink-0">
-                <span class="px-1.5 py-0.5 rounded-md bg-slate-800 font-mono font-bold text-slate-300">${pendingTasks}/${linkedTasks.length}</span>
+                <span class="flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-slate-800 font-mono font-bold text-slate-300"><i data-lucide="list-checks" class="w-2.5 h-2.5"></i>${pendingTasks}/${linkedTasks.length}</span>
                 ${node.url ? `<a href="${escapeHtml(node.url)}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()" title="Open Link" class="px-1.5 py-0.5 rounded-md bg-emerald-600/20 text-emerald-300 hover:bg-emerald-600/30 font-bold transition">↗</a>` : ''}
               </span>
             </div>
@@ -15007,12 +15007,18 @@ html, body {
 
       const titleEl = document.getElementById('inspector-entity-title');
       const badgeEl = document.getElementById('inspector-entity-badge');
-      const statusEl = document.getElementById('inspector-status-badge');
       const notesEl = document.getElementById('inspector-notes-preview');
+      const linkEl = document.getElementById('inspector-open-link');
+      const iconBadgeEl = document.getElementById('inspector-icon-badge');
 
       if (titleEl) titleEl.textContent = title || tag;
       if (badgeEl) badgeEl.textContent = `#${tag}`;
-      if (statusEl && node) statusEl.textContent = `${node.status || 'Active'}`;
+      if (linkEl) {
+        if (node && node.url) { linkEl.href = node.url; linkEl.classList.remove('hidden'); }
+        else { linkEl.removeAttribute('href'); linkEl.classList.add('hidden'); }
+      }
+      if (iconBadgeEl) iconBadgeEl.innerHTML = `<i data-lucide="${node ? nodeTagIcon(node) : 'brain-circuit'}" class="w-5 h-5"></i>`;
+      window.renderNodeStatusSwitcher();
       if (notesEl && node) {
         notesEl.textContent = node.notes || '';
         notesEl.classList.toggle('hidden', !node.notes);
@@ -15021,6 +15027,31 @@ html, body {
       window.renderNodeInspectorContent();
       showModalDirect('node-inspector-modal');
       refreshIconsScoped(document.getElementById('node-inspector-modal'));
+    };
+
+    window.renderNodeStatusSwitcher = function() {
+      const box = document.getElementById('inspector-status-switcher');
+      if (!box || !currentInspectorNodeId) return;
+      const node = (window.appState?.mindmapNodes || []).find(n => n.id === currentInspectorNodeId);
+      if (!node) { box.innerHTML = ''; return; }
+      const statuses = ['Active', 'In Progress', 'Completed', 'Archived'];
+      box.innerHTML = statuses.map(s => {
+        const meta = nodeStatusMeta(s);
+        const on = (node.status || 'Active') === s;
+        return `<button type="button" onclick="setNodeStatusQuick('${node.id}', '${s}')" class="px-2 py-1 rounded-full text-[9px] font-bold flex items-center gap-1 transition ${on ? 'bg-white text-slate-900 shadow' : 'bg-black/25 text-white/80 hover:bg-black/40'}">
+          <span class="w-1.5 h-1.5 rounded-full ${meta.dot}"></span>${meta.label}
+        </button>`;
+      }).join('');
+    };
+
+    window.setNodeStatusQuick = function(nodeId, status) {
+      const node = (window.appState?.mindmapNodes || []).find(n => n.id === nodeId);
+      if (!node) return;
+      node.status = status;
+      persistMindmapAndSync();
+      window.renderNodeStatusSwitcher();
+      window.renderMindmapNodes();
+      if (window.showToast) window.showToast(`Status set to ${status}`, 'success');
     };
 
     window.startFocusTimerForNode = function() {
@@ -21920,19 +21951,20 @@ html, body {
             </div>
             <div class="min-w-0">
               <h3 id="inspector-entity-title" class="text-sm font-extrabold text-white truncate">Node Inspector</h3>
-              <div class="flex items-center gap-1.5 mt-1 flex-wrap">
-                <span id="inspector-entity-badge" class="text-[9px] px-2 py-0.5 rounded-full bg-black/25 text-white font-mono font-bold truncate">#tag</span>
-                <span id="inspector-status-badge" class="text-[9px] px-2 py-0.5 rounded-full bg-black/25 text-white font-semibold font-mono">🟢 Active</span>
-              </div>
+              <span id="inspector-entity-badge" class="inline-block mt-1 text-[9px] px-2 py-0.5 rounded-full bg-black/25 text-white font-mono font-bold truncate max-w-full">#tag</span>
             </div>
           </div>
           <div class="flex items-center gap-1 shrink-0">
+            <a id="inspector-open-link" href="#" target="_blank" rel="noopener noreferrer" title="Open Link" class="hidden p-1.5 bg-black/25 hover:bg-black/40 text-white rounded-xl transition">
+              <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+            </a>
             <button type="button" onclick="openNodeModal(getCurrentInspectorNodeId())" title="Edit Node" class="p-1.5 bg-black/25 hover:bg-black/40 text-white rounded-xl transition active:scale-95">
               <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
             </button>
             <button type="button" onclick="closeModalDirect('node-inspector-modal')" class="text-white/80 hover:text-white p-1 rounded-lg hover:bg-black/25 transition"><i data-lucide="x" class="w-5 h-5"></i></button>
           </div>
         </div>
+        <div id="inspector-status-switcher" class="flex items-center gap-1.5 flex-wrap mt-2.5"></div>
         <p id="inspector-notes-preview" class="hidden mt-2 text-[11px] text-white/85 leading-relaxed whitespace-pre-wrap break-words"></p>
       </div>
 
