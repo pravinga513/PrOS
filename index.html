@@ -15529,7 +15529,7 @@ html, body {
 
       // Hero band inherits the node's own colour
       const heroEl = document.getElementById('inspector-hero');
-      if (heroEl) heroEl.className = `relative shrink-0 px-3.5 sm:px-5 pt-3.5 pb-3 border-b border-black/20 ${node ? (node.color || 'bg-emerald-600') : 'bg-emerald-600'}`;
+      if (heroEl) heroEl.className = `relative shrink-0 px-3.5 sm:px-5 pt-3.5 pb-3 border-b border-black/30 overflow-hidden ${node ? (node.color || 'bg-emerald-600') : 'bg-emerald-600'}`;
 
       const titleEl = document.getElementById('inspector-entity-title');
       const badgeEl = document.getElementById('inspector-entity-badge');
@@ -15540,7 +15540,10 @@ html, body {
 
       if (titleEl) titleEl.textContent = title || tag;
       if (badgeEl) badgeEl.textContent = `#${tag}`;
-      if (statusEl && node) statusEl.textContent = `${node.status || 'Active'}`;
+      if (statusEl && node) {
+        const sm = nodeStatusMeta(node.status);
+        statusEl.innerHTML = `<span class="w-1.5 h-1.5 rounded-full ${sm.dot} shrink-0"></span>${escapeHtml(node.status || 'Active')}`;
+      }
       if (linkEl) {
         if (node && node.url) { linkEl.href = node.url; linkEl.classList.remove('hidden'); }
         else { linkEl.removeAttribute('href'); linkEl.classList.add('hidden'); }
@@ -22585,26 +22588,28 @@ html, body {
     <div class="w-full max-w-md sm:max-w-2xl h-[82vh] sm:h-[78vh] bg-slate-900 border border-slate-800 rounded-3xl shadow-2xl shadow-black/50 ring-1 ring-white/5 relative box-border flex flex-col overflow-hidden my-auto">
 
       <!-- Inspector Hero — colour carries over from the node itself -->
-      <div id="inspector-hero" class="relative shrink-0 px-3.5 sm:px-5 pt-3.5 pb-3 border-b border-black/20 bg-emerald-600">
-        <div class="pointer-events-none absolute inset-0 bg-gradient-to-b from-white/15 via-transparent to-black/10"></div>
+      <div id="inspector-hero" class="relative shrink-0 px-3.5 sm:px-5 pt-3.5 pb-3 border-b border-black/30 bg-emerald-600 overflow-hidden">
+        <div class="pointer-events-none absolute inset-0 bg-gradient-to-b from-white/20 via-white/5 to-black/25"></div>
+        <div class="pointer-events-none absolute -top-10 -right-6 w-36 h-36 rounded-full bg-white/15 blur-2xl"></div>
+        <div class="pointer-events-none absolute inset-x-0 bottom-0 h-px bg-white/20"></div>
         <div class="relative flex items-start justify-between gap-2">
           <div class="flex items-center gap-2.5 min-w-0">
-            <div id="inspector-icon-badge" class="w-10 h-10 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center text-white shrink-0 shadow-md shadow-black/20">
+            <div id="inspector-icon-badge" class="w-11 h-11 rounded-2xl bg-white/25 ring-1 ring-white/30 flex items-center justify-center text-white shrink-0 shadow-lg shadow-black/25">
               <i data-lucide="brain-circuit" class="w-5 h-5"></i>
             </div>
             <div class="min-w-0">
-              <h3 id="inspector-entity-title" class="text-sm font-extrabold text-white truncate">Node Inspector</h3>
+              <h3 id="inspector-entity-title" class="text-[15px] font-black text-white tracking-tight truncate drop-shadow-sm">Node Inspector</h3>
               <div class="flex items-center gap-1.5 mt-1 flex-wrap">
-                <span id="inspector-entity-badge" class="text-[9px] px-2 py-0.5 rounded-full bg-black/25 text-white font-mono font-bold truncate">#tag</span>
-                <span id="inspector-status-badge" class="text-[9px] px-2 py-0.5 rounded-full bg-black/25 text-white font-semibold font-mono">🟢 Active</span>
+                <span id="inspector-entity-badge" class="text-[9px] px-2 py-0.5 rounded-full bg-black/30 ring-1 ring-white/15 text-white font-mono font-bold truncate">#tag</span>
+                <span id="inspector-status-badge" class="text-[9px] px-2 py-0.5 rounded-full bg-black/30 ring-1 ring-white/15 text-white font-semibold font-mono flex items-center gap-1">Active</span>
               </div>
             </div>
           </div>
           <div class="flex items-center gap-1 shrink-0">
-            <a id="inspector-open-link" href="#" target="_blank" rel="noopener noreferrer" title="Open Link" class="hidden p-1.5 bg-black/25 hover:bg-black/40 text-white rounded-xl transition">
+            <a id="inspector-open-link" href="#" target="_blank" rel="noopener noreferrer" title="Open Link" class="hidden p-1.5 bg-black/30 ring-1 ring-white/15 hover:bg-black/45 text-white rounded-xl transition">
               <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
             </a>
-            <button type="button" onclick="openNodeModal(getCurrentInspectorNodeId())" title="Edit Node" class="p-1.5 bg-black/25 hover:bg-black/40 text-white rounded-xl transition active:scale-95">
+            <button type="button" onclick="openNodeModal(getCurrentInspectorNodeId())" title="Edit Node" class="p-1.5 bg-black/30 ring-1 ring-white/15 hover:bg-black/45 text-white rounded-xl transition active:scale-95">
               <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
             </button>
             <button type="button" onclick="closeModalDirect('node-inspector-modal')" class="text-white/80 hover:text-white p-1 rounded-lg hover:bg-black/25 transition"><i data-lucide="x" class="w-5 h-5"></i></button>
