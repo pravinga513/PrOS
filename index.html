@@ -15046,7 +15046,7 @@ html, body {
 
       // Hero band inherits the node's own colour
       const heroEl = document.getElementById('inspector-hero');
-      if (heroEl) heroEl.className = `relative px-3.5 sm:px-5 pt-3.5 pb-3 border-b border-black/20 ${node ? (node.color || 'bg-emerald-600') : 'bg-emerald-600'}`;
+      if (heroEl) heroEl.className = `relative shrink-0 px-3.5 sm:px-5 pt-3.5 pb-3 border-b border-black/20 ${node ? (node.color || 'bg-emerald-600') : 'bg-emerald-600'}`;
 
       const titleEl = document.getElementById('inspector-entity-title');
       const badgeEl = document.getElementById('inspector-entity-badge');
@@ -22099,13 +22099,14 @@ html, body {
 
   <!-- MODAL 4: 360° CROSS-SYSTEM ENTITY INSPECTOR DECK -->
   <div id="node-inspector-modal" class="hidden fixed inset-0 z-[60] modal-backdrop flex items-center justify-center p-2 sm:p-4 overflow-y-auto">
-    <div class="w-full max-w-4xl bg-slate-900 border border-slate-800 rounded-3xl shadow-2xl max-h-[92vh] overflow-y-auto my-auto relative box-border">
+    <div class="w-full max-w-md sm:max-w-2xl h-[82vh] sm:h-[78vh] bg-slate-900 border border-slate-800 rounded-3xl shadow-2xl shadow-black/50 ring-1 ring-white/5 relative box-border flex flex-col overflow-hidden my-auto">
 
       <!-- Inspector Hero — colour carries over from the node itself -->
-      <div id="inspector-hero" class="relative px-3.5 sm:px-5 pt-3.5 pb-3 border-b border-black/20 bg-emerald-600">
-        <div class="flex items-start justify-between gap-2">
+      <div id="inspector-hero" class="relative shrink-0 px-3.5 sm:px-5 pt-3.5 pb-3 border-b border-black/20 bg-emerald-600">
+        <div class="pointer-events-none absolute inset-0 bg-gradient-to-b from-white/15 via-transparent to-black/10"></div>
+        <div class="relative flex items-start justify-between gap-2">
           <div class="flex items-center gap-2.5 min-w-0">
-            <div id="inspector-icon-badge" class="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center text-white shrink-0 shadow">
+            <div id="inspector-icon-badge" class="w-10 h-10 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center text-white shrink-0 shadow-md shadow-black/20">
               <i data-lucide="brain-circuit" class="w-5 h-5"></i>
             </div>
             <div class="min-w-0">
@@ -22126,10 +22127,11 @@ html, body {
             <button type="button" onclick="closeModalDirect('node-inspector-modal')" class="text-white/80 hover:text-white p-1 rounded-lg hover:bg-black/25 transition"><i data-lucide="x" class="w-5 h-5"></i></button>
           </div>
         </div>
-        <p id="inspector-notes-preview" class="hidden mt-2 text-[11px] text-white/85 leading-relaxed whitespace-pre-wrap break-words"></p>
+        <p id="inspector-notes-preview" class="hidden relative mt-2 text-[11px] text-white/85 leading-relaxed whitespace-pre-wrap break-words"></p>
       </div>
 
-      <div class="p-3.5 sm:p-5 pb-6 space-y-3.5">
+      <!-- Pinned toolbar: quick actions + stats (always visible) -->
+      <div class="shrink-0 px-3.5 sm:px-5 pt-3 pb-2.5 space-y-2.5 bg-slate-900/80 backdrop-blur border-b border-slate-800">
         <!-- Add Inside This Node — opens the real section modals -->
         <div class="flex items-center gap-1.5 flex-wrap">
           <span class="text-slate-500 font-bold text-[9px] uppercase tracking-wider shrink-0 mr-0.5">Add</span>
@@ -22146,7 +22148,10 @@ html, body {
 
         <!-- Quick Stats (tap to jump to a section) -->
         <div id="inspector-stats" class="grid grid-cols-4 gap-1.5"></div>
+      </div>
 
+      <!-- Scrolling panels area -->
+      <div class="flex-1 min-h-0 overflow-y-auto p-3.5 sm:p-5 pb-6 space-y-3.5">
         <!-- Subsystems Cards -->
         <div id="inspector-content-grid" class="space-y-3"></div>
       </div>
