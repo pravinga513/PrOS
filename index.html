@@ -7943,6 +7943,24 @@ html, body {
       populateGoalCategoryDropdowns();
       const input = document.getElementById('new-goal-category-name');
       if (input) input.value = '';
+
+      // When opened from Mindmap (e.g. via the goal editor over the node
+      // inspector), the goals view section is hidden — briefly unhide it and
+      // raise the modal above the goal editor (z-70), restoring on close.
+      const section = document.getElementById('view-goals');
+      const modal = document.getElementById('manage-goal-categories-modal');
+      if (modal && section && section.classList.contains('hidden')) {
+        section.classList.remove('hidden');
+        modal.style.zIndex = '80';
+        const obs = new MutationObserver(() => {
+          if (modal.classList.contains('hidden')) {
+            obs.disconnect();
+            modal.style.zIndex = '';
+            section.classList.add('hidden');
+          }
+        });
+        obs.observe(modal, { attributes: true, attributeFilter: ['class'] });
+      }
       showModalDirect('manage-goal-categories-modal');
     };
 
@@ -11240,6 +11258,8 @@ html, body {
     }
 
     function scheduleNoteAutosave() {
+      // Brand-new notes: no autosave — they are only committed by the Save button
+      if (window.__freshNoteIds && window.__freshNoteIds.has(window.appState.activeNoteId)) return;
       if (autosaveTimer) clearTimeout(autosaveTimer);
       autosaveTimer = setTimeout(() => {
         window.flushNoteAutosave();
@@ -11252,6 +11272,9 @@ html, body {
 
       const note = (window.appState.notes || []).find(n => n.id === window.appState.activeNoteId);
       if (!note) return false;
+
+      // Fresh (never saved) notes are never autosaved — Save button only
+      if (window.__freshNoteIds && window.__freshNoteIds.has(note.id)) return false;
 
       const titleInput = document.getElementById('note-title-input');
       const folderSelect = document.getElementById('note-folder-select');
@@ -12263,7 +12286,17 @@ html, body {
 
       // Persist pending edits on the note we are leaving before switching away
       if (openingDifferent) {
-        window.flushNoteAutosave(true);
+        const prevNote = (window.appState.notes || []).find(n => n.id === window.appState.activeNoteId);
+        if (prevNote && window.__freshNoteIds && window.__freshNoteIds.has(prevNote.id)) {
+          // Fresh note left without pressing Save — discard it entirely
+          window.__freshNoteIds.delete(prevNote.id);
+          window.appState.notes = (window.appState.notes || []).filter(n => n.id !== prevNote.id);
+          isUnsaved = false;
+          if (autosaveTimer) { clearTimeout(autosaveTimer); autosaveTimer = null; }
+          if (typeof window.renderNotesList === 'function') window.renderNotesList();
+        } else {
+          window.flushNoteAutosave(true);
+        }
       }
       window.appState.activeNoteId = id;
       const note = (window.appState.notes || []).find(n => n.id === id);
@@ -12715,7 +12748,9 @@ html, body {
 
       if (!window.appState.notes) window.appState.notes = [];
       window.appState.notes.unshift(newNote);
-      if (window.saveCloudData) window.saveCloudData();
+      // Brand-new note: don't persist until the Save button is clicked
+      if (!window.__freshNoteIds) window.__freshNoteIds = new Set();
+      window.__freshNoteIds.add(id);
       window.loadNoteIntoEditor(id, { mode: 'edit' });
       window.renderNotesList();
       if (window.showToast) window.showToast('New note created!', 'success');
@@ -12744,6 +12779,8 @@ html, body {
     window.saveCurrentNote = function() {
       const note = (window.appState.notes || []).find(n => n.id === window.appState.activeNoteId);
       if (note) {
+        // Save button commits a brand-new note permanently
+        if (window.__freshNoteIds) window.__freshNoteIds.delete(note.id);
         saveRevisionSnapshot(note);
 
         note.title = document.getElementById('note-title-input').value.trim() || 'Untitled Note';
@@ -15075,6 +15112,7 @@ html, body {
       watchModalClose(modal, () => {
         modal.style.zIndex = '';
         if (wasHidden) section.classList.add('hidden');
+        window.renderNodeInspectorContent();
       });
       if (typeof window.openAddTaskModal === 'function') {
         window.openAddTaskModal(`[${tag}] `, 'list_node_' + (currentInspectorNodeId || tag));
@@ -15094,6 +15132,7 @@ html, body {
       watchModalClose(modal, () => {
         modal.style.zIndex = '';
         if (wasHidden) section.classList.add('hidden');
+        window.renderNodeInspectorContent();
       });
       if (typeof window.openCreateGoalModal === 'function') {
         window.openCreateGoalModal(`[${tag}] `, 'gf_node_' + (currentInspectorNodeId || tag));
@@ -15112,6 +15151,9 @@ html, body {
       if (wasHidden) section.classList.remove('hidden');
 
       window.loadNoteIntoEditor(noteId, { mode: mode || 'preview' });
+      // Always honour the requested mode (loadNoteIntoEditor only switches
+      // mode when the note was not already open — e.g. preview then Edit)
+      if (typeof window.setNoteEditorMode === 'function') window.setNoteEditorMode(mode || 'preview');
       const panel = document.getElementById('notes-editor-panel');
       if (panel && !panel.classList.contains('note-fullscreen') && typeof window.toggleNoteFullscreen === 'function') {
         window.toggleNoteFullscreen();
@@ -15120,6 +15162,12 @@ html, body {
 
       window.__notesOverlayRestore = () => {
         window.__notesOverlayRestore = null;
+        // Fresh note backed out without Save — discard it entirely
+        if (window.__freshNoteIds && window.__freshNoteIds.has(noteId)) {
+          window.__freshNoteIds.delete(noteId);
+          window.appState.notes = (window.appState.notes || []).filter(n => n.id !== noteId);
+          if (window.appState.activeNoteId === noteId) window.appState.activeNoteId = null;
+        }
         const p = document.getElementById('notes-editor-panel');
         if (p && p.classList.contains('note-fullscreen') && typeof window.toggleNoteFullscreen === 'function') {
           window.toggleNoteFullscreen();
@@ -15150,7 +15198,10 @@ html, body {
       };
       if (!window.appState.notes) window.appState.notes = [];
       window.appState.notes.unshift(newNote);
-      if (window.saveCloudData) window.saveCloudData();
+      // Brand-new note: don't persist until the Save button is clicked;
+      // backing out without Save discards it
+      if (!window.__freshNoteIds) window.__freshNoteIds = new Set();
+      window.__freshNoteIds.add(id);
       window.openNotesEditorOverlay(id, 'edit');
     };
 
@@ -15282,7 +15333,7 @@ html, body {
       grid.innerHTML = `
         <!-- Tasks Subsystem -->
         <div class="space-y-2">
-          <div class="space-y-2 max-h-48 overflow-y-auto pr-1 text-xs">
+          <div class="space-y-1.5 max-h-48 overflow-y-auto p-2 bg-slate-950/40 rounded-xl border border-slate-800/70">
             ${linkedTasks.map(t => {
               const subtasks = Array.isArray(t.subtasks) ? t.subtasks : [];
               const completedSubtasks = subtasks.filter(s => s.completed).length;
@@ -22070,7 +22121,7 @@ html, body {
 
   <!-- MODAL 4: 360° CROSS-SYSTEM ENTITY INSPECTOR DECK -->
   <div id="node-inspector-modal" class="hidden fixed inset-0 z-[60] modal-backdrop flex items-end sm:items-center justify-center p-0 sm:p-4 overflow-y-auto">
-    <div class="w-full max-w-4xl bg-slate-900 border border-slate-800 rounded-t-3xl sm:rounded-3xl shadow-2xl max-h-[92vh] overflow-y-auto my-auto relative box-border">
+    <div class="w-full max-w-4xl bg-slate-900 border border-slate-800 rounded-3xl shadow-2xl max-h-[92vh] overflow-y-auto my-auto relative box-border mb-3 sm:mb-0">
 
       <!-- Inspector Hero — colour carries over from the node itself -->
       <div id="inspector-hero" class="relative px-3.5 sm:px-5 pt-3.5 pb-3 border-b border-black/20 bg-emerald-600">
@@ -22101,9 +22152,6 @@ html, body {
       </div>
 
       <div class="p-3.5 sm:p-5 pb-6 space-y-3.5">
-        <!-- Quick Stats (tap to jump to a section) -->
-        <div id="inspector-stats" class="grid grid-cols-4 gap-1.5"></div>
-
         <!-- Add Inside This Node — opens the real section modals -->
         <div class="flex items-center gap-1.5 flex-wrap">
           <span class="text-slate-500 font-bold text-[9px] uppercase tracking-wider shrink-0 mr-0.5">Add</span>
@@ -22117,6 +22165,9 @@ html, body {
             <i data-lucide="target" class="w-3 h-3"></i> Goal
           </button>
         </div>
+
+        <!-- Quick Stats (tap to jump to a section) -->
+        <div id="inspector-stats" class="grid grid-cols-4 gap-1.5"></div>
 
         <!-- Subsystems Cards -->
         <div id="inspector-content-grid" class="space-y-3"></div>
