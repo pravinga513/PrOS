@@ -847,6 +847,7 @@ html, body {
       <div class="flex items-center justify-between gap-2 border-b border-slate-800 pb-2.5">
         <h3 class="min-w-0 text-xs font-extrabold text-red-300 uppercase tracking-wider flex items-center gap-2 truncate">
           <i data-lucide="flame" class="w-4 h-4 text-red-400 shrink-0"></i> <span class="truncate">Habits Check-In</span>
+          <span id="dash-habit-today-count" class="normal-case tracking-normal text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-slate-950 text-rose-400 border border-slate-800 shrink-0 whitespace-nowrap">0/0 today</span>
         </h3>
         <button type="button" onclick="window.switchTab('habits')" class="shrink-0 p-1.5 rounded-lg bg-slate-950 border border-slate-800 text-red-400 hover:text-red-300 hover:border-red-500/40 transition active:scale-95" title="Open Habits Matrix">
           <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
@@ -868,7 +869,7 @@ html, body {
         </select>
       </div>
 
-      <div id="dash-routines-container" class="space-y-2 max-h-60 overflow-y-auto pr-1 scrollbar-none">
+      <div id="dash-routines-container" class="space-y-2.5 max-h-96 overflow-y-auto pr-1 scrollbar-none">
         <!-- Injected dynamically via JS -->
       </div>
     </div>
@@ -1737,7 +1738,7 @@ html, body {
       container.innerHTML = html;
     };
 
-    /* Habits Check-in Feed */
+    /* Habits Check-in Feed — Goals-module style cards */
     window.renderTodayRoutinesStrip = function() {
       const container = document.getElementById('dash-routines-container');
       if (!container) return;
@@ -1746,32 +1747,76 @@ html, body {
       let habits = window.appState?.habits || [];
       const todayStr = getTodayDateStr();
 
+      const dashHabitDone = (h, ds) => {
+        const v = h.history && h.history[ds];
+        return v === true || (v && typeof v === 'object' && v.completed !== false);
+      };
+      const keyOf = (dt) => `${dt.getFullYear()}-${String(dt.getMonth() + 1).padStart(2, '0')}-${String(dt.getDate()).padStart(2, '0')}`;
+
+      // header chip: done/total across all habits today
+      const allHabits = window.appState?.habits || [];
+      const doneAll = allHabits.filter(h => dashHabitDone(h, todayStr)).length;
+      const counter = document.getElementById('dash-habit-today-count');
+      if (counter) counter.textContent = `${doneAll}/${allHabits.length} today`;
+
       if (slotFilter !== 'ALL') habits = habits.filter(h => (h.timeOfDay || 'Anytime') === slotFilter);
 
       if (habits.length === 0) {
-        container.innerHTML = `<div class="p-4 text-slate-500 text-xs text-center italic bg-slate-950 rounded-xl border border-slate-800">No routines configured in this flow.</div>`;
+        container.innerHTML = `<div class="p-4 text-slate-500 text-xs text-center italic bg-slate-950 rounded-2xl border border-slate-800">No routines configured in this flow.</div>`;
         return;
       }
+
+      const flowEmoji = { Morning: '🌅', Afternoon: '☀️', Evening: '🌙', Anytime: '⚡' };
 
       let html = '';
       for (let i = 0; i < habits.length; i++) {
         const h = habits[i];
-        const isDone = h.history && (h.history[todayStr] === true || (typeof h.history[todayStr] === 'object' && h.history[todayStr].completed !== false));
+        const isDone = dashHabitDone(h, todayStr);
+
+        // back-to-back streak ending today
+        let streak = 0;
+        const d = new Date();
+        while (dashHabitDone(h, keyOf(d))) { streak++; d.setDate(d.getDate() - 1); }
+
+        // last-7-days completion -> drives the progress bar
+        let weekDone = 0;
+        for (let k = 0; k < 7; k++) {
+          const dd = new Date(); dd.setDate(dd.getDate() - k);
+          if (dashHabitDone(h, keyOf(dd))) weekDone++;
+        }
+        const weekPct = Math.round((weekDone / 7) * 100);
+
         html += `
-          <div class="p-2.5 bg-slate-950 rounded-xl border border-slate-800 flex items-center justify-between text-xs hover:border-red-500/40 transition gap-2">
-            <div class="flex items-center gap-2.5 truncate min-w-0 pr-1">
-              <span class="text-base shrink-0">${escapeHtml(h.icon || '🔥')}</span>
-              <div class="truncate min-w-0">
-                <span class="font-bold text-slate-200 block truncate ${isDone ? 'line-through text-slate-500' : ''}">${escapeHtml(h.name)}</span>
-                <span class="text-[9px] text-slate-500 font-mono">${escapeHtml(h.category || 'General')}</span>
+          <div class="glass-card p-2.5 sm:p-3 rounded-2xl border transition space-y-2 ${isDone ? 'border-rose-500/40 bg-rose-500/10' : 'border-slate-800 hover:border-rose-500/40'}">
+            <div class="flex items-center justify-between gap-2">
+              <div class="flex items-center gap-2.5 truncate min-w-0">
+                <span class="w-8 h-8 text-base shrink-0 flex items-center justify-center rounded-xl border transition ${isDone ? 'bg-rose-500/15 border-rose-500/30' : 'bg-slate-900 border-slate-800'}">${escapeHtml(h.icon || '🔥')}</span>
+                <div class="truncate min-w-0">
+                  <h4 class="font-extrabold text-white text-xs sm:text-sm truncate leading-snug ${isDone ? 'line-through text-slate-400' : ''}">${escapeHtml(h.name)}</h4>
+                  <div class="flex items-center gap-1.5 mt-0.5 min-w-0">
+                    <span class="text-[9px] px-2 py-0.5 rounded bg-slate-900 text-slate-300 font-bold uppercase tracking-wider border border-slate-800 truncate">${escapeHtml(h.category || 'General')}</span>
+                    <span class="text-[9px] font-mono text-amber-400/90 font-bold shrink-0" title="Current streak">🔥 ${streak}d</span>
+                  </div>
+                </div>
+              </div>
+              <button type="button" onclick="toggleDashHabitToday('${h.id}')" class="px-3 py-1.5 min-h-[32px] rounded-xl text-[11px] font-bold transition shrink-0 flex items-center gap-1 active:scale-95 ${isDone ? 'bg-rose-600 text-white shadow-sm shadow-rose-600/30' : 'bg-slate-900 border border-slate-800 text-slate-300 hover:text-white'}">
+                <i data-lucide="${isDone ? 'check-circle-2' : 'circle'}" class="w-3 h-3"></i><span>${isDone ? 'Done' : 'Check-In'}</span>
+              </button>
+            </div>
+
+            <div class="space-y-1">
+              <div class="flex justify-between items-center text-[10px] font-mono">
+                <span class="text-slate-500">${flowEmoji[h.timeOfDay] || '⚡'} ${(h.timeOfDay || 'Anytime')} flow</span>
+                <span class="${isDone ? 'text-rose-400 font-bold' : 'text-slate-400'}">${isDone ? '✓ done today' : weekPct + '% this week'}</span>
+              </div>
+              <div class="w-full bg-slate-950 h-2 rounded-full overflow-hidden border border-slate-800">
+                <div class="${isDone ? 'bg-rose-500' : 'bg-rose-500/70'} h-full rounded-full transition-all duration-300" style="width: ${weekPct}%"></div>
               </div>
             </div>
-            <button type="button" onclick="toggleDashHabitToday('${h.id}')" class="px-3 py-1.5 min-h-[32px] text-[11px] font-bold transition shrink-0 active:scale-95 ${isDone ? 'bg-red-500 text-white shadow-sm' : 'bg-slate-900 border border-slate-800 text-slate-400 hover:text-white'}">
-              ${isDone ? '✓ Done' : 'Check-In'}
-            </button>
           </div>`;
       }
       container.innerHTML = html;
+      refreshIconsScoped(container);
     };
 
     /* Priority Tasks List */
