@@ -14504,34 +14504,37 @@ html, body {
         const pendingTasks = linkedTasks.filter(t => !t.completed && t.status !== 'completed' && t.status !== 'done').length;
 
         const card = document.createElement('div');
-        card.className = `absolute pointer-events-auto px-2.5 py-2 rounded-2xl ${node.color || 'bg-emerald-600'} text-white shadow-xl shadow-black/30 border border-white/15 select-none flex flex-col gap-1 transition hover:border-white/30 hover:shadow-2xl w-44 sm:w-48 box-border backdrop-blur-md`;
+        card.className = `absolute pointer-events-auto w-44 sm:w-48 rounded-2xl bg-slate-950/95 backdrop-blur-md border border-slate-700/50 shadow-xl shadow-black/40 select-none flex flex-col overflow-hidden transition hover:border-slate-500/70 hover:shadow-2xl`;
         card.style.left = posX + 'px';
         card.style.top = posY + 'px';
 
         card.innerHTML = `
-          <div class="flex items-center gap-1">
-            <div class="drag-handle cursor-grab active:cursor-grabbing text-white/60 hover:text-white transition shrink-0" title="Drag Anywhere">
-              <i data-lucide="grip-vertical" class="w-3 h-3"></i>
+          <div class="h-1 ${node.color || 'bg-emerald-600'} shrink-0"></div>
+          <div class="p-2 flex flex-col gap-1.5">
+            <div class="flex items-center gap-1">
+              <div class="drag-handle cursor-grab active:cursor-grabbing text-slate-500 hover:text-slate-200 transition shrink-0" title="Drag Anywhere">
+                <i data-lucide="grip-vertical" class="w-3 h-3"></i>
+              </div>
+              <span class="flex-1 min-w-0 truncate text-[9px] font-mono font-bold uppercase tracking-wider text-slate-400">#${escapeHtml(node.entityTag || node.text)}</span>
+              <button type="button" onclick="openNodeModal('${node.id}')" class="text-slate-500 hover:text-emerald-300 transition shrink-0" title="Edit Node"><i data-lucide="edit-3" class="w-3.5 h-3.5"></i></button>
             </div>
-            <span class="flex-1 min-w-0 truncate text-[9px] font-mono font-bold uppercase tracking-wider text-white/75 flex items-center gap-1">
-              <span class="w-1.5 h-1.5 rounded-full ${statusMeta.dot} shrink-0"></span>#${escapeHtml(node.entityTag || node.text)}
-            </span>
-            <button type="button" onclick="openNodeModal('${node.id}')" class="text-white/60 hover:text-white transition shrink-0" title="Edit Node"><i data-lucide="edit-3" class="w-3.5 h-3.5"></i></button>
-          </div>
 
-          <div class="flex items-center gap-2 cursor-pointer group" onclick="openNodeInspectorPopup('${node.id}', '${escapeHtml(node.entityTag || node.text)}', '${escapeHtml(node.text)}')">
-            <span class="w-6 h-6 rounded-lg bg-white/15 flex items-center justify-center shrink-0">
-              <i data-lucide="${tagIcon}" class="w-3.5 h-3.5 text-white"></i>
-            </span>
-            <span class="flex-1 min-w-0 text-[11px] leading-tight font-extrabold text-white group-hover:underline decoration-white/40 underline-offset-2">${escapeHtml(node.text)}</span>
-          </div>
+            <div class="flex items-center gap-2 cursor-pointer group" onclick="openNodeInspectorPopup('${node.id}', '${escapeHtml(node.entityTag || node.text)}', '${escapeHtml(node.text)}')">
+              <span class="w-7 h-7 rounded-lg ${node.color || 'bg-emerald-600'} flex items-center justify-center shrink-0 shadow">
+                <i data-lucide="${tagIcon}" class="w-3.5 h-3.5 text-white"></i>
+              </span>
+              <span class="flex-1 min-w-0 text-[11px] leading-tight font-extrabold text-white group-hover:text-emerald-300 transition">${escapeHtml(node.text)}</span>
+            </div>
 
-          <div class="flex items-center justify-between gap-1 pt-1 border-t border-white/15 text-[9px]">
-            <span class="font-mono font-bold text-white/80 truncate">${statusMeta.label}</span>
-            <span class="flex items-center gap-1 shrink-0">
-              <span class="px-1.5 py-0.5 rounded-md bg-black/25 font-mono font-bold">${pendingTasks}/${linkedTasks.length}</span>
-              ${node.url ? `<a href="${escapeHtml(node.url)}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()" title="Open Link" class="px-1.5 py-0.5 bg-white/20 hover:bg-white/30 rounded-md font-bold transition">↗</a>` : ''}
-            </span>
+            <div class="flex items-center justify-between gap-1 text-[9px]">
+              <span class="flex items-center gap-1 font-mono font-bold text-slate-400 truncate min-w-0">
+                <span class="w-1.5 h-1.5 rounded-full ${statusMeta.dot} shrink-0"></span>${statusMeta.label}
+              </span>
+              <span class="flex items-center gap-1 shrink-0">
+                <span class="px-1.5 py-0.5 rounded-md bg-slate-800 font-mono font-bold text-slate-300">${pendingTasks}/${linkedTasks.length}</span>
+                ${node.url ? `<a href="${escapeHtml(node.url)}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()" title="Open Link" class="px-1.5 py-0.5 rounded-md bg-emerald-600/20 text-emerald-300 hover:bg-emerald-600/30 font-bold transition">↗</a>` : ''}
+              </span>
+            </div>
           </div>
         `;
 
@@ -14997,6 +15000,10 @@ html, body {
 
       const node = (window.appState?.mindmapNodes || []).find(n => n.id === nodeId);
       if (node) ensureNodeFoldersRegistered(node);
+
+      // Hero band inherits the node's own colour
+      const heroEl = document.getElementById('inspector-hero');
+      if (heroEl) heroEl.className = `relative px-3.5 sm:px-5 pt-3.5 pb-3 border-b border-black/20 ${node ? (node.color || 'bg-emerald-600') : 'bg-emerald-600'}`;
 
       const titleEl = document.getElementById('inspector-entity-title');
       const badgeEl = document.getElementById('inspector-entity-badge');
@@ -21916,54 +21923,57 @@ html, body {
 
   <!-- MODAL 4: 360° CROSS-SYSTEM ENTITY INSPECTOR DECK -->
   <div id="node-inspector-modal" class="hidden fixed inset-0 z-[60] modal-backdrop flex items-end sm:items-center justify-center p-0 sm:p-4 overflow-y-auto">
-    <div class="w-full max-w-4xl bg-slate-900 border border-slate-800 rounded-t-3xl sm:rounded-3xl p-3.5 sm:p-5 shadow-2xl space-y-3 max-h-[92vh] overflow-y-auto my-auto relative box-border">
-      
-      <!-- Inspector Header -->
-      <div class="flex justify-between items-center border-b border-slate-800 pb-2.5 gap-2">
-        <div class="flex items-center gap-2 min-w-0">
-          <div id="inspector-icon-badge" class="w-9 h-9 rounded-xl bg-emerald-600 text-slate-950 font-black shadow-lg shrink-0 flex items-center justify-center">
-            <i data-lucide="brain-circuit" class="w-4 h-4"></i>
+    <div class="w-full max-w-4xl bg-slate-900 border border-slate-800 rounded-t-3xl sm:rounded-3xl shadow-2xl max-h-[92vh] overflow-y-auto my-auto relative box-border">
+
+      <!-- Inspector Hero — colour carries over from the node itself -->
+      <div id="inspector-hero" class="relative px-3.5 sm:px-5 pt-3.5 pb-3 border-b border-black/20 bg-emerald-600">
+        <div class="flex items-start justify-between gap-2">
+          <div class="flex items-center gap-2.5 min-w-0">
+            <div id="inspector-icon-badge" class="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center text-white shrink-0 shadow">
+              <i data-lucide="brain-circuit" class="w-5 h-5"></i>
+            </div>
+            <div class="min-w-0">
+              <h3 id="inspector-entity-title" class="text-sm font-extrabold text-white truncate">Node Inspector</h3>
+              <div class="flex items-center gap-1.5 mt-1 flex-wrap">
+                <span id="inspector-entity-badge" class="text-[9px] px-2 py-0.5 rounded-full bg-black/25 text-white font-mono font-bold truncate">#tag</span>
+                <span id="inspector-status-badge" class="text-[9px] px-2 py-0.5 rounded-full bg-black/25 text-white font-semibold font-mono">🟢 Active</span>
+              </div>
+            </div>
           </div>
-          <div class="flex items-center gap-1.5 min-w-0 flex-wrap">
-            <h3 id="inspector-entity-title" class="text-sm font-extrabold text-white truncate">Node Inspector</h3>
-            <span id="inspector-entity-badge" class="text-[9px] px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 font-mono font-bold border border-emerald-500/30 truncate">#tag</span>
-            <span id="inspector-status-badge" class="text-[9px] px-2 py-0.5 rounded-full bg-slate-800 text-slate-300 font-semibold font-mono border border-slate-700">🟢 Active</span>
+          <div class="flex items-center gap-1 shrink-0">
+            <button type="button" onclick="openNodeModal(getCurrentInspectorNodeId())" title="Edit Node" class="p-1.5 bg-black/25 hover:bg-black/40 text-white rounded-xl transition active:scale-95">
+              <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
+            </button>
+            <button type="button" onclick="closeModalDirect('node-inspector-modal')" class="text-white/80 hover:text-white p-1 rounded-lg hover:bg-black/25 transition"><i data-lucide="x" class="w-5 h-5"></i></button>
           </div>
         </div>
-        
-        <div class="flex items-center gap-1 shrink-0">
-          <button type="button" onclick="openNodeModal(getCurrentInspectorNodeId())" title="Edit Node" class="p-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl transition active:scale-95">
-            <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
+        <p id="inspector-notes-preview" class="hidden mt-2 text-[11px] text-white/85 leading-relaxed whitespace-pre-wrap break-words"></p>
+      </div>
+
+      <div class="p-3.5 sm:p-5 space-y-3">
+        <!-- Add Inside This Node (compact launcher chips) -->
+        <div class="flex items-center gap-1.5 flex-wrap">
+          <span class="text-slate-500 font-bold text-[9px] uppercase tracking-wider shrink-0 mr-0.5">Add</span>
+          <button type="button" onclick="openDedicatedTaskModal()" class="px-2.5 py-1 bg-purple-600/15 border border-purple-500/30 hover:bg-purple-600/25 text-purple-300 font-bold rounded-full transition flex items-center gap-1 text-[11px] active:scale-95">
+            <i data-lucide="check-square" class="w-3 h-3"></i> Task
           </button>
-          <button type="button" onclick="closeModalDirect('node-inspector-modal')" class="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-slate-800 transition"><i data-lucide="x" class="w-5 h-5"></i></button>
+          <button type="button" onclick="openDedicatedNoteModal()" class="px-2.5 py-1 bg-yellow-500/15 border border-yellow-500/30 hover:bg-yellow-500/25 text-yellow-300 font-bold rounded-full transition flex items-center gap-1 text-[11px] active:scale-95">
+            <i data-lucide="file-text" class="w-3 h-3"></i> Note
+          </button>
+          <button type="button" onclick="openDedicatedGoalModal()" class="px-2.5 py-1 bg-rose-600/15 border border-rose-500/30 hover:bg-rose-600/25 text-rose-300 font-bold rounded-full transition flex items-center gap-1 text-[11px] active:scale-95">
+            <i data-lucide="target" class="w-3 h-3"></i> Goal
+          </button>
+          <button type="button" onclick="startFocusTimerForNode()" class="px-2.5 py-1 bg-indigo-600/15 border border-indigo-500/30 hover:bg-indigo-600/25 text-indigo-300 font-bold rounded-full transition flex items-center gap-1 text-[11px] active:scale-95">
+            <i data-lucide="timer" class="w-3 h-3"></i> Timer
+          </button>
         </div>
+
+        <!-- Tabs: one panel at a time keeps this readable on a phone -->
+        <div id="inspector-tab-bar" class="flex items-center gap-1 p-1 bg-slate-950 border border-slate-800 rounded-xl overflow-x-auto"></div>
+
+        <!-- Subsystems Cards -->
+        <div id="inspector-content-grid" class="space-y-3"></div>
       </div>
-
-      <!-- About this node (only when the node has a description) -->
-      <div id="inspector-notes-preview" class="hidden px-3 py-2 bg-slate-950 rounded-xl border border-slate-800 text-[11px] text-slate-300 leading-relaxed whitespace-pre-wrap break-words"></div>
-
-      <!-- Add Inside This Node (compact launcher chips) -->
-      <div class="flex items-center gap-1.5 flex-wrap">
-        <span class="text-slate-500 font-bold text-[9px] uppercase tracking-wider shrink-0 mr-0.5">Add</span>
-        <button type="button" onclick="openDedicatedTaskModal()" class="px-2.5 py-1 bg-purple-600/15 border border-purple-500/30 hover:bg-purple-600/25 text-purple-300 font-bold rounded-full transition flex items-center gap-1 text-[11px] active:scale-95">
-          <i data-lucide="check-square" class="w-3 h-3"></i> Task
-        </button>
-        <button type="button" onclick="openDedicatedNoteModal()" class="px-2.5 py-1 bg-yellow-500/15 border border-yellow-500/30 hover:bg-yellow-500/25 text-yellow-300 font-bold rounded-full transition flex items-center gap-1 text-[11px] active:scale-95">
-          <i data-lucide="file-text" class="w-3 h-3"></i> Note
-        </button>
-        <button type="button" onclick="openDedicatedGoalModal()" class="px-2.5 py-1 bg-rose-600/15 border border-rose-500/30 hover:bg-rose-600/25 text-rose-300 font-bold rounded-full transition flex items-center gap-1 text-[11px] active:scale-95">
-          <i data-lucide="target" class="w-3 h-3"></i> Goal
-        </button>
-        <button type="button" onclick="startFocusTimerForNode()" class="px-2.5 py-1 bg-indigo-600/15 border border-indigo-500/30 hover:bg-indigo-600/25 text-indigo-300 font-bold rounded-full transition flex items-center gap-1 text-[11px] active:scale-95">
-          <i data-lucide="timer" class="w-3 h-3"></i> Timer
-        </button>
-      </div>
-
-      <!-- Tabs: one panel at a time keeps this readable on a phone -->
-      <div id="inspector-tab-bar" class="flex items-center gap-1 p-1 bg-slate-950 border border-slate-800 rounded-xl overflow-x-auto"></div>
-
-      <!-- Subsystems Cards -->
-      <div id="inspector-content-grid" class="space-y-3"></div>
     </div>
   </div>
 
