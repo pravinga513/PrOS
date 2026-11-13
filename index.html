@@ -13067,13 +13067,15 @@ html, body {
           <i data-lucide="folder-plus" class="w-4 h-4 text-emerald-400"></i>
         </button>
 
-        <button type="button" onclick="exportMindmapImage('png')" class="p-2 bg-slate-900 border border-slate-800 hover:border-emerald-500/40 text-emerald-300 text-xs font-bold rounded-xl transition flex items-center justify-center active:scale-95 shadow-sm shrink-0" title="Download the full mindmap as a PNG image">
-          <i data-lucide="download" class="w-4 h-4 text-emerald-400"></i>
-        </button>
-
-        <button type="button" onclick="exportMindmapImage('pdf')" class="p-2 bg-slate-900 border border-slate-800 hover:border-emerald-500/40 text-emerald-300 text-xs font-bold rounded-xl transition flex items-center justify-center active:scale-95 shadow-sm shrink-0" title="Export the full mindmap as PDF (via the print dialog)">
-          <i data-lucide="printer" class="w-4 h-4 text-emerald-400"></i>
-        </button>
+        <div class="relative shrink-0">
+          <button type="button" onclick="toggleMindmapExportMenu(event)" class="p-2 bg-slate-900 border border-slate-800 hover:border-emerald-500/40 text-emerald-300 text-xs font-bold rounded-xl transition flex items-center justify-center active:scale-95 shadow-sm shrink-0" title="Export the full mindmap as PNG or PDF">
+            <i data-lucide="download" class="w-4 h-4 text-emerald-400"></i>
+          </button>
+          <div id="mindmap-export-menu" class="hidden absolute right-0 top-full mt-1 w-44 bg-slate-900 border border-slate-800 rounded-xl shadow-2xl p-1 z-40">
+            <button type="button" onclick="exportMindmapImage('png')" class="w-full text-left px-3 py-2 rounded-lg text-[11px] font-bold text-slate-200 hover:bg-slate-800 flex items-center gap-2 transition"><i data-lucide="download" class="w-3.5 h-3.5 text-emerald-400"></i>PNG Image</button>
+            <button type="button" onclick="exportMindmapImage('pdf')" class="w-full text-left px-3 py-2 rounded-lg text-[11px] font-bold text-slate-200 hover:bg-slate-800 flex items-center gap-2 transition"><i data-lucide="file-text" class="w-3.5 h-3.5 text-sky-400"></i>PDF Document</button>
+          </div>
+        </div>
 
         <button type="button" onclick="openNodeModal(null)" class="hidden sm:flex px-3.5 py-2 bg-emerald-600 hover:bg-emerald-500 text-slate-950 font-black text-xs rounded-xl transition items-center gap-1.5 shadow-lg shadow-emerald-600/20 active:scale-95 touch-manipulation shrink-0">
           <i data-lucide="plus-circle" class="w-4 h-4 shrink-0"></i>
@@ -14464,9 +14466,80 @@ html, body {
     }
 
     /* Export the full mindmap (current map) as a PNG image or a PDF
-       (drawn onto a canvas from data — no external libraries needed) */
+       (drawn onto a canvas from data — no external libraries needed).
+       This is a standalone render of the whole map, not a viewport
+       screenshot: it always includes every node, even off-screen ones. */
+    window.toggleMindmapExportMenu = function(e) {
+      if (e) e.stopPropagation();
+      const menu = document.getElementById('mindmap-export-menu');
+      if (menu) menu.classList.toggle('hidden');
+    };
+    document.addEventListener('click', (e) => {
+      const menu = document.getElementById('mindmap-export-menu');
+      if (menu && !menu.classList.contains('hidden') && !menu.contains(e.target)) menu.classList.add('hidden');
+    });
+
+    /* Minimal single-page PDF writer: embeds a JPEG of the canvas as an
+       XObject on an A3 landscape page. ASCII header/objects, binary image. */
+    function buildPdfFromCanvas(cv) {
+      const jpegB64 = cv.toDataURL('image/jpeg', 0.92).split(',')[1];
+      const bin = atob(jpegB64);
+      const imgBytes = new Uint8Array(bin.length);
+      for (let i = 0; i < bin.length; i++) imgBytes[i] = bin.charCodeAt(i) & 0xff;
+
+      const iw = cv.width, ih = cv.height;
+      const PW = 1190.55, PH = 841.89; // A3 landscape in points
+      const margin = 24;
+      const scale = Math.min((PW - margin * 2) / iw, (PH - margin * 2) / ih);
+      const w = iw * scale, h = ih * scale;
+      const x = (PW - w) / 2, y = (PH - h) / 2;
+
+      const enc = (s) => {
+        const u = new Uint8Array(s.length);
+        for (let i = 0; i < s.length; i++) u[i] = s.charCodeAt(i) & 0xff;
+        return u;
+      };
+
+      const content = 'q ' + w.toFixed(2) + ' 0 0 ' + h.toFixed(2) + ' ' + x.toFixed(2) + ' ' + y.toFixed(2) + ' cm /Im0 Do Q';
+      const objects = [
+        '1 0 obj\n<< /Type /Catalog /Pages 2 0 R >>\nendobj\n',
+        '2 0 obj\n<< /Type /Pages /Kids [3 0 R] /Count 1 >>\nendobj\n',
+        '3 0 obj\n<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ' + PW.toFixed(2) + ' ' + PH.toFixed(2) + '] /Resources << /XObject << /Im0 4 0 R >> >> /Contents 5 0 R >> >>\nendobj\n',
+        '4 0 obj\n<< /Type /XObject /Subtype /Image /Width ' + iw + ' /Height ' + ih + ' /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ' + imgBytes.length + ' >>\nstream\n',
+        imgBytes,
+        '\nendstream\nendobj\n',
+        '5 0 obj\n<< /Length ' + content.length + ' >>\nstream\n' + content + '\nendstream\nendobj\n'
+      ];
+
+      const chunks = [];
+      let offset = 0;
+      const push = (c) => {
+        if (typeof c === 'string') c = enc(c);
+        chunks.push(c);
+        offset += c.length;
+      };
+
+      push('%PDF-1.4\n%\xE2\xE3\xCF\xD3\n');
+      const offsets = [];
+      objects.forEach(obj => { offsets.push(offset); push(obj); });
+      const xrefStart = offset;
+      let xref = 'xref\n0 ' + (objects.length + 1) + '\n0000000000 65535 f \n';
+      offsets.forEach(o => { xref += String(o).padStart(10, '0') + ' 00000 n \n'; });
+      xref += 'trailer\n<< /Size ' + (objects.length + 1) + ' /Root 1 0 R >>\nstartxref\n' + xrefStart + '\n%%EOF';
+      push(xref);
+
+      const total = chunks.reduce((s, c) => s + c.length, 0);
+      const out = new Uint8Array(total);
+      let pos = 0;
+      chunks.forEach(c => { out.set(c, pos); pos += c.length; });
+      return out;
+    }
+
     window.exportMindmapImage = function(kind) {
       try {
+        const menu = document.getElementById('mindmap-export-menu');
+        if (menu) menu.classList.add('hidden');
+
         const curMapId = window.appState.activeMindmapId || 'map_main';
         const nodes = (window.appState.mindmapNodes || []).filter(n => (n.mapId || 'map_main') === curMapId);
         if (!nodes.length) {
@@ -14640,14 +14713,17 @@ html, body {
         const fileName = String(mapName).replace(/[^a-z0-9_-]+/gi, '_').toLowerCase() + '_' + new Date().toISOString().slice(0, 10);
 
         if (kind === 'pdf') {
-          const w = window.open('', '_blank');
-          if (!w) {
-            if (window.showToast) window.showToast('Allow pop-ups to export as PDF.', 'error');
-            return;
-          }
-          w.document.write('<html><head><title>' + fileName + '</title><style>@page{size:A3 landscape;margin:8mm}html,body{margin:0;padding:0;background:#0b1220;height:100%}body{display:flex;align-items:center;justify-content:center}img{max-width:100%;max-height:98vh}</style></head><body><img src="' + dataUrl + '" onload="setTimeout(function(){window.print()},250)"></body></html>');
-          w.document.close();
-          if (window.showToast) window.showToast('Use "Save as PDF" in the print dialog.', 'info');
+          const pdfBytes = buildPdfFromCanvas(canvas);
+          const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = fileName + '.pdf';
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+          setTimeout(() => URL.revokeObjectURL(url), 4000);
+          if (window.showToast) window.showToast('Mindmap exported as PDF!', 'success');
         } else {
           const a = document.createElement('a');
           a.href = dataUrl;
@@ -15523,7 +15599,7 @@ html, body {
       grid.innerHTML = `
         <!-- Tasks Subsystem -->
         <div class="space-y-2">
-          <div class="space-y-1.5 p-2 bg-slate-950/40 rounded-xl border border-slate-800/70">
+          <div class="space-y-1.5 h-52 overflow-y-auto p-2 bg-slate-950/40 rounded-xl border border-slate-800/70">
             ${linkedTasks.map(t => {
               const subtasks = Array.isArray(t.subtasks) ? t.subtasks : [];
               const completedSubtasks = subtasks.filter(s => s.completed).length;
@@ -15564,14 +15640,14 @@ html, body {
                 </div>
               `;
             }).join('')}
-            ${linkedTasks.length === 0 ? '<p class="text-slate-500 italic text-[11px] text-center py-3">No tasks linked yet — use <span class="text-purple-300 font-bold">+ Task</span> above.</p>' : ''}
+            ${linkedTasks.length === 0 ? '<p class="h-full flex items-center justify-center text-slate-500 italic text-[11px] text-center py-3">No tasks linked yet — use <span class="text-purple-300 font-bold">+ Task</span> above.</p>' : ''}
           </div>
           <button type="button" onclick="openNodeFolderInView('tasks')" class="w-full h-8 rounded-xl bg-slate-950 border border-slate-800 text-[11px] font-bold text-purple-300 hover:border-purple-500/40 transition flex items-center justify-center gap-1">${linkedTasks.length > 0 ? 'Show all in Tasks' : 'Open in Tasks'} <i data-lucide="arrow-right" class="w-3 h-3"></i></button>
         </div>
 
         <!-- Knowledge Notes Subsystem -->
         <div class="space-y-2">
-          <div class="space-y-1.5 p-2 bg-slate-950/40 rounded-xl border border-slate-800/70">
+          <div class="space-y-1.5 h-52 overflow-y-auto p-2 bg-slate-950/40 rounded-xl border border-slate-800/70">
             ${linkedNotes.map(n => `
               <div class="p-2.5 bg-slate-950 rounded-xl border border-slate-800 space-y-1.5 hover:border-yellow-500/40 transition cursor-pointer" onclick="openNotesEditorOverlay('${n.id}', 'preview')">
                 <div class="flex items-center justify-between gap-2">
@@ -15584,14 +15660,14 @@ html, body {
                 <p class="text-[11px] text-slate-400 line-clamp-2 leading-relaxed font-sans pl-8">${escapeHtml(n.content || 'Empty note...')}</p>
               </div>
             `).join('')}
-            ${linkedNotes.length === 0 ? '<p class="text-slate-500 italic text-[11px] text-center py-3">No notes linked yet — use <span class="text-yellow-300 font-bold">+ Note</span> above.</p>' : ''}
+            ${linkedNotes.length === 0 ? '<p class="h-full flex items-center justify-center text-slate-500 italic text-[11px] text-center py-3">No notes linked yet — use <span class="text-yellow-300 font-bold">+ Note</span> above.</p>' : ''}
           </div>
           <button type="button" onclick="openNodeFolderInView('notes')" class="w-full h-8 rounded-xl bg-slate-950 border border-slate-800 text-[11px] font-bold text-yellow-300 hover:border-yellow-500/40 transition flex items-center justify-center gap-1">${linkedNotes.length > 0 ? 'Show all in Notes' : 'Open in Notes'} <i data-lucide="arrow-right" class="w-3 h-3"></i></button>
         </div>
 
         <!-- Goals & OKRs Subsystem -->
         <div class="space-y-2">
-          <div class="space-y-1.5 p-2 bg-slate-950/40 rounded-xl border border-slate-800/70">
+          <div class="space-y-1.5 h-52 overflow-y-auto p-2 bg-slate-950/40 rounded-xl border border-slate-800/70">
             ${linkedGoals.map(g => {
               const krs = g.keyResults || [];
               return `
@@ -15619,7 +15695,7 @@ html, body {
                 </div>
               `;
             }).join('')}
-            ${linkedGoals.length === 0 ? '<p class="text-slate-500 italic text-[11px] text-center py-3">No goals linked yet — use <span class="text-rose-300 font-bold">+ Goal</span> above.</p>' : ''}
+            ${linkedGoals.length === 0 ? '<p class="h-full flex items-center justify-center text-slate-500 italic text-[11px] text-center py-3">No goals linked yet — use <span class="text-rose-300 font-bold">+ Goal</span> above.</p>' : ''}
           </div>
           <button type="button" onclick="openNodeFolderInView('goals')" class="w-full h-8 rounded-xl bg-slate-950 border border-slate-800 text-[11px] font-bold text-rose-300 hover:border-rose-500/40 transition flex items-center justify-center gap-1">${linkedGoals.length > 0 ? 'Show all in Goals' : 'Open in Goals'} <i data-lucide="arrow-right" class="w-3 h-3"></i></button>
         </div>
