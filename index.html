@@ -21695,7 +21695,6 @@ html, body {
             <h2 class="text-base sm:text-lg md:text-xl font-black text-white tracking-tight">Diary &amp; Experience Logbook</h2>
             <span class="text-[9px] px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-300 font-mono font-bold border border-emerald-500/30">Life Memory Stream</span>
           </div>
-          <p class="text-xs text-slate-400 mt-1">Chronological memory archive, mood analytics, reflections, and tagged breakthroughs.</p>
         </div>
       </div>
 
@@ -21798,10 +21797,10 @@ html, body {
         </button>
       </div>
 
-      <!-- Type Select -->
-      <div class="flex items-center gap-2 w-full sm:w-auto">
+      <!-- Type Select + Date Jump -->
+      <div class="flex items-center gap-2 w-full sm:w-auto flex-wrap">
         <span class="text-slate-500 text-[11px] font-semibold shrink-0">Category:</span>
-        <select id="logbook-type-filter" onchange="renderLogbookTimeline(true)" class="bg-slate-900 border border-slate-800 text-slate-200 rounded-xl px-2.5 py-1 text-xs outline-none focus:border-emerald-400 font-semibold transition">
+        <select id="logbook-type-filter" onchange="renderLogbookTimeline(true)" class="bg-slate-900 border border-slate-800 text-slate-200 rounded-xl px-2.5 py-1 text-xs outline-none focus:border-emerald-400 font-semibold transition max-w-[132px]">
           <option value="ALL">All Categories</option>
           <option value="Daily Thought">💭 Daily Thought</option>
           <option value="Milestone / Win">🏆 Milestone / Win</option>
@@ -21811,21 +21810,23 @@ html, body {
           <option value="Challenge">⚡ Challenge &amp; Fix</option>
           <option value="Decision Log">⚖️ Major Decision</option>
         </select>
+        <input type="date" id="logbook-date-jump-input" onchange="jumpToLogbookDate(this.value)" class="bg-slate-900 border border-slate-800 text-slate-200 rounded-xl px-2 py-1 text-[11px] outline-none focus:border-emerald-400 font-mono transition w-[136px] sm:w-auto shrink-0" />
       </div>
     </div>
 
-    <!-- Date navigator — folded into the filter bar, no separate section -->
-    <div class="flex flex-col sm:flex-row sm:items-center gap-2 pt-2.5 border-t border-slate-900">
-      <span class="text-[10px] text-slate-500 uppercase font-bold shrink-0">Date</span>
-      <span id="logbook-active-date-badge" class="text-[10px] font-mono text-emerald-400 shrink-0">All Dates</span>
-      <input type="date" id="logbook-date-jump-input" onchange="jumpToLogbookDate(this.value)" class="bg-slate-900 border border-slate-800 text-slate-200 rounded-xl px-2 py-1 text-[11px] outline-none focus:border-emerald-400 font-mono transition w-[160px] sm:w-auto shrink-0" />
-      <div id="logbook-months-nav" class="flex items-center gap-1.5 overflow-x-auto no-scrollbar flex-1 min-w-0"></div>
-    </div>
+    <!-- Monthly breakdown chips -->
+    <div id="logbook-months-nav" class="flex items-center gap-1.5 overflow-x-auto no-scrollbar pt-2.5 border-t border-slate-900"></div>
 
     <!-- Dynamic Hashtag Tag Cloud -->
     <div id="logbook-tag-cloud" class="flex items-center gap-1.5 overflow-x-auto pt-1 border-t border-slate-900 text-xs no-scrollbar">
       <!-- Injected dynamically via JS -->
     </div>
+  </div>
+
+  <!-- Active filter strip, right above the memory stream -->
+  <div class="flex items-center justify-between gap-2 px-1">
+    <span id="logbook-active-date-badge" class="text-[10px] font-mono text-emerald-400">All Dates</span>
+    <span class="text-[10px] text-slate-600 font-mono uppercase tracking-wider">Memory Stream</span>
   </div>
 
   <!-- Chronological Stream -->
@@ -22064,17 +22065,30 @@ html, body {
       window.renderLogbookTimeline(true);
     };
 
-    /* KPI cards act as filter shortcuts */
+    /* KPI cards act as filter shortcuts and jump to the memory stream */
     window.logbookKpiFilter = function(kind) {
       triggerHaptic();
       if (kind === 'mood') {
         const m = window.__logbookDominantMood || '🙂';
         logbookActiveMood = (logbookActiveMood === m) ? '' : m;
         window.renderLogbookTimeline(true);
+        window.logbookScrollToStream();
         return;
       }
       logbookActiveMood = '';
       window.setLogbookTimeFilter(kind === 'all' ? 'ALL' : kind === 'pinned' ? 'PINNED' : 'MONTH');
+      window.logbookScrollToStream();
+    };
+
+    /* Brings the memory stream into view after a KPI filter */
+    window.logbookScrollToStream = function() {
+      const stream = document.getElementById('logbook-timeline-container');
+      if (!stream) return;
+      try {
+        stream.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      } catch (err) {
+        stream.scrollIntoView();
+      }
     };
 
     /* Highlights the KPI card that matches the active filter */
