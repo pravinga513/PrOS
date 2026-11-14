@@ -7901,6 +7901,7 @@ html, body {
       const generalFolders = folders.filter(f => !f.isNodeFolder);
       const nodeFolders = folders.filter(f => f.isNodeFolder);
 
+      // Show general goal folders always
       if (generalFolders.length > 0) {
         const groupGen = document.createElement('optgroup');
         groupGen.label = '📁 Goal Collections';
@@ -7913,10 +7914,16 @@ html, body {
         select.appendChild(groupGen);
       }
 
-      if (nodeFolders.length > 0) {
+      // Only show node folders that have associated goals (not orphaned mindmap nodes)
+      const nodeFoldersWithGoals = nodeFolders.filter(f => {
+        const hasAssociatedGoal = (window.appState.goals || []).some(g => g.folderId === f.id);
+        return hasAssociatedGoal;
+      });
+
+      if (nodeFoldersWithGoals.length > 0) {
         const groupNode = document.createElement('optgroup');
         groupNode.label = '🧠 Mindmap Node Folders';
-        nodeFolders.forEach(f => {
+        nodeFoldersWithGoals.forEach(f => {
           const opt = document.createElement('option');
           opt.value = f.id;
           opt.textContent = f.name.startsWith('🧠') ? f.name : `🧠 ${f.name}`;
