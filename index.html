@@ -7454,13 +7454,7 @@ html, body {
           <input id="goal-folder-name-input" type="text" placeholder="e.g. Q3 Milestones, PrOS Roadmap" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 sm:p-3 text-slate-100 outline-none focus:border-rose-400 transition font-bold text-xs" />
         </div>
 
-        <div>
-          <label class="flex items-center gap-2 text-slate-300 cursor-pointer pt-1">
-            <input id="goal-folder-is-node" type="checkbox" class="w-4 h-4 rounded accent-rose-500 cursor-pointer" />
-            <span class="font-semibold text-xs">Tag as Mindmap Node Folder</span>
-          </label>
-          <p class="text-[10px] text-slate-500 mt-1 pl-6">Node folders receive special badges and only appear in the sidebar when linked targets exist.</p>
-        </div>
+        
 
         <div class="flex gap-2 pt-2 border-t border-slate-800">
           <button type="button" onclick="closeModalDirect('create-goal-folder-modal')" class="flex-1 py-2.5 bg-slate-800 text-slate-300 font-semibold rounded-xl hover:bg-slate-700 transition">Cancel</button>
@@ -8964,10 +8958,16 @@ html, body {
     window.submitCreateGoalFolder = function() {
       ensureGoalsInitialized();
       const name = document.getElementById('goal-folder-name-input')?.value.trim();
-      const isNodeFolder = document.getElementById('goal-folder-is-node')?.checked || false;
 
       if (!name) {
         if (window.showToast) window.showToast('Please enter a folder name.', 'error');
+        return;
+      }
+
+      // Avoid duplicating the default "General Goals" folder
+      if (name.toLowerCase() === 'general goals') {
+        if (window.showToast) window.showToast('General Goals already exists.', 'error');
+        closeModalDirect('create-goal-folder-modal');
         return;
       }
 
@@ -8976,18 +8976,11 @@ html, body {
         existing = {
           id: 'gf_' + Date.now(),
           name,
-          isNodeFolder,
-          nodeTag: isNodeFolder ? name : null,
           createdAt: new Date().toISOString()
         };
         window.appState.goalFolders.push(existing);
       } else {
-        existing.isNodeFolder = isNodeFolder;
-        if (isNodeFolder) existing.nodeTag = name;
-      }
-
-      if (isNodeFolder) {
-        window.ensureNodeFolderForTag(name);
+        if (window.showToast) window.showToast('Folder already exists.', 'error');
       }
 
       closeModalDirect('create-goal-folder-modal');
