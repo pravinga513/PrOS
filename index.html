@@ -21681,49 +21681,52 @@ html, body {
 <section id="view-logbook" class="app-view hidden space-y-4 md:space-y-6 max-w-7xl mx-auto w-full pb-36 px-1 sm:px-0">
 
   <!-- Top Header Toolbar -->
-  <div class="glass-card rounded-2xl p-4 md:p-5 border border-slate-800 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 bg-slate-900/60 backdrop-blur-xl">
-    <div>
-      <div class="flex items-center gap-2 flex-wrap">
-        <div class="p-2 rounded-xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+  <div class="relative overflow-hidden rounded-2xl md:rounded-3xl border border-emerald-500/20 bg-gradient-to-br from-emerald-950/50 via-slate-900/80 to-slate-900/90 backdrop-blur-xl p-4 md:p-5">
+    <div class="pointer-events-none absolute -top-14 -right-10 w-44 h-44 rounded-full bg-emerald-500/10 blur-3xl"></div>
+    <div class="pointer-events-none absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-emerald-500/30 to-transparent"></div>
+
+    <div class="relative flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+      <div class="flex items-start gap-3 min-w-0">
+        <div class="w-11 h-11 rounded-2xl bg-emerald-500/15 text-emerald-300 border border-emerald-500/25 flex items-center justify-center shrink-0 shadow-lg shadow-emerald-950/50">
           <i data-lucide="book-open" class="w-5 h-5"></i>
         </div>
-        <div>
-          <h2 class="text-base sm:text-lg md:text-xl font-extrabold text-white tracking-tight flex items-center gap-2">
-            <span>Diary &amp; Experience Logbook</span>
-            <span class="text-[9px] px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 font-mono font-bold border border-emerald-500/30">Life Memory Stream</span>
-          </h2>
-          <p class="text-xs text-slate-400 mt-0.5">Chronological memory archive, mood analytics, reflections, and tagged breakthroughs.</p>
+        <div class="min-w-0">
+          <div class="flex items-center gap-2 flex-wrap">
+            <h2 class="text-base sm:text-lg md:text-xl font-black text-white tracking-tight">Diary &amp; Experience Logbook</h2>
+            <span class="text-[9px] px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-300 font-mono font-bold border border-emerald-500/30">Life Memory Stream</span>
+          </div>
+          <p class="text-xs text-slate-400 mt-1">Chronological memory archive, mood analytics, reflections, and tagged breakthroughs.</p>
         </div>
       </div>
-    </div>
 
-    <!-- Toolbar Filters, Search & Action -->
-    <div class="flex flex-wrap items-center gap-2 w-full sm:w-auto justify-stretch sm:justify-end text-xs">
-      <!-- Search Input -->
-      <div class="relative flex-1 sm:flex-none sm:w-48 min-w-[140px]">
-        <i data-lucide="search" class="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none"></i>
-        <input id="logbook-search-input" type="text" onkeyup="searchLogbookEntries(this.value)" placeholder="Search memories, #tags..." class="w-full bg-slate-950 border border-slate-800 rounded-xl pl-8 pr-7 py-2 text-xs text-slate-200 outline-none focus:border-emerald-400 transition" />
-        <button type="button" onclick="clearLogbookSearch()" id="logbook-search-clear-btn" class="hidden absolute right-2 top-1/2 -translate-y-1/2 text-slate-500 hover:text-white p-0.5 text-xs">✕</button>
+      <!-- Toolbar Filters, Search & Action -->
+      <div class="flex flex-wrap items-center gap-2 w-full lg:w-auto justify-stretch lg:justify-end text-xs">
+        <!-- Search Input -->
+        <div class="relative flex-1 sm:flex-none sm:w-48 min-w-[140px]">
+          <i data-lucide="search" class="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none"></i>
+          <input id="logbook-search-input" type="text" onkeyup="searchLogbookEntries(this.value)" placeholder="Search memories, #tags..." class="w-full bg-slate-950/70 border border-slate-800 rounded-xl pl-8 pr-7 py-2 text-xs text-slate-200 outline-none focus:border-emerald-400 transition" />
+          <button type="button" onclick="clearLogbookSearch()" id="logbook-search-clear-btn" class="hidden absolute right-2 top-1/2 -translate-y-1/2 text-slate-500 hover:text-white p-0.5 text-xs">✕</button>
+        </div>
+
+        <!-- Export Button -->
+        <button type="button" onclick="exportLogbookArchive()" class="px-3 py-2 bg-slate-950/70 border border-slate-800 hover:border-emerald-500/40 text-emerald-300 font-semibold rounded-xl transition flex items-center gap-1.5 shadow-sm active:scale-95 shrink-0" title="Export Logbook as Text Report">
+          <i data-lucide="download" class="w-3.5 h-3.5 text-emerald-400"></i>
+          <span>Export</span>
+        </button>
+
+        <!-- New Entry Trigger -->
+        <button type="button" onclick="openLogbookModal()" class="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-500 text-slate-950 font-black rounded-xl transition flex items-center gap-1.5 shadow-lg shadow-emerald-600/20 active:scale-95 shrink-0">
+          <i data-lucide="plus-circle" class="w-4 h-4"></i>
+          <span>Write Log</span>
+        </button>
       </div>
-
-      <!-- Export Button -->
-      <button type="button" onclick="exportLogbookArchive()" class="px-3 py-2 bg-slate-900 border border-slate-800 hover:border-emerald-500/40 text-emerald-300 font-semibold rounded-xl transition flex items-center gap-1.5 shadow-sm active:scale-95 shrink-0" title="Export Logbook as Text Report">
-        <i data-lucide="download" class="w-3.5 h-3.5 text-emerald-400"></i>
-        <span>Export</span>
-      </button>
-
-      <!-- New Entry Trigger -->
-      <button type="button" onclick="openLogbookModal()" class="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-500 text-slate-950 font-black rounded-xl transition flex items-center gap-1.5 shadow-lg shadow-emerald-600/20 active:scale-95 shrink-0">
-        <i data-lucide="plus-circle" class="w-4 h-4"></i>
-        <span>Write Log</span>
-      </button>
     </div>
   </div>
 
-  <!-- KPI Metrics & Mood Radar Overview -->
+  <!-- KPI Metrics — each card is a filter shortcut -->
   <div class="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-3 md:gap-4">
     <!-- Card 1: Total Recorded Memories -->
-    <div class="glass-card p-3 sm:p-4 rounded-2xl border border-emerald-500/20 bg-emerald-500/[0.03] space-y-1 hover:border-emerald-500/40 transition">
+    <button type="button" onclick="logbookKpiFilter('all')" id="logbook-kpi-total" class="glass-card p-3 sm:p-4 rounded-2xl border border-emerald-500/20 bg-emerald-500/[0.03] space-y-1 hover:border-emerald-500/50 hover:bg-emerald-500/[0.06] transition text-left active:scale-95 cursor-pointer">
       <div class="flex justify-between items-center text-xs font-bold text-slate-400">
         <span class="uppercase tracking-wider text-[9px]">Total Memories</span>
         <div class="p-1 bg-emerald-500/10 text-emerald-400 rounded-lg shrink-0">
@@ -21731,11 +21734,11 @@ html, body {
         </div>
       </div>
       <div id="logbook-stat-total" class="text-base sm:text-lg md:text-xl font-black text-slate-100">0</div>
-      <p id="logbook-stat-streak" class="text-[10px] text-emerald-400 font-mono">0 Days Tracked</p>
-    </div>
+      <p id="logbook-stat-streak" class="text-[10px] text-emerald-400 font-mono">0 Unique Days</p>
+    </button>
 
     <!-- Card 2: Pinned Wins & Milestones -->
-    <div class="glass-card p-3 sm:p-4 rounded-2xl border border-amber-500/20 bg-amber-500/[0.03] space-y-1 hover:border-amber-500/40 transition">
+    <button type="button" onclick="logbookKpiFilter('pinned')" id="logbook-kpi-pinned" class="glass-card p-3 sm:p-4 rounded-2xl border border-amber-500/20 bg-amber-500/[0.03] space-y-1 hover:border-amber-500/50 hover:bg-amber-500/[0.06] transition text-left active:scale-95 cursor-pointer">
       <div class="flex justify-between items-center text-xs font-bold text-slate-400">
         <span class="uppercase tracking-wider text-[9px]">Pinned Milestones</span>
         <div class="p-1 bg-amber-500/10 text-amber-400 rounded-lg shrink-0">
@@ -21743,11 +21746,11 @@ html, body {
         </div>
       </div>
       <div id="logbook-stat-pinned" class="text-base sm:text-lg md:text-xl font-black text-amber-300">0</div>
-      <p class="text-[10px] text-slate-500 font-mono">Highlights preserved</p>
-    </div>
+      <p class="text-[10px] text-slate-500 font-mono">Tap for highlights</p>
+    </button>
 
     <!-- Card 3: Dominant Mood -->
-    <div class="glass-card p-3 sm:p-4 rounded-2xl border border-sky-500/20 bg-sky-500/[0.03] space-y-1 hover:border-sky-500/40 transition">
+    <button type="button" onclick="logbookKpiFilter('mood')" id="logbook-kpi-mood" class="glass-card p-3 sm:p-4 rounded-2xl border border-sky-500/20 bg-sky-500/[0.03] space-y-1 hover:border-sky-500/50 hover:bg-sky-500/[0.06] transition text-left active:scale-95 cursor-pointer">
       <div class="flex justify-between items-center text-xs font-bold text-slate-400">
         <span class="uppercase tracking-wider text-[9px]">Dominant State</span>
         <div class="p-1 bg-sky-500/10 text-sky-400 rounded-lg shrink-0">
@@ -21758,19 +21761,19 @@ html, body {
         <span>🙂</span> <span class="text-xs text-slate-400 font-normal font-sans">Balanced</span>
       </div>
       <p id="logbook-stat-energy-avg" class="text-[10px] text-sky-400 font-mono">Avg Energy: 4.0/5</p>
-    </div>
+    </button>
 
-    <!-- Card 4: Words & Content Volume -->
-    <div class="glass-card p-3 sm:p-4 rounded-2xl border border-purple-500/20 bg-purple-500/[0.03] space-y-1 hover:border-purple-500/40 transition">
+    <!-- Card 4: This Month -->
+    <button type="button" onclick="logbookKpiFilter('month')" id="logbook-kpi-month" class="glass-card p-3 sm:p-4 rounded-2xl border border-purple-500/20 bg-purple-500/[0.03] space-y-1 hover:border-purple-500/50 hover:bg-purple-500/[0.06] transition text-left active:scale-95 cursor-pointer">
       <div class="flex justify-between items-center text-xs font-bold text-slate-400">
-        <span class="uppercase tracking-wider text-[9px]">Logged Words</span>
+        <span class="uppercase tracking-wider text-[9px]">This Month</span>
         <div class="p-1 bg-purple-500/10 text-purple-400 rounded-lg shrink-0">
           <i data-lucide="file-text" class="w-3.5 h-3.5"></i>
         </div>
       </div>
       <div id="logbook-stat-words" class="text-base sm:text-lg md:text-xl font-black text-purple-300">0</div>
-      <p class="text-[10px] text-slate-500 font-mono">Total word volume</p>
-    </div>
+      <p id="logbook-stat-words-sub" class="text-[10px] text-slate-500 font-mono">0 words total</p>
+    </button>
   </div>
 
   <!-- Filter Pills: Timeframes, Types & Dynamic Hashtag Cloud -->
@@ -21811,56 +21814,35 @@ html, body {
       </div>
     </div>
 
+    <!-- Date navigator — folded into the filter bar, no separate section -->
+    <div class="flex flex-col sm:flex-row sm:items-center gap-2 pt-2.5 border-t border-slate-900">
+      <span class="text-[10px] text-slate-500 uppercase font-bold shrink-0">Date</span>
+      <span id="logbook-active-date-badge" class="text-[10px] font-mono text-emerald-400 shrink-0">All Dates</span>
+      <input type="date" id="logbook-date-jump-input" onchange="jumpToLogbookDate(this.value)" class="bg-slate-900 border border-slate-800 text-slate-200 rounded-xl px-2 py-1 text-[11px] outline-none focus:border-emerald-400 font-mono transition w-[160px] sm:w-auto shrink-0" />
+      <div id="logbook-months-nav" class="flex items-center gap-1.5 overflow-x-auto no-scrollbar flex-1 min-w-0"></div>
+    </div>
+
     <!-- Dynamic Hashtag Tag Cloud -->
     <div id="logbook-tag-cloud" class="flex items-center gap-1.5 overflow-x-auto pt-1 border-t border-slate-900 text-xs no-scrollbar">
       <!-- Injected dynamically via JS -->
     </div>
   </div>
 
-  <!-- Workspace Grid: Left Date-Navigator & Right Chronological Stream -->
-  <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 items-start">
-    
-    <!-- Left Navigation: Year / Month Calendar Index -->
-    <div class="lg:col-span-4 order-2 lg:order-1 glass-card rounded-2xl p-3.5 sm:p-4 space-y-3.5 border border-slate-800 bg-slate-950/60">
-      <div class="flex justify-between items-center border-b border-slate-800 pb-2">
-        <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
-          <i data-lucide="calendar" class="w-3.5 h-3.5 text-emerald-400"></i> Date Archive
-        </h3>
-        <span id="logbook-active-date-badge" class="text-[10px] font-mono text-emerald-400">All Dates</span>
-      </div>
-
-      <!-- Specific Date Picker Jump -->
-      <div class="space-y-1">
-        <label class="text-[10px] text-slate-500 uppercase font-bold block">Jump to Specific Date</label>
-        <input type="date" id="logbook-date-jump-input" onchange="jumpToLogbookDate(this.value)" class="w-full bg-slate-900 border border-slate-800 rounded-xl p-2 text-xs text-slate-200 outline-none focus:border-emerald-400 font-mono transition" />
-      </div>
-
-      <!-- Monthly Aggregations List -->
-      <div class="space-y-1 pt-1">
-        <span class="text-[10px] text-slate-500 uppercase font-bold block">Monthly Breakdown</span>
-        <div id="logbook-months-nav" class="space-y-1 max-h-64 lg:max-h-96 overflow-y-auto pr-0.5 scrollbar-none">
-          <!-- Injected via JS -->
-        </div>
-      </div>
+  <!-- Chronological Stream -->
+  <div class="space-y-3">
+    <div id="logbook-timeline-container" class="space-y-3">
+      <!-- Chronological entry cards rendered via JS in chunks -->
     </div>
 
-    <!-- Right Container: Timeline Stream with Infinite Scroll Trigger -->
-    <div class="lg:col-span-8 order-1 lg:order-2 space-y-3">
-      <div id="logbook-timeline-container" class="space-y-3">
-        <!-- Chronological entry cards rendered via JS in chunks -->
-      </div>
-
-      <!-- Lazy Loading Sentinel & Load More Trigger -->
-      <div id="logbook-lazy-sentinel" class="py-4 text-center">
-        <button type="button" id="logbook-load-more-btn" onclick="loadNextLogbookBatch()" class="hidden px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-400 hover:text-emerald-400 border border-slate-800 text-xs font-semibold font-mono transition">
-          Load More Entries...
-        </button>
-        <span id="logbook-all-loaded-indicator" class="hidden text-[10px] font-mono text-slate-600 block">
-          &bull; End of Timeline &bull;
-        </span>
-      </div>
+    <!-- Lazy Loading Sentinel & Load More Trigger -->
+    <div id="logbook-lazy-sentinel" class="py-4 text-center">
+      <button type="button" id="logbook-load-more-btn" onclick="loadNextLogbookBatch()" class="hidden px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-400 hover:text-emerald-400 border border-slate-800 text-xs font-semibold font-mono transition">
+        Load More Entries...
+      </button>
+      <span id="logbook-all-loaded-indicator" class="hidden text-[10px] font-mono text-slate-600 block">
+        &bull; End of Timeline &bull;
+      </span>
     </div>
-
   </div>
 
   <!-- MODAL: WRITE / EDIT DIARY EXPERIENCE -->
@@ -21980,6 +21962,7 @@ html, body {
     let logbookSearchQuery = '';
     let logbookActiveTimeFilter = 'ALL';
     let logbookActiveTag = '';
+    let logbookActiveMood = '';
     let logbookActiveMonthFilter = '';
     let modalSelectedMood = '🙂';
     let modalSelectedEnergy = 4;
@@ -22060,6 +22043,7 @@ html, body {
       triggerHaptic();
       logbookActiveTimeFilter = filterKey;
       logbookActiveMonthFilter = '';
+      logbookActiveMood = '';
 
       ['all', 'today', '7days', 'month', 'pinned'].forEach(k => {
         const btn = document.getElementById(`lb-time-btn-${k}`);
@@ -22080,6 +22064,38 @@ html, body {
       window.renderLogbookTimeline(true);
     };
 
+    /* KPI cards act as filter shortcuts */
+    window.logbookKpiFilter = function(kind) {
+      triggerHaptic();
+      if (kind === 'mood') {
+        const m = window.__logbookDominantMood || '🙂';
+        logbookActiveMood = (logbookActiveMood === m) ? '' : m;
+        window.renderLogbookTimeline(true);
+        return;
+      }
+      logbookActiveMood = '';
+      window.setLogbookTimeFilter(kind === 'all' ? 'ALL' : kind === 'pinned' ? 'PINNED' : 'MONTH');
+    };
+
+    /* Highlights the KPI card that matches the active filter */
+    window.updateLogbookKpiActiveState = function() {
+      const state = {
+        'logbook-kpi-total': logbookActiveTimeFilter === 'ALL' && !logbookActiveMood,
+        'logbook-kpi-pinned': logbookActiveTimeFilter === 'PINNED',
+        'logbook-kpi-mood': !!logbookActiveMood,
+        'logbook-kpi-month': logbookActiveTimeFilter === 'MONTH'
+      };
+      Object.keys(state).forEach(id => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.classList.toggle('ring-2', state[id]);
+        el.classList.toggle('ring-emerald-400/60', state[id] && id === 'logbook-kpi-total');
+        el.classList.toggle('ring-amber-400/60', state[id] && id === 'logbook-kpi-pinned');
+        el.classList.toggle('ring-sky-400/60', state[id] && id === 'logbook-kpi-mood');
+        el.classList.toggle('ring-purple-400/60', state[id] && id === 'logbook-kpi-month');
+      });
+    };
+
     window.searchLogbookEntries = function(query) {
       logbookSearchQuery = (query || '').toLowerCase().trim();
       const clearBtn = document.getElementById('logbook-search-clear-btn');
@@ -22094,6 +22110,22 @@ html, body {
       const input = document.getElementById('logbook-search-input');
       if (input) input.value = '';
       window.searchLogbookEntries('');
+    };
+
+    /* Wipes every active filter (pills, date, tag, mood, search, type) */
+    window.logbookClearAllFilters = function() {
+      triggerHaptic();
+      logbookSearchQuery = '';
+      logbookActiveTag = '';
+      logbookActiveMood = '';
+      logbookActiveMonthFilter = '';
+      const input = document.getElementById('logbook-search-input');
+      if (input) input.value = '';
+      const clearBtn = document.getElementById('logbook-search-clear-btn');
+      if (clearBtn) clearBtn.classList.add('hidden');
+      const typeSel = document.getElementById('logbook-type-filter');
+      if (typeSel) typeSel.value = 'ALL';
+      window.setLogbookTimeFilter('ALL');
     };
 
     window.jumpToLogbookDate = function(dateStr) {
@@ -22366,16 +22398,30 @@ html, body {
       const batch = logbookFilteredEntries.slice(startIndex, endIndex);
 
       if (batch.length === 0 && logbookCurrentPage === 1) {
-        container.innerHTML = `<div class="p-7 text-center rounded-2xl bg-slate-950/60 border border-dashed border-slate-800 flex flex-col items-center gap-2">
-          <div class="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center">
-            <i data-lucide="book-open" class="w-6 h-6"></i>
-          </div>
-          <p class="text-sm font-extrabold text-slate-200">No memories here yet</p>
-          <p class="text-[11px] text-slate-500 max-w-[240px] leading-relaxed">Nothing matches the current filter — loosen the pills above, or capture your first memory of the day.</p>
-          <button type="button" onclick="openLogbookModal()" class="mt-1 px-3.5 py-2 bg-emerald-600 hover:bg-emerald-500 text-slate-950 font-black rounded-xl text-[11px] flex items-center gap-1.5 active:scale-95 shadow-lg shadow-emerald-600/20">
-            <i data-lucide="plus-circle" class="w-4 h-4"></i> Write Log
-          </button>
-        </div>`;
+        const totalEntries = (window.appState?.diaryEntries || []).length;
+        if (totalEntries === 0) {
+          container.innerHTML = `<div class="p-7 text-center rounded-2xl bg-slate-950/60 border border-dashed border-slate-800 flex flex-col items-center gap-2">
+            <div class="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center">
+              <i data-lucide="book-open" class="w-6 h-6"></i>
+            </div>
+            <p class="text-sm font-extrabold text-slate-200">Your logbook is empty</p>
+            <p class="text-[11px] text-slate-500 max-w-[240px] leading-relaxed">Capture what happened today &mdash; a win, a lesson, a feeling. Future you will be glad you wrote it down.</p>
+            <button type="button" onclick="openLogbookModal()" class="mt-1 px-3.5 py-2 bg-emerald-600 hover:bg-emerald-500 text-slate-950 font-black rounded-xl text-[11px] flex items-center gap-1.5 active:scale-95 shadow-lg shadow-emerald-600/20">
+              <i data-lucide="plus-circle" class="w-4 h-4"></i> Write your first log
+            </button>
+          </div>`;
+        } else {
+          container.innerHTML = `<div class="p-7 text-center rounded-2xl bg-slate-950/60 border border-dashed border-slate-800 flex flex-col items-center gap-2">
+            <div class="w-12 h-12 rounded-2xl bg-slate-800/60 border border-slate-700 text-slate-400 flex items-center justify-center">
+              <i data-lucide="search-x" class="w-6 h-6"></i>
+            </div>
+            <p class="text-sm font-extrabold text-slate-200">No memories match this filter</p>
+            <p class="text-[11px] text-slate-500 max-w-[240px] leading-relaxed">You have ${totalEntries} ${totalEntries === 1 ? 'memory' : 'memories'} logged &mdash; none of them fit the current pills, date, tag or search.</p>
+            <button type="button" onclick="logbookClearAllFilters()" class="mt-1 px-3.5 py-2 bg-slate-900 hover:bg-slate-800 border border-slate-700 hover:border-emerald-500/40 text-slate-200 font-bold rounded-xl text-[11px] flex items-center gap-1.5 active:scale-95">
+              <i data-lucide="filter" class="w-4 h-4"></i> Clear all filters
+            </button>
+          </div>`;
+        }
         if (loadMoreBtn) loadMoreBtn.classList.add('hidden');
         if (endIndicator) endIndicator.classList.add('hidden');
         refreshIconsScoped(container);
@@ -22440,6 +22486,7 @@ html, body {
       const statMoodEl = document.getElementById('logbook-stat-mood');
       const statEnergyAvgEl = document.getElementById('logbook-stat-energy-avg');
       const statWordsEl = document.getElementById('logbook-stat-words');
+      const statWordsSubEl = document.getElementById('logbook-stat-words-sub');
 
       const allEntries = window.appState.diaryEntries || [];
       const todayStr = new Date().toISOString().split('T')[0];
@@ -22452,6 +22499,10 @@ html, body {
       const totalWords = allEntries.reduce((sum, e) => sum + (e.text ? e.text.split(/\s+/).length : 0), 0);
       const uniqueDays = new Set(allEntries.map(e => e.date)).size;
       const avgEnergy = totalCount > 0 ? (allEntries.reduce((sum, e) => sum + (e.energy || 4), 0) / totalCount).toFixed(1) : '4.0';
+      const monthCount = allEntries.filter(e => {
+        const d = new Date(e.date || e.createdAt);
+        return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+      }).length;
 
       // Mood frequency
       const moodCounts = {};
@@ -22472,9 +22523,11 @@ html, body {
       if (statStreakEl) statStreakEl.textContent = `${uniqueDays} Unique Days`;
       if (statPinnedEl) statPinnedEl.textContent = pinnedCount;
       if (statEnergyAvgEl) statEnergyAvgEl.textContent = `Avg Energy: ${avgEnergy}/5`;
-      if (statWordsEl) statWordsEl.textContent = totalWords.toLocaleString();
+      if (statWordsEl) statWordsEl.textContent = monthCount;
+      if (statWordsSubEl) statWordsSubEl.textContent = `${totalWords.toLocaleString()} words total`;
+      window.__logbookDominantMood = dominantMood;
       if (statMoodEl) {
-        statMoodEl.innerHTML = `<span>${dominantMood}</span> <span class="text-xs text-slate-400 font-normal font-sans">Dominant</span>`;
+        statMoodEl.innerHTML = `<span>${dominantMood}</span> <span class="text-xs text-slate-400 font-normal font-sans">${logbookActiveMood === dominantMood ? 'Filtering' : 'Dominant'}</span>`;
       }
 
       // 2. Build Tag Cloud
@@ -22518,11 +22571,8 @@ html, body {
           const btn = document.createElement('button');
           btn.type = 'button';
           const isSelected = logbookActiveMonthFilter === ym;
-          btn.className = `w-full text-left p-2 rounded-xl text-xs font-semibold flex items-center justify-between transition ${isSelected ? 'bg-slate-900 text-emerald-300 border border-emerald-500/40' : 'text-slate-400 hover:bg-slate-900/60'}`;
-          btn.innerHTML = `
-            <span>${ym}</span>
-            <span class="text-[10px] font-mono font-bold text-slate-500">${monthGroups[ym]} logs</span>
-          `;
+          btn.className = `px-2 py-1 rounded-lg text-[10px] font-mono font-bold shrink-0 transition ${isSelected ? 'bg-emerald-600 text-slate-950' : 'bg-slate-900 text-slate-400 hover:text-emerald-300 border border-slate-800'}`;
+          btn.innerHTML = `${ym} <span class="opacity-60">${monthGroups[ym]}</span>`;
           btn.onclick = () => filterLogbookByMonth(ym);
           monthsNavContainer.appendChild(btn);
         });
@@ -22554,6 +22604,10 @@ html, body {
         entries = entries.filter(e => e.type === typeFilter);
       }
 
+      if (logbookActiveMood) {
+        entries = entries.filter(e => (e.mood || '🙂') === logbookActiveMood);
+      }
+
       if (logbookActiveTag) {
         entries = entries.filter(e => `${e.tags || ''} ${e.text || ''}`.toLowerCase().includes(logbookActiveTag));
       }
@@ -22567,6 +22621,8 @@ html, body {
       }
 
       logbookFilteredEntries = entries;
+
+      if (typeof window.updateLogbookKpiActiveState === 'function') window.updateLogbookKpiActiveState();
 
       if (resetPagination) {
         logbookCurrentPage = 1;
