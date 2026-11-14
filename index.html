@@ -7136,6 +7136,49 @@ html, body {
     </div>
   </div>
 
+  <!-- KPI Overview Metrics (compressed, above filter bar) -->
+  <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-2 md:gap-3 my-3">
+    <button type="button" onclick="goalKpiJump('ALL')" data-goal-kpi="ALL" class="glass-card p-2 sm:p-3 rounded-xl border border-rose-500/20 bg-rose-500/[0.02] space-y-0.5 hover:border-rose-500/40 transition text-left active:scale-95 cursor-pointer">
+      <div class="flex justify-between items-center text-xs font-bold text-slate-400">
+        <span class="uppercase tracking-wider text-[8px]">Active Targets</span>
+        <div class="w-5 h-5 rounded-xl bg-rose-500/10 text-rose-400 flex items-center justify-center shrink-0">
+          <i data-lucide="compass" class="w-3 h-3"></i>
+        </div>
+      </div>
+      <div id="goal-stat-total" class="text-sm sm:text-base font-black text-slate-100">0</div>
+    </button>
+
+    <button type="button" onclick="scrollToGoalsCards()" class="glass-card p-2 sm:p-3 rounded-xl border border-emerald-500/20 bg-emerald-500/[0.02] space-y-0.5 hover:border-emerald-500/40 transition text-left active:scale-95 cursor-pointer">
+      <div class="flex justify-between items-center text-xs font-bold text-slate-400">
+        <span class="uppercase tracking-wider text-[8px]">Avg OKR Velocity</span>
+        <div class="w-5 h-5 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center shrink-0">
+          <i data-lucide="trending-up" class="w-3 h-3"></i>
+        </div>
+      </div>
+      <div id="goal-stat-avg" class="text-sm text-emerald-300">0%</div>
+    </button>
+
+    <button type="button" onclick="goalKpiJump('COMPLETED')" data-goal-kpi="COMPLETED" class="glass-card p-2 sm:p-3 rounded-xl border border-sky-500/20 bg-sky-500/[0.02] space-y-0.5 hover:border-sky-500/40 transition text-left active:scale-95 cursor-pointer">
+      <div class="flex justify-between items-center text-xs font-bold text-slate-400">
+        <span class="uppercase tracking-wider text-[8px]">Completed</span>
+        <div class="w-5 h-5 rounded-xl bg-sky-500/10 text-sky-400 flex items-center justify-center shrink-0">
+          <i data-lucide="check-circle-2" class="w-3.5 h-3.5"></i>
+        </div>
+      </div>
+      <div id="goal-stat-completed" class="text-sm text-sky-300">0</div>
+    </button>
+
+    <button type="button" onclick="goalKpiJump('URGENT')" data-goal-kpi="URGENT" class="glass-card p-2 sm:p-3 rounded-xl border border-amber-500/20 bg-amber-500/[0.02] space-y-0.5 hover:border-amber-500/40 transition text-left active:scale-95 cursor-pointer">
+      <div class="flex justify-between items-center text-xs font-bold text-slate-400">
+        <span class="uppercase tracking-wider text-[8px]">Near Deadline</span>
+        <div class="w-5 h-5 rounded-xl bg-amber-500/10 text-amber-400 flex items-center justify-center shrink-0">
+          <i data-lucide="flame" class="w-3 h-3"></i>
+        </div>
+      </div>
+      <div id="goal-stat-urgent" class="text-sm text-amber-400">0</div>
+    </button>
+  </div>
+
   <!-- Filters: status pills, category, sort and collections -->
   <div class="glass-card rounded-2xl p-3 sm:p-4 border border-slate-800 bg-slate-950/60 space-y-3">
     <!-- Status pills -->
@@ -7189,20 +7232,7 @@ html, body {
       </button>
     </div>
 
-    <!-- Folder list overlay (hidden by default) -->
-    <div id="folder-list-overlay" class="fixed inset-0 z-40 bg-slate-950/95 backdrop-blur-sm hidden">
-      <div class="min-h-screen p-6 pt-8">
-        <div class="absolute top-4 right-4">
-          <button onclick="toggleFolderList()" class="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white transition">
-            <i data-lucide="x" class="w-5 h-5"></i>
-          </button>
-        </div>
-        <div id="folder-list-content" class="space-y-2 max-h-[calc(100vh-4rem)] overflow-y-auto pr-1 scrollbar-slim"></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- KPI Overview Metrics -->
+    
   <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3 md:gap-4">
     <button type="button" onclick="goalKpiJump('ALL')" data-goal-kpi="ALL" class="glass-card p-3 sm:p-4 rounded-2xl border border-rose-500/20 bg-rose-500/[0.03] space-y-1.5 hover:border-rose-500/50 hover:bg-rose-500/[0.06] transition text-left active:scale-95 cursor-pointer">
       <div class="flex justify-between items-center text-xs font-bold text-slate-400">
