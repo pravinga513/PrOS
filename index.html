@@ -70,6 +70,29 @@
       scrollbar-width: none;
     }
 
+    /* Slim, light scrollbar for small scrollable lists (checklists etc.) */
+    .scrollbar-slim::-webkit-scrollbar {
+      width: 4px;
+      height: 4px;
+      display: block;
+    }
+    .scrollbar-slim::-webkit-scrollbar-track {
+      display: block;
+      background: transparent;
+    }
+    .scrollbar-slim::-webkit-scrollbar-thumb {
+      display: block;
+      background: rgba(148, 163, 184, 0.35);
+      border-radius: 999px;
+    }
+    .scrollbar-slim:hover::-webkit-scrollbar-thumb {
+      background: rgba(148, 163, 184, 0.55);
+    }
+    .scrollbar-slim {
+      scrollbar-width: thin;
+      scrollbar-color: rgba(148, 163, 184, 0.35) transparent;
+    }
+
     /* Native <select> restyle: consistent dark dropdowns app-wide */
     html {
       color-scheme: dark;
@@ -8333,7 +8356,7 @@ html, body {
       if (populated.length === 0) {
         container.innerHTML = `
           <div class="col-span-full p-4 text-center text-xs text-slate-500 bg-slate-950/60 rounded-xl border border-slate-800">
-            No categories with goals yet. Pin categories via <button type="button" onclick="openRadarFilterModal()" class="text-rose-400 underline font-semibold">Select Cards</button> — they appear here once goals exist.
+            No categories with goals yet. Pin categories via <button type="button" onclick="openRadarFilterModal()" class="text-rose-400 underline font-semibold">Cards</button> — they appear here once goals exist.
           </div>
         `;
         return;
@@ -8509,10 +8532,17 @@ html, body {
         const keyResults = g.keyResults || [];
         let krHtml = '';
         if (keyResults.length > 0) {
-          const krItems = keyResults.map((kr, idx) => {
+          // Any-order checklists sink completed rows to the bottom;
+          // step ladders keep their strict sequence
+          const krOrder = keyResults
+            .map((kr, idx) => ({ kr, idx }))
+            .sort((a, b) => isSequentialGoal
+              ? a.idx - b.idx
+              : (a.kr.completed ? 1 : 0) - (b.kr.completed ? 1 : 0));
+          const krItems = krOrder.map(({ kr, idx }) => {
             const isLocked = isSequentialGoal && (idx > 0 && !keyResults[idx - 1].completed);
             return `
-              <div class="flex items-center justify-between gap-2 text-xs py-0.5 ${isLocked ? 'opacity-40' : ''}">
+              <div class="flex items-center justify-between gap-2 text-xs py-0.5 ${isLocked ? 'opacity-40' : ''}" data-kr-idx="${idx}" data-kr-checked="${kr.completed ? 1 : 0}">
                 <label class="flex items-center gap-2 flex-1 min-w-0 ${isLocked ? 'cursor-not-allowed' : 'cursor-pointer'}">
                   <input type="checkbox" ${kr.completed ? 'checked' : ''} ${isLocked ? 'disabled' : ''} onchange="toggleGoalKeyResult('${g.id}', ${idx})" class="w-3.5 h-3.5 rounded accent-rose-500 cursor-pointer shrink-0" />
                   <span class="${kr.completed ? 'line-through text-slate-500' : 'text-slate-200'} truncate">${escapeHtml(kr.text)}</span>
@@ -8531,7 +8561,7 @@ html, body {
                 </span>
                 <span class="font-mono text-rose-400 font-bold">${keyResults.filter(k => k.completed).length}/${keyResults.length}</span>
               </div>
-              <div class="space-y-0.5 max-h-32 overflow-y-auto pr-1">
+              <div class="space-y-0.5 max-h-32 overflow-y-auto pr-1 scrollbar-slim" data-kr-list="1" data-kr-seq="${isSequentialGoal ? 1 : 0}" data-kr-goal="${g.id}">
                 ${krItems}
               </div>
             </div>
@@ -8625,6 +8655,7 @@ html, body {
 
       container.appendChild(fragment);
       refreshIconsScoped(container);
+      if (typeof window.scrollKRListsToChecked === 'function') window.scrollKRListsToChecked(container);
     };
 
     window.updateGoalProgress = function(id, val) {
@@ -15733,6 +15764,23 @@ html, body {
       }
     };
 
+    /* Step ladders (sequential goals) keep only the newest completed
+       step in the visible area; any-order checklists never scroll */
+    window.scrollKRListsToChecked = function(scope) {
+      const root = scope || document;
+      root.querySelectorAll('[data-kr-seq="1"]').forEach(list => {
+        const listRect = list.getBoundingClientRect();
+        if (!listRect.height) return; // panel is hidden — nothing to scroll
+        const done = list.querySelectorAll('[data-kr-checked="1"]');
+        if (!done.length) return;
+        const last = done[done.length - 1];
+        const itemRect = last.getBoundingClientRect();
+        const delta = itemRect.top - listRect.top;
+        if (Math.abs(delta) < 2) return;
+        list.scrollTop += delta;
+      });
+    };
+
     window.renderNodeInspectorContent = function() {
       const grid = document.getElementById('inspector-content-grid');
       if (!grid) return;
@@ -15869,10 +15917,10 @@ html, body {
                     <div class="bg-rose-500 h-full transition-all duration-300" style="width: ${g.progress || 0}%"></div>
                   </div>
                   ${krs.length > 0 ? `
-                    <div class="space-y-1 pt-1 border-t border-slate-900 text-[11px] max-h-24 overflow-y-auto pr-1">
-                      ${krs.map((k, kIdx) => `
-                        <label class="flex items-center gap-1.5 cursor-pointer text-slate-400 hover:text-slate-200">
-                          <input type="checkbox" ${k.completed ? 'checked' : ''} onchange="toggleGoalKRDirect('${g.id}', ${kIdx})" class="w-3 h-3 rounded accent-rose-500 cursor-pointer shrink-0" />
+                    <div class="space-y-1 pt-1 border-t border-slate-900 text-[11px] max-h-24 overflow-y-auto pr-1 scrollbar-slim" data-kr-list="1" data-kr-seq="${g.isSequential ? 1 : 0}" data-kr-goal="${g.id}">
+                      ${krs.map((k, i) => ({ k, i })).sort((a, b) => g.isSequential ? a.i - b.i : (a.k.completed ? 1 : 0) - (b.k.completed ? 1 : 0)).map(({ k, i }) => `
+                        <label class="flex items-center gap-1.5 cursor-pointer text-slate-400 hover:text-slate-200" data-kr-idx="${i}" data-kr-checked="${k.completed ? 1 : 0}">
+                          <input type="checkbox" ${k.completed ? 'checked' : ''} onchange="toggleGoalKRDirect('${g.id}', ${i})" class="w-3 h-3 rounded accent-rose-500 cursor-pointer shrink-0" />
                           <span class="truncate ${k.completed ? 'line-through text-slate-600' : ''}">${escapeHtml(k.text)}</span>
                         </label>
                       `).join('')}
@@ -15917,6 +15965,7 @@ html, body {
       });
 
       refreshIconsScoped(grid);
+      if (typeof window.scrollKRListsToChecked === 'function') window.scrollKRListsToChecked(grid);
     };
 
     window.setInspectorTab = function(tab) {
@@ -15924,6 +15973,10 @@ html, body {
       document.querySelectorAll('[data-inspector-tab]').forEach(wrap => {
         wrap.classList.toggle('hidden', wrap.getAttribute('data-inspector-tab') !== tab);
       });
+      // the newly shown panel may hold a step ladder that needs scrolling
+      if (typeof window.scrollKRListsToChecked === 'function') {
+        window.scrollKRListsToChecked(document.getElementById('inspector-content-grid'));
+      }
       const statsEl = document.getElementById('inspector-stats');
       if (statsEl) {
         const ids = ['tasks', 'notes', 'goals', 'links'];
