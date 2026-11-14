@@ -93,6 +93,40 @@
       scrollbar-color: rgba(148, 163, 184, 0.35) transparent;
     }
 
+    /* Seamless folder list expand/collapse */
+    #folder-list-overlay {
+      transition: opacity 0.2s ease, visibility 0.2s ease;
+      backdrop-filter: blur(4px);
+    }
+    #folder-list-overlay.flex {
+      opacity: 1;
+      visibility: visible;
+    }
+    #folder-list-overlay.hidden {
+      opacity: 0;
+      visibility: hidden;
+    }
+    .folder-list-btn .lucide-icon {
+      transition: transform 0.2s ease;
+    }
+    .folder-list-btn.expanded .lucide-icon:first-child {
+      transform: rotate(45deg);
+    }
+    .folder-list-btn.expanded .lucide-icon:last-child {
+      transform: rotate(-45deg) translateX(8px);
+    }
+
+    /* Content entrance staggered */
+    #folder-list-content > * {
+      opacity: 0;
+      transform: translateY(8px);
+      transition: opacity 0.2s ease 0.05s, transform 0.2s ease 0.05s;
+    }
+    #folder-list-content.visible > * {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
     /* Native <select> restyle: consistent dark dropdowns app-wide */
     html {
       color-scheme: dark;
@@ -8992,6 +9026,8 @@ html, body {
     // Toggle folder list expand/collapse
     window.toggleFolderList = function() {
       const overlay = document.getElementById('folder-list-overlay');
+      const content = document.getElementById('folder-list-content');
+      const btn = document.querySelector('.folder-list-btn');
       const iconPlus = document.getElementById('folder-list-icon')?.nextElementSibling;
       const iconMinus = document.getElementById('folder-list-icon')?.previousElementSibling;
       const folderCountEl = document.getElementById('folder-count');
@@ -9000,6 +9036,7 @@ html, body {
         // Show overlay
         overlay.classList.remove('hidden');
         overlay.classList.add('flex');
+        if (btn) btn.classList.add('expanded');
 
         const folders = window.appState.goalFolders || [];
         const usedFolders = folders.filter(f => {
@@ -9029,15 +9066,24 @@ html, body {
         }
 
         document.getElementById('folder-list-content').innerHTML = listHtml;
+        // Force reflow for animation
+        void overlay.offsetWidth;
         if (folderCountEl) folderCountEl.textContent = usedFolders.length;
         if (iconPlus) iconPlus.classList.add('hidden');
         if (iconMinus) iconMinus.classList.remove('hidden');
+        // Trigger content entrance animation
+        setTimeout(() => content.classList.add('visible'), 50);
       } else {
-        // Hide overlay
-        overlay.classList.add('hidden');
-        overlay.classList.remove('flex');
+        // Hide overlay - remove visible first so out animation can play
+        content.classList.remove('visible');
+        if (btn) btn.classList.remove('expanded');
         if (iconPlus) iconPlus.classList.remove('hidden');
         if (iconMinus) iconMinus.classList.add('hidden');
+        // Hide after a brief delay so the out animation plays
+        setTimeout(() => {
+          overlay.classList.add('hidden');
+          overlay.classList.remove('flex');
+        }, 200);
       }
     };
 
