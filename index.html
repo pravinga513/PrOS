@@ -21709,7 +21709,7 @@ html, body {
       <!-- Export Button -->
       <button type="button" onclick="exportLogbookArchive()" class="px-3 py-2 bg-slate-900 border border-slate-800 hover:border-emerald-500/40 text-emerald-300 font-semibold rounded-xl transition flex items-center gap-1.5 shadow-sm active:scale-95 shrink-0" title="Export Logbook as Text Report">
         <i data-lucide="download" class="w-3.5 h-3.5 text-emerald-400"></i>
-        <span class="hidden sm:inline">Export</span>
+        <span>Export</span>
       </button>
 
       <!-- New Entry Trigger -->
@@ -21777,12 +21777,22 @@ html, body {
   <div class="glass-card rounded-2xl p-3 sm:p-4 border border-slate-800 bg-slate-950/60 space-y-2.5">
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
       <!-- Timeframe Filters -->
-      <div class="flex items-center gap-1 overflow-x-auto pb-1 text-xs no-scrollbar">
-        <button type="button" onclick="setLogbookTimeFilter('ALL')" id="lb-time-btn-all" class="px-2.5 py-1 rounded-lg font-bold transition bg-emerald-600 text-slate-950 shrink-0 shadow-sm">All Timeline</button>
-        <button type="button" onclick="setLogbookTimeFilter('TODAY')" id="lb-time-btn-today" class="px-2.5 py-1 rounded-lg font-semibold text-slate-400 hover:text-white bg-slate-900 border border-slate-800 shrink-0">📅 Today</button>
-        <button type="button" onclick="setLogbookTimeFilter('7DAYS')" id="lb-time-btn-7days" class="px-2.5 py-1 rounded-lg font-semibold text-slate-400 hover:text-white bg-slate-900 border border-slate-800 shrink-0">⚡ Past 7 Days</button>
-        <button type="button" onclick="setLogbookTimeFilter('MONTH')" id="lb-time-btn-month" class="px-2.5 py-1 rounded-lg font-semibold text-slate-400 hover:text-white bg-slate-900 border border-slate-800 shrink-0">🗓️ This Month</button>
-        <button type="button" onclick="setLogbookTimeFilter('PINNED')" id="lb-time-btn-pinned" class="px-2.5 py-1 rounded-lg font-semibold text-slate-400 hover:text-amber-300 bg-slate-900 border border-slate-800 shrink-0">★ Highlights Only</button>
+      <div class="flex items-center gap-1.5 overflow-x-auto pb-1 text-xs no-scrollbar">
+        <button type="button" onclick="setLogbookTimeFilter('ALL')" id="lb-time-btn-all" class="px-2.5 py-1.5 rounded-xl font-bold transition bg-emerald-600 text-slate-950 shrink-0 shadow-sm flex items-center gap-1.5">
+          <i data-lucide="layers" class="w-3.5 h-3.5"></i> All
+        </button>
+        <button type="button" onclick="setLogbookTimeFilter('TODAY')" id="lb-time-btn-today" class="px-2.5 py-1.5 rounded-xl font-semibold text-slate-400 hover:text-white bg-slate-900 border border-slate-800 shrink-0 flex items-center gap-1.5">
+          <i data-lucide="calendar-days" class="w-3.5 h-3.5"></i> Today
+        </button>
+        <button type="button" onclick="setLogbookTimeFilter('7DAYS')" id="lb-time-btn-7days" class="px-2.5 py-1.5 rounded-xl font-semibold text-slate-400 hover:text-white bg-slate-900 border border-slate-800 shrink-0 flex items-center gap-1.5">
+          <i data-lucide="zap" class="w-3.5 h-3.5"></i> 7 Days
+        </button>
+        <button type="button" onclick="setLogbookTimeFilter('MONTH')" id="lb-time-btn-month" class="px-2.5 py-1.5 rounded-xl font-semibold text-slate-400 hover:text-white bg-slate-900 border border-slate-800 shrink-0 flex items-center gap-1.5">
+          <i data-lucide="calendar" class="w-3.5 h-3.5"></i> Month
+        </button>
+        <button type="button" onclick="setLogbookTimeFilter('PINNED')" id="lb-time-btn-pinned" class="px-2.5 py-1.5 rounded-xl font-semibold text-slate-400 hover:text-amber-300 bg-slate-900 border border-slate-800 shrink-0 flex items-center gap-1.5">
+          <i data-lucide="star" class="w-3.5 h-3.5"></i> Highlights
+        </button>
       </div>
 
       <!-- Type Select -->
@@ -21811,7 +21821,7 @@ html, body {
   <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 items-start">
     
     <!-- Left Navigation: Year / Month Calendar Index -->
-    <div class="lg:col-span-4 glass-card rounded-2xl p-3.5 sm:p-4 space-y-3.5 border border-slate-800 bg-slate-950/60">
+    <div class="lg:col-span-4 order-2 lg:order-1 glass-card rounded-2xl p-3.5 sm:p-4 space-y-3.5 border border-slate-800 bg-slate-950/60">
       <div class="flex justify-between items-center border-b border-slate-800 pb-2">
         <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
           <i data-lucide="calendar" class="w-3.5 h-3.5 text-emerald-400"></i> Date Archive
@@ -21835,7 +21845,7 @@ html, body {
     </div>
 
     <!-- Right Container: Timeline Stream with Infinite Scroll Trigger -->
-    <div class="lg:col-span-8 space-y-3">
+    <div class="lg:col-span-8 order-1 lg:order-2 space-y-3">
       <div id="logbook-timeline-container" class="space-y-3">
         <!-- Chronological entry cards rendered via JS in chunks -->
       </div>
@@ -22055,9 +22065,11 @@ html, body {
         const btn = document.getElementById(`lb-time-btn-${k}`);
         if (btn) {
           if (k.toUpperCase() === filterKey) {
-            btn.className = 'px-2.5 py-1 rounded-lg font-bold transition bg-emerald-600 text-slate-950 shrink-0 shadow-sm';
+            btn.className = k === 'pinned'
+              ? 'px-2.5 py-1.5 rounded-xl font-bold transition bg-amber-500 text-slate-950 shrink-0 shadow-sm flex items-center gap-1.5'
+              : 'px-2.5 py-1.5 rounded-xl font-bold transition bg-emerald-600 text-slate-950 shrink-0 shadow-sm flex items-center gap-1.5';
           } else {
-            btn.className = 'px-2.5 py-1 rounded-lg font-semibold text-slate-400 hover:text-white bg-slate-900 border border-slate-800 shrink-0';
+            btn.className = 'px-2.5 py-1.5 rounded-xl font-semibold text-slate-400 hover:text-white bg-slate-900 border border-slate-800 shrink-0 flex items-center gap-1.5';
           }
         }
       });
@@ -22301,17 +22313,19 @@ html, body {
       }
 
       card.innerHTML = `
-        <div class="flex items-start justify-between gap-2 border-b border-slate-900 pb-2">
-          <div class="flex items-center gap-2 flex-wrap min-w-0">
-            <span class="text-xl leading-none shrink-0">${e.mood || '🙂'}</span>
-            <div>
+        <div class="flex items-start justify-between gap-2">
+          <div class="flex items-center gap-2.5 min-w-0">
+            <div class="w-10 h-10 rounded-xl bg-slate-800/70 border border-slate-700/60 flex items-center justify-center text-lg shrink-0 shadow-inner">${e.mood || '🙂'}</div>
+            <div class="min-w-0">
               <div class="flex items-center gap-1.5 flex-wrap">
                 <span class="font-bold text-white text-xs">${e.date || todayStr}</span>
                 <span class="text-[10px] text-slate-500 font-mono">${e.time || ''}</span>
-                <span class="text-[9px] px-2 py-0.5 rounded-full bg-slate-900 text-slate-300 font-semibold border border-slate-800">${escapeHtml(e.type || 'Reflection')}</span>
-                ${e.isPinned ? '<span class="text-[9px] px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 font-bold border border-amber-500/30">★ PINNED</span>' : ''}
               </div>
-              ${e.location ? `<span class="text-[10px] text-slate-400 flex items-center gap-1 font-mono mt-0.5"><i data-lucide="map-pin" class="w-3 h-3 text-emerald-400"></i> ${escapeHtml(e.location)}</span>` : ''}
+              <div class="flex items-center gap-1.5 flex-wrap mt-1">
+                <span class="text-[9px] px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-300 font-semibold border border-emerald-500/25">${escapeHtml(e.type || 'Reflection')}</span>
+                ${e.isPinned ? '<span class="text-[9px] px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 font-bold border border-amber-500/30">★ PINNED</span>' : ''}
+                ${e.location ? `<span class="text-[9px] text-slate-400 flex items-center gap-1 font-mono"><i data-lucide="map-pin" class="w-2.5 h-2.5 text-emerald-400"></i>${escapeHtml(e.location)}</span>` : ''}
+              </div>
             </div>
           </div>
 
@@ -22322,14 +22336,19 @@ html, body {
           </div>
         </div>
 
-        <p class="text-xs text-slate-200 leading-relaxed font-sans whitespace-pre-wrap">${escapeHtml(e.text)}</p>
+        <p class="text-xs text-slate-200 leading-relaxed font-sans whitespace-pre-wrap border-t border-slate-900 pt-2.5">${escapeHtml(e.text)}</p>
         ${mediaHtml}
 
-        <div class="flex justify-between items-center text-[10px] font-mono text-slate-500 pt-1">
-          <div class="flex items-center gap-1 flex-wrap">
+        <div class="flex justify-between items-center gap-2 pt-2 border-t border-slate-900 text-[10px] font-mono text-slate-500">
+          <div class="flex items-center gap-1 flex-wrap min-w-0">
             ${(e.tags || '').split(/\s+/).filter(Boolean).map(t => `<span class="px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-300 border border-emerald-500/20">${escapeHtml(t)}</span>`).join('')}
           </div>
-          <span class="text-amber-400/80">Energy: ${'⚡'.repeat(e.energy || 4)}</span>
+          <div class="flex items-center gap-1.5 shrink-0">
+            <span class="text-slate-500">Energy</span>
+            <span class="flex items-end gap-0.5">
+              ${[1, 2, 3, 4, 5].map(i => `<span class="w-1.5 h-3 rounded-sm ${i <= (e.energy || 4) ? 'bg-amber-400' : 'bg-slate-800'}"></span>`).join('')}
+            </span>
+          </div>
         </div>
       `;
       return card;
@@ -22347,9 +22366,19 @@ html, body {
       const batch = logbookFilteredEntries.slice(startIndex, endIndex);
 
       if (batch.length === 0 && logbookCurrentPage === 1) {
-        container.innerHTML = `<div class="p-8 text-center text-xs text-slate-500 bg-slate-950 rounded-2xl border border-slate-800">No memories found matching the current timeline filter. Click "Write Log" to add an entry!</div>`;
+        container.innerHTML = `<div class="p-7 text-center rounded-2xl bg-slate-950/60 border border-dashed border-slate-800 flex flex-col items-center gap-2">
+          <div class="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center">
+            <i data-lucide="book-open" class="w-6 h-6"></i>
+          </div>
+          <p class="text-sm font-extrabold text-slate-200">No memories here yet</p>
+          <p class="text-[11px] text-slate-500 max-w-[240px] leading-relaxed">Nothing matches the current filter — loosen the pills above, or capture your first memory of the day.</p>
+          <button type="button" onclick="openLogbookModal()" class="mt-1 px-3.5 py-2 bg-emerald-600 hover:bg-emerald-500 text-slate-950 font-black rounded-xl text-[11px] flex items-center gap-1.5 active:scale-95 shadow-lg shadow-emerald-600/20">
+            <i data-lucide="plus-circle" class="w-4 h-4"></i> Write Log
+          </button>
+        </div>`;
         if (loadMoreBtn) loadMoreBtn.classList.add('hidden');
         if (endIndicator) endIndicator.classList.add('hidden');
+        refreshIconsScoped(container);
         return;
       }
 
