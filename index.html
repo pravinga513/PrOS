@@ -7147,9 +7147,24 @@ html, body {
       <button type="button" onclick="openCreateGoalFolderModal()" class="p-1.5 rounded-lg bg-slate-900 border border-slate-800 hover:border-rose-500/40 text-rose-400 hover:text-rose-300 transition shrink-0" title="New Collection">
         <i data-lucide="folder-plus" class="w-3.5 h-3.5"></i>
       </button>
-      <button type="button" onclick="openGoalFolderManager()" class="p-1.5 rounded-lg bg-slate-900 border border-slate-800 hover:border-rose-500/40 text-slate-400 hover:text-rose-300 transition shrink-0" title="Manage Collections">
-        <i data-lucide="folder" class="w-3.5 h-3.5"></i> M
+      <button type="button" onclick="toggleFolderList()" class="p-1.5 rounded-lg bg-slate-900 border border-slate-800 hover:border-rose-500/40 text-slate-400 hover:text-rose-300 transition shrink-0 flex items-center gap-1.5" title="Show / hide folders">
+        <i data-lucide="minus" id="folder-list-icon" class="w-3.5 h-3.5 text-slate-500 shrink-0 hidden"></i>
+        <i data-lucide="plus" id="folder-list-icon" class="w-3.5 h-3.5 text-rose-400 shrink-0"></i>
+        <span class="text-[10px] font-medium">Folders</span>
+        <span id="folder-count" class="text-[9px] font-mono text-slate-500">0</span>
       </button>
+    </div>
+
+    <!-- Folder list overlay (hidden by default) -->
+    <div id="folder-list-overlay" class="fixed inset-0 z-40 bg-slate-950/95 backdrop-blur-sm hidden">
+      <div class="min-h-screen p-6 pt-8">
+        <div class="absolute top-4 right-4">
+          <button onclick="toggleFolderList()" class="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white transition">
+            <i data-lucide="x" class="w-5 h-5"></i>
+          </button>
+        </div>
+        <div id="folder-list-content" class="space-y-2 max-h-[calc(100vh-4rem)] overflow-y-auto pr-1 scrollbar-slim"></div>
+      </div>
     </div>
   </div>
 
@@ -8325,6 +8340,7 @@ html, body {
             window.renderGoalFoldersNav();
             window.renderGoalsView();
           };
+          btn.setAttribute('data-id', f.id);
           container.appendChild(btn);
         });
 
@@ -8971,6 +8987,77 @@ html, body {
       if (input) input.value = '';
       if (check) check.checked = false;
       showModalDirect('create-goal-folder-modal');
+    };
+
+    // Toggle folder list expand/collapse
+    window.toggleFolderList = function() {
+      const overlay = document.getElementById('folder-list-overlay');
+      const iconPlus = document.getElementById('folder-list-icon')?.nextElementSibling;
+      const iconMinus = document.getElementById('folder-list-icon')?.previousElementSibling;
+      const folderCountEl = document.getElementById('folder-count');
+
+      if (overlay.classList.contains('hidden')) {
+        // Show overlay
+        overlay.classList.remove('hidden');
+        overlay.classList.add('flex');
+
+        const folders = window.appState.goalFolders || [];
+        const usedFolders = folders.filter(f => {
+          const hasGoal = (window.appState.goals || []).some(g => g.folderId === f.id);
+          return hasGoal || f.id === 'gf_default';
+        });
+
+        let listHtml = '';
+        if (usedFolders.length === 0) {
+          listHtml = `<p class="text-[10px] text-slate-500">No collections yet — create one above</p>`;
+        } else {
+          listHtml = `
+            <div class="space-y-1 max-h-[calc(100vh-4rem)] overflow-y-auto pr-1 scrollbar-slim">
+            ${usedFolders.map(f => `
+              <div class="flex items-center gap-2 px-2 py-1 rounded text-[10px] cursor-pointer hover:bg-slate-900/50" 
+                   onclick="toggleFolderList(); selectFolderNav('${f.id}')">
+                <i data-lucide="${f.isNodeFolder ? 'brain-circuit' : 'folder'}" class="w-3 h-3 text-rose-400 shrink-0 ${f.isNodeFolder ? '' : 'text-slate-500'}"></i>
+                <span class="truncate flex-1">${escapeHtml(f.name)}</span>
+                <span class="text-[9px] font-mono opacity-60">${(window.appState.goals || []).filter(g => g.folderId === f.id).length}</span>
+              </div>
+            `).join('')}
+            </div>
+            <div class="mt-2 text-[10px] text-slate-500">
+              <button onclick="toggleFolderList(); openCreateGoalFolderModal()" class="underline text-rose-400 hover:text-rose-300">Create new collection</button>
+            </div>
+          `;
+        }
+
+        document.getElementById('folder-list-content').innerHTML = listHtml;
+        if (folderCountEl) folderCountEl.textContent = usedFolders.length;
+        if (iconPlus) iconPlus.classList.add('hidden');
+        if (iconMinus) iconMinus.classList.remove('hidden');
+      } else {
+        // Hide overlay
+        overlay.classList.add('hidden');
+        overlay.classList.remove('flex');
+        if (iconPlus) iconPlus.classList.remove('hidden');
+        if (iconMinus) iconMinus.classList.add('hidden');
+      }
+    };
+
+    // Select a folder from the list and scroll to it
+    window.selectFolderNav = function(folderId) {
+      toggleFolderList();
+      const filterBtn = document.querySelector(`[onclick*="activeGoalFolderFilter']`) || 
+                        document.querySelector(`button[onclick*="setGoalStatusFilter']`);
+      // Find the matching folder button in the nav and click it
+      const folderBtns = document.querySelectorAll('#goal-folders-nav button');
+      for (const btn of folderBtns) {
+        if (btn.getAttribute('data-id') === folderId || (btn.textContent || '').includes(folderId)) {
+          btn.click();
+          break;
+        }
+      }
+      // Also update the filter
+      if (window.appState) window.appState.activeGoalFolderFilter = folderId;
+      window.renderGoalFoldersNav();
+      window.renderGoalsView();
     };
 
     window.openGoalFolderManager = function() {
