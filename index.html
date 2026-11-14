@@ -7045,114 +7045,150 @@ html, body {
 <section id="view-goals" class="app-view hidden space-y-3 sm:space-y-4 md:space-y-6 max-w-7xl mx-auto w-full pb-36 px-1 sm:px-0">
 
   <!-- Top Header Toolbar (z-10 stack to prevent sidebar overlap) -->
-  <div class="glass-card rounded-2xl p-3 sm:p-4 md:p-5 border border-rose-500/20 bg-rose-500/[0.02] flex flex-col sm:flex-row justify-between items-center sm:items-center gap-3 relative z-10">
-    <div class="flex items-center justify-between w-full sm:w-auto min-w-0">
-      <div class="min-w-0">
-        <h2 class="text-base sm:text-lg md:text-xl font-extrabold text-white tracking-tight flex items-center gap-2 truncate">
-          <i data-lucide="target" class="w-5 h-5 text-rose-400 shrink-0"></i>
-          <span class="truncate">Goals, OKRs &amp; Spheres</span>
-          <span class="text-[9px] sm:text-[10px] px-2 py-0.5 bg-rose-500/15 text-rose-300 rounded-full border border-rose-500/30 font-semibold font-mono hidden sm:inline-block">
-            Milestones Matrix
-          </span>
-        </h2>
+  <div class="relative overflow-hidden rounded-2xl md:rounded-3xl border border-rose-500/20 bg-gradient-to-br from-rose-950/50 via-slate-900/80 to-slate-900/90 backdrop-blur-xl p-4 md:p-5">
+    <div class="pointer-events-none absolute -top-14 -right-10 w-44 h-44 rounded-full bg-rose-500/10 blur-3xl"></div>
+    <div class="pointer-events-none absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-rose-500/30 to-transparent"></div>
+
+    <div class="relative flex flex-col lg:flex-row lg:items-center justify-between gap-3">
+      <div class="flex items-center gap-3 min-w-0">
+        <div class="w-11 h-11 rounded-2xl bg-rose-500/15 text-rose-300 border border-rose-500/25 flex items-center justify-center shrink-0 shadow-lg shadow-rose-950/50">
+          <i data-lucide="target" class="w-5 h-5"></i>
+        </div>
+        <div class="min-w-0">
+          <div class="flex items-center gap-2 flex-wrap">
+            <h2 class="text-base sm:text-lg md:text-xl font-black text-white tracking-tight">Goals, OKRs &amp; Spheres</h2>
+            <span class="text-[9px] px-2 py-0.5 rounded-full bg-rose-500/15 text-rose-300 font-mono font-bold border border-rose-500/30">Milestones Matrix</span>
+          </div>
+        </div>
       </div>
 
-      <!-- Mobile Quick Action Button -->
-      <button type="button" onclick="openCreateGoalModal()" class="sm:hidden shrink-0 px-3 py-1.5 bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs rounded-xl transition flex items-center gap-1 shadow-lg shadow-rose-600/20 active:scale-95 touch-manipulation">
-        <i data-lucide="plus" class="w-4 h-4 shrink-0"></i>
-        <span>Goal</span>
+      <div class="flex flex-wrap items-center gap-2 w-full lg:w-auto justify-stretch lg:justify-end text-xs">
+        <!-- Search Bar -->
+        <div class="relative flex-1 sm:flex-none sm:w-48 min-w-[140px]">
+          <i data-lucide="search" class="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none"></i>
+          <input id="goal-search-input" type="text" onkeyup="searchGoals(this.value)" onkeydown="goalSearchKeydown(event, this)" placeholder="Search targets &amp; OKRs..." class="w-full bg-slate-950/70 border border-slate-800 rounded-xl pl-8 pr-7 py-2 text-xs text-slate-200 outline-none focus:border-rose-400 transition" />
+          <button type="button" onclick="clearGoalSearchQuery()" id="goal-search-clear-btn" class="hidden absolute right-2 top-1/2 -translate-y-1/2 text-slate-500 hover:text-white p-0.5 text-xs">✕</button>
+        </div>
+
+        <!-- Create Goal -->
+        <button type="button" onclick="openCreateGoalModal()" class="px-3.5 py-2 bg-rose-600 hover:bg-rose-500 text-white font-bold rounded-xl shadow-lg shadow-rose-600/20 transition flex items-center gap-1.5 active:scale-95 touch-manipulation shrink-0">
+          <i data-lucide="plus-circle" class="w-4 h-4 shrink-0"></i>
+          <span>Set Goal</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filters: status pills, category, sort and collections -->
+  <div class="glass-card rounded-2xl p-3 sm:p-4 border border-slate-800 bg-slate-950/60 space-y-2.5">
+    <!-- Status pills -->
+    <div class="flex items-center gap-1.5 overflow-x-auto pb-1 text-xs no-scrollbar">
+      <button type="button" onclick="setGoalStatusFilter('ALL')" id="goal-filter-all" class="goal-pill-btn bg-rose-600 text-white font-bold px-2.5 py-1.5 rounded-xl transition touch-manipulation shadow-sm flex items-center gap-1.5">
+        <i data-lucide="layers" class="w-3.5 h-3.5"></i> All
+      </button>
+      <button type="button" onclick="setGoalStatusFilter('ACTIVE')" id="goal-filter-active" class="goal-pill-btn text-slate-400 hover:text-white px-2.5 py-1.5 rounded-xl transition touch-manipulation flex items-center gap-1.5">
+        <i data-lucide="activity" class="w-3.5 h-3.5"></i> Active
+      </button>
+      <button type="button" onclick="setGoalStatusFilter('URGENT')" id="goal-filter-urgent" class="goal-pill-btn text-slate-400 hover:text-white px-2.5 py-1.5 rounded-xl transition touch-manipulation flex items-center gap-1.5">
+        <i data-lucide="flame" class="w-3.5 h-3.5"></i> Due Soon
+      </button>
+      <button type="button" onclick="setGoalStatusFilter('ARCHIVED')" id="goal-filter-archived" class="goal-pill-btn text-slate-400 hover:text-white px-2.5 py-1.5 rounded-xl transition touch-manipulation flex items-center gap-1.5">
+        <i data-lucide="archive" class="w-3.5 h-3.5"></i> Archive
       </button>
     </div>
 
-    <!-- Toolbar Filters, Actions & Categories -->
-    <div class="flex flex-wrap items-center gap-2 w-full sm:w-auto justify-end text-xs">
-      <!-- Search Bar -->
-      <div class="relative flex-1 sm:flex-none sm:w-48 min-w-[140px]">
-        <i data-lucide="search" class="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none"></i>
-        <input id="goal-search-input" type="text" onkeyup="searchGoals(this.value)" onkeydown="goalSearchKeydown(event, this)" placeholder="Search targets &amp; OKRs..." class="w-full bg-slate-950 border border-slate-800 rounded-xl pl-8 pr-7 py-2 text-xs text-slate-200 outline-none focus:border-rose-400 transition" />
-        <button type="button" onclick="clearGoalSearchQuery()" id="goal-search-clear-btn" class="hidden absolute right-2 top-1/2 -translate-y-1/2 text-slate-500 hover:text-white p-0.5 text-xs">✕</button>
+    <!-- Category + Sort -->
+    <div class="flex flex-col sm:flex-row gap-2 sm:items-center">
+      <div class="flex items-center gap-2 w-full sm:w-auto flex-wrap">
+        <span class="text-slate-500 text-[11px] font-semibold shrink-0">Category:</span>
+        <select id="goal-category-filter" onchange="onGoalSidebarChange()" class="bg-slate-900 border border-slate-800 text-slate-200 rounded-xl px-2.5 py-1 text-[11px] outline-none focus:border-rose-400 transition font-medium truncate max-w-[150px]">
+          <!-- Dynamically populated from custom categories -->
+        </select>
       </div>
-
-      <!-- Quick Filter Pills -->
-      <div class="flex items-center bg-slate-950 p-1 rounded-xl border border-slate-800 text-[11px] font-medium shrink-0">
-        <button type="button" onclick="setGoalStatusFilter('ALL')" id="goal-filter-all" class="goal-pill-btn bg-rose-600 text-white font-bold px-2.5 py-1 rounded-lg transition touch-manipulation shadow-sm">All</button>
-        <button type="button" onclick="setGoalStatusFilter('ACTIVE')" id="goal-filter-active" class="goal-pill-btn text-slate-400 hover:text-white px-2.5 py-1 rounded-lg transition touch-manipulation">Active</button>
-        <button type="button" onclick="setGoalStatusFilter('URGENT')" id="goal-filter-urgent" class="goal-pill-btn text-slate-400 hover:text-white px-2.5 py-1 rounded-lg transition touch-manipulation">Due Soon</button>
-        <button type="button" onclick="setGoalStatusFilter('ARCHIVED')" id="goal-filter-archived" class="goal-pill-btn text-slate-400 hover:text-white px-2.5 py-1 rounded-lg transition touch-manipulation">Archive</button>
+      <div class="flex items-center gap-2 w-full sm:w-auto flex-wrap">
+        <span class="text-slate-500 text-[11px] font-semibold shrink-0">Sort:</span>
+        <select id="goal-sort-by" onchange="onGoalSidebarChange()" class="bg-slate-900 border border-slate-800 text-slate-200 rounded-xl px-2.5 py-1 text-[11px] outline-none focus:border-rose-400 transition font-medium truncate max-w-[150px]">
+          <option value="DATE">Target Date</option>
+          <option value="PROGRESS_DESC">Highest Progress</option>
+          <option value="PROGRESS_ASC">Lowest Progress</option>
+          <option value="TITLE">Title (A-Z)</option>
+        </select>
       </div>
+    </div>
 
-      <!-- Desktop Create Goal Button -->
-      <button type="button" onclick="openCreateGoalModal()" class="hidden sm:flex px-3.5 py-2 bg-rose-600 hover:bg-rose-500 font-bold text-xs text-white rounded-xl shadow-lg shadow-rose-600/20 transition items-center gap-1.5 active:scale-95 touch-manipulation shrink-0">
-        <i data-lucide="plus-circle" class="w-4 h-4 shrink-0"></i>
-        <span>Set Goal</span>
+    <!-- Goal Collections -->
+    <div class="flex items-center gap-1.5 pt-2.5 border-t border-slate-900 overflow-x-auto no-scrollbar">
+      <span class="text-[10px] text-slate-500 uppercase font-bold shrink-0">Collections</span>
+      <span id="goal-folders-count" class="text-[10px] font-mono text-slate-500 shrink-0">0 active</span>
+      <div id="goal-folders-nav" class="flex items-center gap-1.5"></div>
+      <button type="button" onclick="openCreateGoalFolderModal()" class="p-1 rounded-lg bg-slate-900 border border-slate-800 hover:border-rose-500/40 text-rose-400 hover:text-rose-300 transition shrink-0" title="New Collection">
+        <i data-lucide="folder-plus" class="w-3.5 h-3.5"></i>
       </button>
     </div>
   </div>
 
   <!-- KPI Overview Metrics -->
   <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3 md:gap-4">
-    <div onclick="goalKpiJump('ALL')" class="glass-card p-3 sm:p-4 rounded-2xl border border-rose-500/20 bg-rose-500/[0.03] space-y-1 hover:border-rose-500/40 transition cursor-pointer active:scale-[0.98]">
+    <button type="button" onclick="goalKpiJump('ALL')" data-goal-kpi="ALL" class="glass-card p-3 sm:p-4 rounded-2xl border border-rose-500/20 bg-rose-500/[0.03] space-y-1.5 hover:border-rose-500/50 hover:bg-rose-500/[0.06] transition text-left active:scale-95 cursor-pointer">
       <div class="flex justify-between items-center text-xs font-bold text-slate-400">
         <span class="uppercase tracking-wider text-[9px]">Active Targets</span>
-        <div class="p-1 bg-rose-500/10 text-rose-400 rounded-lg shrink-0">
+        <div class="w-7 h-7 rounded-xl bg-rose-500/10 text-rose-400 flex items-center justify-center shrink-0">
           <i data-lucide="compass" class="w-3.5 h-3.5"></i>
         </div>
       </div>
       <div id="goal-stat-total" class="text-base sm:text-lg md:text-xl font-black text-slate-100">0</div>
       <p id="goal-stat-total-sub" class="text-[10px] text-slate-500 font-mono">0 Collections active</p>
-    </div>
+    </button>
 
-    <div onclick="scrollToGoalsCards()" class="glass-card p-3 sm:p-4 rounded-2xl border border-rose-500/20 bg-rose-500/[0.03] space-y-1 hover:border-rose-500/40 transition cursor-pointer active:scale-[0.98]">
+    <button type="button" onclick="scrollToGoalsCards()" class="glass-card p-3 sm:p-4 rounded-2xl border border-emerald-500/20 bg-emerald-500/[0.03] space-y-1.5 hover:border-emerald-500/50 hover:bg-emerald-500/[0.06] transition text-left active:scale-95 cursor-pointer">
       <div class="flex justify-between items-center text-xs font-bold text-slate-400">
         <span class="uppercase tracking-wider text-[9px]">Avg OKR Velocity</span>
-        <div class="p-1 bg-rose-500/10 text-rose-300 rounded-lg shrink-0">
+        <div class="w-7 h-7 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center shrink-0">
           <i data-lucide="trending-up" class="w-3.5 h-3.5"></i>
         </div>
       </div>
-      <div id="goal-stat-avg" class="text-base sm:text-lg md:text-xl font-black text-rose-400">0%</div>
+      <div id="goal-stat-avg" class="text-base sm:text-lg md:text-xl font-black text-emerald-300">0%</div>
       <p class="text-[10px] text-slate-500 font-mono">Overall OKR progress</p>
-    </div>
+    </button>
 
-    <div onclick="goalKpiJump('COMPLETED')" data-goal-kpi="COMPLETED" class="glass-card p-3 sm:p-4 rounded-2xl border border-rose-500/20 bg-rose-500/[0.03] space-y-1 hover:border-rose-500/40 transition cursor-pointer active:scale-[0.98]">
+    <button type="button" onclick="goalKpiJump('COMPLETED')" data-goal-kpi="COMPLETED" class="glass-card p-3 sm:p-4 rounded-2xl border border-sky-500/20 bg-sky-500/[0.03] space-y-1.5 hover:border-sky-500/50 hover:bg-sky-500/[0.06] transition text-left active:scale-95 cursor-pointer">
       <div class="flex justify-between items-center text-xs font-bold text-slate-400">
         <span class="uppercase tracking-wider text-[9px]">Completed</span>
-        <div class="p-1 bg-rose-500/10 text-rose-400 rounded-lg shrink-0">
+        <div class="w-7 h-7 rounded-xl bg-sky-500/10 text-sky-400 flex items-center justify-center shrink-0">
           <i data-lucide="check-circle-2" class="w-3.5 h-3.5"></i>
         </div>
       </div>
-      <div id="goal-stat-completed" class="text-base sm:text-lg md:text-xl font-black text-rose-300">0</div>
+      <div id="goal-stat-completed" class="text-base sm:text-lg md:text-xl font-black text-sky-300">0</div>
       <p class="text-[10px] text-slate-500 font-mono">Targets achieved</p>
-    </div>
+    </button>
 
-    <div onclick="goalKpiJump('URGENT')" data-goal-kpi="URGENT" class="glass-card p-3 sm:p-4 rounded-2xl border border-rose-500/20 bg-rose-500/[0.03] space-y-1 hover:border-amber-500/40 transition cursor-pointer active:scale-[0.98]">
+    <button type="button" onclick="goalKpiJump('URGENT')" data-goal-kpi="URGENT" class="glass-card p-3 sm:p-4 rounded-2xl border border-amber-500/20 bg-amber-500/[0.03] space-y-1.5 hover:border-amber-500/50 hover:bg-amber-500/[0.06] transition text-left active:scale-95 cursor-pointer">
       <div class="flex justify-between items-center text-xs font-bold text-slate-400">
         <span class="uppercase tracking-wider text-[9px]">Near Deadline</span>
-        <div class="p-1 bg-amber-500/10 text-amber-400 rounded-lg shrink-0">
+        <div class="w-7 h-7 rounded-xl bg-amber-500/10 text-amber-400 flex items-center justify-center shrink-0">
           <i data-lucide="flame" class="w-3.5 h-3.5"></i>
         </div>
       </div>
       <div id="goal-stat-urgent" class="text-base sm:text-lg md:text-xl font-black text-amber-400">0</div>
       <p class="text-[10px] text-slate-500 font-mono">Due within 14 days</p>
-    </div>
+    </button>
   </div>
 
   <!-- COLLAPSIBLE & SELECTIVE CATEGORY BREAKDOWN BAR -->
   <div class="glass-card rounded-2xl p-3.5 sm:p-4 border border-rose-500/20 bg-rose-500/[0.02] space-y-2.5">
-    <div class="flex items-center justify-between border-b border-slate-800/80 pb-2 gap-2">
-      <div class="flex items-center gap-2">
-        <button type="button" onclick="toggleRadarVisibility()" class="p-1 rounded-lg bg-slate-900 border border-slate-800 hover:border-rose-500/40 text-slate-400 hover:text-white transition" title="Show / Hide Breakdown Panel">
+    <div class="flex items-center justify-between gap-2">
+      <div class="flex items-center gap-2 min-w-0">
+        <button type="button" onclick="toggleRadarVisibility()" class="p-1.5 rounded-lg bg-slate-900 border border-slate-800 hover:border-rose-500/40 text-slate-400 hover:text-white transition shrink-0" title="Show / Hide Breakdown Panel">
           <i id="radar-toggle-icon" data-lucide="chevron-down" class="w-3.5 h-3.5 text-rose-400"></i>
         </button>
-        <h3 class="text-xs font-extrabold text-white uppercase tracking-wider flex items-center gap-1.5">
-          <i data-lucide="pie-chart" class="w-4 h-4 text-rose-400 shrink-0"></i> Pinned Category Breakdown
+        <h3 class="text-xs font-extrabold text-white flex items-center gap-1.5 truncate">
+          <i data-lucide="pie-chart" class="w-3.5 h-3.5 text-rose-400 shrink-0"></i> <span class="truncate">Pinned Categories</span>
         </h3>
       </div>
-      
-      <div class="flex items-center gap-2 shrink-0">
-        <button type="button" onclick="openRadarFilterModal()" class="text-[11px] text-rose-300 hover:underline font-bold flex items-center gap-1 whitespace-nowrap">
-          <i data-lucide="sliders-horizontal" class="w-3.5 h-3.5 text-rose-400 shrink-0"></i> <span class="whitespace-nowrap">Select Cards (<span id="radar-pinned-count">0</span>)</span>
-        </button>
-      </div>
+
+      <button type="button" onclick="openRadarFilterModal()" class="text-[11px] px-2.5 py-1 rounded-lg bg-rose-500/10 text-rose-300 border border-rose-500/30 hover:bg-rose-500/20 font-bold transition flex items-center gap-1.5 shrink-0 whitespace-nowrap">
+        <i data-lucide="sliders-horizontal" class="w-3.5 h-3.5 text-rose-400 shrink-0"></i> Cards (<span id="radar-pinned-count">0</span>)
+      </button>
     </div>
 
     <!-- Collapsible Container -->
@@ -7163,56 +7199,11 @@ html, body {
     </div>
   </div>
 
-  <!-- Workspace Grid: Sidebar Folders + Goal Cards Grid -->
-  <div class="grid grid-cols-1 lg:grid-cols-12 gap-3 sm:gap-4 items-start">
-
-    <!-- Left Navigation Panel -->
-    <div class="lg:col-span-4 glass-card rounded-2xl p-3.5 sm:p-4 space-y-3.5 border border-rose-500/20 bg-rose-500/[0.02]">
-      
-      <!-- Category & Sort Controls inside Sidebar -->
-      <div class="grid grid-cols-2 gap-2 text-xs">
-        <div>
-          <label class="text-[10px] text-slate-400 font-semibold block mb-1">Filter Category</label>
-          <select id="goal-category-filter" onchange="onGoalSidebarChange()" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2 text-[11px] text-slate-200 outline-none focus:border-rose-400 transition font-medium truncate">
-            <!-- Dynamically populated from custom categories -->
-          </select>
-        </div>
-
-        <div>
-          <label class="text-[10px] text-slate-400 font-semibold block mb-1">Sort By</label>
-          <select id="goal-sort-by" onchange="onGoalSidebarChange()" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2 text-[11px] text-slate-200 outline-none focus:border-rose-400 transition font-medium truncate">
-            <option value="DATE">Target Date</option>
-            <option value="PROGRESS_DESC">Highest Progress</option>
-            <option value="PROGRESS_ASC">Lowest Progress</option>
-            <option value="TITLE">Title (A-Z)</option>
-          </select>
-        </div>
-      </div>
-
-      <!-- Goal Folders List -->
-      <div class="space-y-1.5 border-t border-slate-800/80 pt-3">
-        <div class="flex justify-between items-center px-1">
-          <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Goal Collections</span>
-          <div class="flex items-center gap-1.5">
-            <span id="goal-folders-count" class="text-[10px] font-mono text-slate-500">0 active</span>
-            <button type="button" onclick="openCreateGoalFolderModal()" class="p-1 rounded-lg bg-slate-900 border border-slate-800 hover:border-rose-500/40 text-rose-400 hover:text-rose-300 transition" title="New Collection">
-              <i data-lucide="folder-plus" class="w-3.5 h-3.5"></i>
-            </button>
-          </div>
-        </div>
-        <div id="goal-folders-nav" class="space-y-1 max-h-64 lg:max-h-[500px] overflow-y-auto pr-0.5">
-          <!-- Dynamic goal folders -->
-        </div>
-      </div>
+  <!-- Goal Cards Grid -->
+  <div id="goals-main-workspace" class="space-y-3">
+    <div id="goals-cards-container" class="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
+      <!-- Injected via JS -->
     </div>
-
-    <!-- Right Container: Goal Cards Grid -->
-    <div id="goals-main-workspace" class="lg:col-span-8 space-y-3">
-      <div id="goals-cards-container" class="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
-        <!-- Injected via JS -->
-      </div>
-    </div>
-
   </div>
 
   <!-- MODAL 1: CREATE / EDIT GOAL TARGET -->
@@ -8181,12 +8172,12 @@ html, body {
       window.appState.goalStatusFilter = filterKey;
 
       document.querySelectorAll('.goal-pill-btn').forEach(btn => {
-        btn.className = 'goal-pill-btn text-slate-400 hover:text-white px-2.5 py-1 rounded-lg transition touch-manipulation';
+        btn.className = 'goal-pill-btn text-slate-400 hover:text-white px-2.5 py-1.5 rounded-xl transition touch-manipulation flex items-center gap-1.5';
       });
 
       const activeBtn = document.getElementById(`goal-filter-${filterKey.toLowerCase()}`);
       if (activeBtn) {
-        activeBtn.className = 'goal-pill-btn bg-rose-600 text-white font-bold px-2.5 py-1 rounded-lg transition touch-manipulation shadow-sm';
+        activeBtn.className = 'goal-pill-btn bg-rose-600 text-white font-bold px-2.5 py-1.5 rounded-xl transition touch-manipulation shadow-sm flex items-center gap-1.5';
       }
 
       document.querySelectorAll('[data-goal-kpi]').forEach(card => {
@@ -8194,6 +8185,7 @@ html, body {
         card.classList.toggle('ring-2', isActive);
         card.classList.toggle('ring-rose-400/70', isActive);
         card.classList.toggle('ring-amber-400/70', isActive);
+        card.classList.toggle('ring-sky-400/70', isActive);
       });
 
       window.renderGoalsView();
@@ -8242,10 +8234,10 @@ html, body {
 
         const allBtn = document.createElement('button');
         allBtn.type = 'button';
-        allBtn.className = `w-full text-left p-2 rounded-xl text-xs font-semibold flex items-center justify-between transition ${
-          !window.appState.activeGoalFolderFilter || window.appState.activeGoalFolderFilter === 'ALL' ? 'bg-rose-600/30 text-rose-100 border border-rose-400/60 shadow-md' : 'text-slate-400 hover:bg-slate-900 border border-transparent'
+        allBtn.className = `px-2 py-1 rounded-lg text-[11px] font-bold flex items-center gap-1.5 shrink-0 transition ${
+          !window.appState.activeGoalFolderFilter || window.appState.activeGoalFolderFilter === 'ALL' ? 'bg-rose-600 text-white shadow-sm' : 'bg-slate-900 text-slate-400 hover:text-white border border-slate-800'
         }`;
-        allBtn.innerHTML = `<span class="flex items-center gap-2"><i data-lucide="layers" class="w-3.5 h-3.5 text-rose-400"></i> All Collections</span>`;
+        allBtn.innerHTML = `<i data-lucide="layers" class="w-3 h-3"></i> All`;
         allBtn.onclick = () => {
           triggerHaptic();
           window.appState.activeGoalFolderFilter = 'ALL';
@@ -8272,22 +8264,17 @@ html, body {
 
           const btn = document.createElement('button');
           btn.type = 'button';
-          btn.className = `w-full text-left p-2 rounded-xl text-xs font-semibold flex items-center justify-between transition group ${
-            isSelected 
-              ? 'bg-slate-900 text-white border border-rose-500/40 shadow-md' 
-              : (isNode ? 'bg-rose-950/20 border border-rose-500/20 text-rose-300 hover:bg-rose-900/30' : 'text-slate-400 hover:bg-slate-900/60 border border-transparent')
+          btn.className = `px-2 py-1 rounded-lg text-[11px] font-bold flex items-center gap-1.5 shrink-0 transition group ${
+            isSelected
+              ? 'bg-rose-600 text-white shadow-sm'
+              : (isNode ? 'bg-rose-950/30 border border-rose-500/25 text-rose-300 hover:bg-rose-900/40' : 'bg-slate-900 text-slate-400 hover:text-white border border-slate-800')
           }`;
 
           btn.innerHTML = `
-            <div class="flex items-center gap-2 truncate flex-1 min-w-0 pr-1">
-              <i data-lucide="${isNode ? 'brain-circuit' : 'folder'}" class="w-3.5 h-3.5 shrink-0 ${isNode ? 'text-rose-400' : 'text-slate-500'}"></i>
-              <span class="truncate ${isNode ? 'font-bold text-rose-200' : ''}">${escapeHtml(f.name)}</span>
-            </div>
-            <div class="flex items-center gap-1 shrink-0">
-              ${isNode ? '<span class="text-[9px] px-1.5 py-0.5 rounded bg-rose-500/20 text-rose-300 font-mono font-bold border border-rose-500/30">NODE</span>' : ''}
-              <span class="text-[10px] font-mono text-slate-400">${linkedGoals.length}</span>
-              ${f.id !== 'gf_default' ? `<button type="button" onclick="event.stopPropagation(); deleteGoalFolder('${f.id}')" class="opacity-0 group-hover:opacity-100 text-slate-500 hover:text-rose-400 text-xs px-1" title="Delete Collection">✕</button>` : ''}
-            </div>
+            <i data-lucide="${isNode ? 'brain-circuit' : 'folder'}" class="w-3 h-3 shrink-0 ${isNode ? 'text-rose-400' : 'text-slate-500'}"></i>
+            <span class="truncate max-w-[110px]">${escapeHtml(f.name)}</span>
+            <span class="text-[10px] font-mono opacity-60">${linkedGoals.length}</span>
+            ${f.id !== 'gf_default' ? `<span onclick="event.stopPropagation(); deleteGoalFolder('${f.id}')" class="opacity-0 group-hover:opacity-100 text-slate-500 hover:text-rose-400 px-0.5 cursor-pointer" title="Delete Collection">✕</span>` : ''}
           `;
 
           btn.onclick = () => {
@@ -8340,7 +8327,7 @@ html, body {
             return { catName, count: matching.length, avg };
           })
           .filter(c => c.count > 0);
-        if (populated.length > 0) fallbackNote = `<div class="col-span-full text-[9px] text-slate-500 font-mono">showing categories with goals — pin yours via Select Cards</div>`;
+        if (populated.length > 0) fallbackNote = `<div class="col-span-full text-[9px] text-slate-500 font-mono">showing categories with goals — pin yours from the Cards button</div>`;
       }
 
       if (populated.length === 0) {
@@ -8583,8 +8570,8 @@ html, body {
             <div class="flex items-start justify-between gap-2">
               <div class="space-y-1 truncate flex-1 min-w-0">
                 <div class="flex flex-wrap items-center gap-1.5">
-                  <span class="text-[9px] px-2 py-0.5 rounded bg-slate-900 text-slate-300 font-bold uppercase tracking-wider border border-slate-800">${escapeHtml(g.category || 'General')}</span>
-                  <span class="text-[9px] px-2 py-0.5 rounded bg-slate-950 text-slate-400 font-mono font-semibold border border-slate-800/80 truncate max-w-[120px]">${folder ? escapeHtml(folder.name) : 'General'}</span>
+                  <span class="text-[9px] px-2 py-0.5 rounded bg-rose-500/10 text-rose-300 font-bold uppercase tracking-wider border border-rose-500/25">${escapeHtml(g.category || 'General')}</span>
+                  <span class="text-[9px] px-2 py-0.5 rounded bg-slate-950 text-slate-400 font-mono font-semibold border border-slate-800/80 flex items-center gap-1 truncate max-w-[140px]"><i data-lucide="folder" class="w-2.5 h-2.5 shrink-0"></i>${folder ? escapeHtml(folder.name) : 'General'}</span>
                   ${isSequentialGoal ? `<span class="text-[9px] px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-300 font-mono font-bold border border-amber-500/20 flex items-center gap-0.5"><i data-lucide="lock" class="w-2.5 h-2.5"></i> SEQ</span>` : ''}
                   ${g.autoSyncLedger ? `<span class="text-[9px] px-1.5 py-0.5 rounded bg-rose-500/20 text-rose-300 font-mono font-bold border border-rose-500/30">⚡ LEDGER</span>` : ''}
                   ${isNodeFolder ? `<span class="text-[9px] px-1.5 py-0.5 rounded bg-rose-500/20 text-rose-300 font-mono font-bold border border-rose-500/30 flex items-center gap-1"><i data-lucide="brain-circuit" class="w-3 h-3"></i> NODE</span>` : ''}
@@ -8609,16 +8596,16 @@ html, body {
             ${retroHtml}
             ${metricDetailHtml}
 
-            <div class="space-y-1.5 pt-1">
+            <div class="space-y-2 rounded-xl bg-slate-950/60 border border-slate-800/80 p-2.5">
               <div class="flex justify-between items-center gap-2 text-xs font-semibold">
                 <span class="text-slate-400 flex items-center gap-1.5 min-w-0">
                   <i data-lucide="calendar" class="w-3.5 h-3.5 text-amber-400 shrink-0"></i> <span class="truncate">${g.targetDate || 'TBD'}</span>
                   ${deadlineBadge}
                 </span>
-                <span class="font-extrabold font-mono text-rose-400 shrink-0">${g.progress || 0}%</span>
+                <span class="px-1.5 py-0.5 rounded-md ${isAchieved ? 'bg-emerald-500/15 text-emerald-300' : 'bg-rose-500/15 text-rose-300'} font-extrabold font-mono text-[11px] shrink-0">${g.progress || 0}%</span>
               </div>
 
-              <div class="w-full bg-slate-950 h-2 rounded-full overflow-hidden border border-slate-800">
+              <div class="w-full bg-slate-900 h-2 rounded-full overflow-hidden border border-slate-800">
                 <div class="${isAchieved ? 'bg-emerald-500' : 'bg-rose-500'} h-full transition-all duration-300" style="width: ${g.progress || 0}%"></div>
               </div>
 
