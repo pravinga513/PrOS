@@ -7080,34 +7080,34 @@ html, body {
   </div>
 
   <!-- Filters: status pills, category, sort and collections -->
-  <div class="glass-card rounded-2xl p-3 sm:p-4 border border-slate-800 bg-slate-950/60 space-y-2.5">
+  <div class="glass-card rounded-2xl p-3 sm:p-4 border border-slate-800 bg-slate-950/60 space-y-3">
     <!-- Status pills -->
-    <div class="flex items-center gap-1.5 overflow-x-auto pb-1 text-xs no-scrollbar">
-      <button type="button" onclick="setGoalStatusFilter('ALL')" id="goal-filter-all" class="goal-pill-btn bg-rose-600 text-white font-bold px-2.5 py-1.5 rounded-xl transition touch-manipulation shadow-sm flex items-center gap-1.5">
+    <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar text-xs">
+      <button type="button" onclick="setGoalStatusFilter('ALL')" id="goal-filter-all" class="goal-pill-btn bg-rose-600 text-white font-bold px-2.5 py-1.5 rounded-xl transition touch-manipulation shadow-sm flex items-center gap-1.5 shrink-0">
         <i data-lucide="layers" class="w-3.5 h-3.5"></i> All
       </button>
-      <button type="button" onclick="setGoalStatusFilter('ACTIVE')" id="goal-filter-active" class="goal-pill-btn text-slate-400 hover:text-white px-2.5 py-1.5 rounded-xl transition touch-manipulation flex items-center gap-1.5">
+      <button type="button" onclick="setGoalStatusFilter('ACTIVE')" id="goal-filter-active" class="goal-pill-btn text-slate-400 hover:text-white px-2.5 py-1.5 rounded-xl transition touch-manipulation flex items-center gap-1.5 shrink-0">
         <i data-lucide="activity" class="w-3.5 h-3.5"></i> Active
       </button>
-      <button type="button" onclick="setGoalStatusFilter('URGENT')" id="goal-filter-urgent" class="goal-pill-btn text-slate-400 hover:text-white px-2.5 py-1.5 rounded-xl transition touch-manipulation flex items-center gap-1.5">
+      <button type="button" onclick="setGoalStatusFilter('URGENT')" id="goal-filter-urgent" class="goal-pill-btn text-slate-400 hover:text-white px-2.5 py-1.5 rounded-xl transition touch-manipulation flex items-center gap-1.5 shrink-0">
         <i data-lucide="flame" class="w-3.5 h-3.5"></i> Due Soon
       </button>
-      <button type="button" onclick="setGoalStatusFilter('ARCHIVED')" id="goal-filter-archived" class="goal-pill-btn text-slate-400 hover:text-white px-2.5 py-1.5 rounded-xl transition touch-manipulation flex items-center gap-1.5">
+      <button type="button" onclick="setGoalStatusFilter('ARCHIVED')" id="goal-filter-archived" class="goal-pill-btn text-slate-400 hover:text-white px-2.5 py-1.5 rounded-xl transition touch-manipulation flex items-center gap-1.5 shrink-0">
         <i data-lucide="archive" class="w-3.5 h-3.5"></i> Archive
       </button>
     </div>
 
-    <!-- Category + Sort -->
-    <div class="flex flex-col sm:flex-row gap-2 sm:items-center">
-      <div class="flex items-center gap-2 w-full sm:w-auto flex-wrap">
-        <span class="text-slate-500 text-[11px] font-semibold shrink-0">Category:</span>
-        <select id="goal-category-filter" onchange="onGoalSidebarChange()" class="bg-slate-900 border border-slate-800 text-slate-200 rounded-xl px-2.5 py-1 text-[11px] outline-none focus:border-rose-400 transition font-medium truncate max-w-[150px]">
+    <!-- Category + Sort on one line -->
+    <div class="flex items-center gap-2">
+      <div class="flex items-center gap-1.5 flex-1 min-w-0">
+        <i data-lucide="tag" class="w-3.5 h-3.5 text-slate-500 shrink-0"></i>
+        <select id="goal-category-filter" onchange="onGoalSidebarChange()" class="flex-1 min-w-0 bg-slate-900 border border-slate-800 text-slate-200 rounded-xl px-2.5 py-1.5 text-[11px] outline-none focus:border-rose-400 transition font-medium truncate">
           <!-- Dynamically populated from custom categories -->
         </select>
       </div>
-      <div class="flex items-center gap-2 w-full sm:w-auto flex-wrap">
-        <span class="text-slate-500 text-[11px] font-semibold shrink-0">Sort:</span>
-        <select id="goal-sort-by" onchange="onGoalSidebarChange()" class="bg-slate-900 border border-slate-800 text-slate-200 rounded-xl px-2.5 py-1 text-[11px] outline-none focus:border-rose-400 transition font-medium truncate max-w-[150px]">
+      <div class="flex items-center gap-1.5 flex-1 min-w-0">
+        <i data-lucide="sliders-horizontal" class="w-3.5 h-3.5 text-slate-500 shrink-0"></i>
+        <select id="goal-sort-by" onchange="onGoalSidebarChange()" class="flex-1 min-w-0 bg-slate-900 border border-slate-800 text-slate-200 rounded-xl px-2.5 py-1.5 text-[11px] outline-none focus:border-rose-400 transition font-medium truncate">
           <option value="DATE">Target Date</option>
           <option value="PROGRESS_DESC">Highest Progress</option>
           <option value="PROGRESS_ASC">Lowest Progress</option>
@@ -7117,11 +7117,11 @@ html, body {
     </div>
 
     <!-- Goal Collections -->
-    <div class="flex items-center gap-1.5 pt-2.5 border-t border-slate-900 overflow-x-auto no-scrollbar">
+    <div class="flex items-center gap-2 pt-3 border-t border-slate-900">
       <span class="text-[10px] text-slate-500 uppercase font-bold shrink-0">Collections</span>
-      <span id="goal-folders-count" class="text-[10px] font-mono text-slate-500 shrink-0">0 active</span>
-      <div id="goal-folders-nav" class="flex items-center gap-1.5"></div>
-      <button type="button" onclick="openCreateGoalFolderModal()" class="p-1 rounded-lg bg-slate-900 border border-slate-800 hover:border-rose-500/40 text-rose-400 hover:text-rose-300 transition shrink-0" title="New Collection">
+      <span id="goal-folders-count" class="text-[10px] font-mono text-slate-500 shrink-0">0</span>
+      <div id="goal-folders-nav" class="flex items-center gap-1.5 overflow-x-auto no-scrollbar flex-1 min-w-0"></div>
+      <button type="button" onclick="openCreateGoalFolderModal()" class="p-1.5 rounded-lg bg-slate-900 border border-slate-800 hover:border-rose-500/40 text-rose-400 hover:text-rose-300 transition shrink-0" title="New Collection">
         <i data-lucide="folder-plus" class="w-3.5 h-3.5"></i>
       </button>
     </div>
@@ -8286,7 +8286,7 @@ html, body {
           container.appendChild(btn);
         });
 
-        if (countEl) countEl.textContent = `${visibleFoldersCount} collection${visibleFoldersCount === 1 ? '' : 's'}`;
+        if (countEl) countEl.textContent = `${visibleFoldersCount}`;
       }
 
       refreshIconsScoped(container);
