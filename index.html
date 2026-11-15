@@ -7203,6 +7203,16 @@ html, body {
       </button>
     </div>
 
+    <!-- Stats of the currently applied filter -->
+    <div id="goal-filter-stats" class="flex items-center gap-1.5 flex-wrap text-[10px] font-mono">
+      <span class="px-2 py-1 rounded-lg bg-slate-900 border border-slate-800 text-slate-400"><span id="goal-filter-stat-count" class="text-rose-300 font-bold">0</span> in view</span>
+      <span class="px-2 py-1 rounded-lg bg-slate-900 border border-slate-800 text-slate-400"><span id="goal-filter-stat-done" class="text-emerald-300 font-bold">0</span> done</span>
+      <span class="px-2 py-1 rounded-lg bg-slate-900 border border-slate-800 text-slate-400"><span id="goal-filter-stat-pct" class="text-sky-300 font-bold">0%</span> avg progress</span>
+      <div class="flex-1 min-w-[60px] h-1.5 rounded-full bg-slate-900 border border-slate-800 overflow-hidden">
+        <div id="goal-filter-stat-bar" class="h-full bg-gradient-to-r from-rose-500 to-emerald-500 transition-all duration-300" style="width: 0%"></div>
+      </div>
+    </div>
+
     <!-- Category + Sort on one line -->
     <div class="flex items-center gap-2">
       <div class="flex items-center gap-1.5 flex-1 min-w-0">
@@ -7223,28 +7233,6 @@ html, body {
     </div>
 
   </div>
-
-      <!-- Category Breakdown (compact, stats follow the applied filters) -->
-      <div class="glass-card rounded-2xl p-3 sm:p-4 border border-rose-500/20 bg-rose-500/[0.02] space-y-2.5">
-        <div class="flex items-center justify-between gap-2">
-          <button type="button" onclick="toggleRadarVisibility()" class="flex items-center gap-2 min-w-0 text-left group/radar" title="Show / Hide Breakdown">
-            <i id="radar-toggle-icon" data-lucide="chevron-down" class="w-3.5 h-3.5 text-rose-400 shrink-0"></i>
-            <i data-lucide="pie-chart" class="w-3.5 h-3.5 text-rose-400 shrink-0"></i>
-            <h3 class="text-xs font-extrabold text-white truncate">Category Breakdown</h3>
-            <span class="text-[9px] font-mono text-slate-500 shrink-0 hidden sm:inline">for current filters</span>
-          </button>
-          <button type="button" onclick="openRadarFilterModal()" class="text-[11px] px-2.5 py-1 rounded-lg bg-rose-500/10 text-rose-300 border border-rose-500/30 hover:bg-rose-500/20 font-bold transition flex items-center gap-1.5 shrink-0 whitespace-nowrap">
-            <i data-lucide="sliders-horizontal" class="w-3.5 h-3.5 text-rose-400 shrink-0"></i> Cards (<span id="radar-pinned-count">0</span>)
-          </button>
-        </div>
-
-        <!-- Collapsible Container -->
-        <div id="goals-sphere-radar-container">
-          <div id="goals-sphere-radar-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs">
-            <!-- Rendered based on custom pinned selection -->
-          </div>
-        </div>
-      </div>
 
       <!-- Goal Cards Grid -->
       <div id="goals-main-workspace" class="space-y-3">
@@ -8526,6 +8514,17 @@ html, body {
         if (sortBy === 'TITLE') return (a.title || '').localeCompare(b.title || '');
         return 0;
       });
+
+      // Live stats for the currently applied filter
+      const fstatCount = document.getElementById('goal-filter-stat-count');
+      const fstatDone = document.getElementById('goal-filter-stat-done');
+      const fstatPct = document.getElementById('goal-filter-stat-pct');
+      const fstatBar = document.getElementById('goal-filter-stat-bar');
+      if (fstatCount) fstatCount.textContent = goals.length;
+      if (fstatDone) fstatDone.textContent = goals.filter(g => (g.progress || 0) >= 100).length;
+      const fstatAvg = goals.length > 0 ? Math.round(goals.reduce((s, g) => s + (g.progress || 0), 0) / goals.length) : 0;
+      if (fstatPct) fstatPct.textContent = fstatAvg + '%';
+      if (fstatBar) fstatBar.style.width = fstatAvg + '%';
 
       const allGoals = (window.appState.goals || []).filter(g => !g.isArchived);
       const totalCount = allGoals.length;
