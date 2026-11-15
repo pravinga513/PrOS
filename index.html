@@ -93,38 +93,16 @@
       scrollbar-color: rgba(148, 163, 184, 0.35) transparent;
     }
 
-    /* Seamless folder list expand/collapse */
-    #folder-list-overlay {
-      transition: opacity 0.2s ease, visibility 0.2s ease;
-      backdrop-filter: blur(4px);
-    }
-    #folder-list-overlay.flex {
-      opacity: 1;
-      visibility: visible;
-    }
-    #folder-list-overlay.hidden {
-      opacity: 0;
-      visibility: hidden;
-    }
-    .folder-list-btn .lucide-icon {
+    /* Folder list inline panel */
+    #folder-list-chevron {
       transition: transform 0.2s ease;
     }
-    .folder-list-btn.expanded .lucide-icon:first-child {
-      transform: rotate(45deg);
+    #folder-list-panel {
+      animation: folderPanelIn 0.18s ease;
     }
-    .folder-list-btn.expanded .lucide-icon:last-child {
-      transform: rotate(-45deg) translateX(8px);
-    }
-
-    /* Content entrance staggered */
-    #folder-list-content > * {
-      opacity: 0;
-      transform: translateY(8px);
-      transition: opacity 0.2s ease 0.05s, transform 0.2s ease 0.05s;
-    }
-    #folder-list-content.visible > * {
-      opacity: 1;
-      transform: translateY(0);
+    @keyframes folderPanelIn {
+      from { opacity: 0; transform: translateY(-4px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
     /* Native <select> restyle: consistent dark dropdowns app-wide */
@@ -7136,50 +7114,98 @@ html, body {
     </div>
   </div>
 
-  <!-- KPI Overview Metrics (compressed, above filter bar) -->
-  <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-2 md:gap-3 my-3">
-    <button type="button" onclick="goalKpiJump('ALL')" data-goal-kpi="ALL" class="glass-card p-2 sm:p-3 rounded-xl border border-rose-500/20 bg-rose-500/[0.02] space-y-0.5 hover:border-rose-500/40 transition text-left active:scale-95 cursor-pointer">
-      <div class="flex justify-between items-center text-xs font-bold text-slate-400">
-        <span class="uppercase tracking-wider text-[8px]">Active Targets</span>
-        <div class="w-5 h-5 rounded-xl bg-rose-500/10 text-rose-400 flex items-center justify-center shrink-0">
-          <i data-lucide="compass" class="w-3 h-3"></i>
-        </div>
+  <!-- KPI Overview Metrics -->
+  <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 md:gap-3">
+    <button type="button" onclick="goalKpiJump('ALL')" data-goal-kpi="ALL" class="glass-card p-2.5 sm:p-3 rounded-2xl border border-rose-500/20 bg-rose-500/[0.03] flex items-center gap-2.5 hover:border-rose-500/50 hover:bg-rose-500/[0.06] transition text-left active:scale-95 cursor-pointer">
+      <div class="w-9 h-9 rounded-xl bg-rose-500/10 text-rose-400 border border-rose-500/20 flex items-center justify-center shrink-0">
+        <i data-lucide="compass" class="w-4 h-4"></i>
       </div>
-      <div id="goal-stat-total" class="text-sm sm:text-base font-black text-slate-100">0</div>
+      <div class="min-w-0">
+        <div class="text-[9px] uppercase tracking-wider text-slate-500 font-bold truncate">Active Targets</div>
+        <div id="goal-stat-total" class="text-lg sm:text-xl font-black text-slate-100 leading-tight">0</div>
+      </div>
     </button>
 
-    <button type="button" onclick="scrollToGoalsCards()" class="glass-card p-2 sm:p-3 rounded-xl border border-emerald-500/20 bg-emerald-500/[0.02] space-y-0.5 hover:border-emerald-500/40 transition text-left active:scale-95 cursor-pointer">
-      <div class="flex justify-between items-center text-xs font-bold text-slate-400">
-        <span class="uppercase tracking-wider text-[8px]">Avg OKR Velocity</span>
-        <div class="w-5 h-5 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center shrink-0">
-          <i data-lucide="trending-up" class="w-3 h-3"></i>
-        </div>
+    <button type="button" onclick="scrollToGoalsCards()" class="glass-card p-2.5 sm:p-3 rounded-2xl border border-emerald-500/20 bg-emerald-500/[0.03] flex items-center gap-2.5 hover:border-emerald-500/50 hover:bg-emerald-500/[0.06] transition text-left active:scale-95 cursor-pointer">
+      <div class="w-9 h-9 rounded-xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 flex items-center justify-center shrink-0">
+        <i data-lucide="trending-up" class="w-4 h-4"></i>
       </div>
-      <div id="goal-stat-avg" class="text-sm text-emerald-300">0%</div>
+      <div class="min-w-0">
+        <div class="text-[9px] uppercase tracking-wider text-slate-500 font-bold truncate">Avg OKR Velocity</div>
+        <div id="goal-stat-avg" class="text-lg sm:text-xl font-black text-emerald-300 leading-tight">0%</div>
+      </div>
     </button>
 
-    <button type="button" onclick="goalKpiJump('COMPLETED')" data-goal-kpi="COMPLETED" class="glass-card p-2 sm:p-3 rounded-xl border border-sky-500/20 bg-sky-500/[0.02] space-y-0.5 hover:border-sky-500/40 transition text-left active:scale-95 cursor-pointer">
-      <div class="flex justify-between items-center text-xs font-bold text-slate-400">
-        <span class="uppercase tracking-wider text-[8px]">Completed</span>
-        <div class="w-5 h-5 rounded-xl bg-sky-500/10 text-sky-400 flex items-center justify-center shrink-0">
-          <i data-lucide="check-circle-2" class="w-3.5 h-3.5"></i>
-        </div>
+    <button type="button" onclick="goalKpiJump('COMPLETED')" data-goal-kpi="COMPLETED" class="glass-card p-2.5 sm:p-3 rounded-2xl border border-sky-500/20 bg-sky-500/[0.03] flex items-center gap-2.5 hover:border-sky-500/50 hover:bg-sky-500/[0.06] transition text-left active:scale-95 cursor-pointer">
+      <div class="w-9 h-9 rounded-xl bg-sky-500/10 text-sky-400 border border-sky-500/20 flex items-center justify-center shrink-0">
+        <i data-lucide="check-circle-2" class="w-4 h-4"></i>
       </div>
-      <div id="goal-stat-completed" class="text-sm text-sky-300">0</div>
+      <div class="min-w-0">
+        <div class="text-[9px] uppercase tracking-wider text-slate-500 font-bold truncate">Completed</div>
+        <div id="goal-stat-completed" class="text-lg sm:text-xl font-black text-sky-300 leading-tight">0</div>
+      </div>
     </button>
 
-    <button type="button" onclick="goalKpiJump('URGENT')" data-goal-kpi="URGENT" class="glass-card p-2 sm:p-3 rounded-xl border border-amber-500/20 bg-amber-500/[0.02] space-y-0.5 hover:border-amber-500/40 transition text-left active:scale-95 cursor-pointer">
-      <div class="flex justify-between items-center text-xs font-bold text-slate-400">
-        <span class="uppercase tracking-wider text-[8px]">Near Deadline</span>
-        <div class="w-5 h-5 rounded-xl bg-amber-500/10 text-amber-400 flex items-center justify-center shrink-0">
-          <i data-lucide="flame" class="w-3 h-3"></i>
-        </div>
+    <button type="button" onclick="goalKpiJump('URGENT')" data-goal-kpi="URGENT" class="glass-card p-2.5 sm:p-3 rounded-2xl border border-amber-500/20 bg-amber-500/[0.03] flex items-center gap-2.5 hover:border-amber-500/50 hover:bg-amber-500/[0.06] transition text-left active:scale-95 cursor-pointer">
+      <div class="w-9 h-9 rounded-xl bg-amber-500/10 text-amber-400 border border-amber-500/20 flex items-center justify-center shrink-0">
+        <i data-lucide="flame" class="w-4 h-4"></i>
       </div>
-      <div id="goal-stat-urgent" class="text-sm text-amber-400">0</div>
+      <div class="min-w-0">
+        <div class="text-[9px] uppercase tracking-wider text-slate-500 font-bold truncate">Near Deadline</div>
+        <div id="goal-stat-urgent" class="text-lg sm:text-xl font-black text-amber-400 leading-tight">0</div>
+      </div>
     </button>
   </div>
 
-  <!-- Filters: status pills, category, sort and collections -->
+  <!-- Pinned Categories (right after KPIs) -->
+  <div class="glass-card rounded-2xl p-3.5 sm:p-4 border border-rose-500/20 bg-rose-500/[0.02] space-y-2.5">
+    <div class="flex items-center justify-between gap-2">
+      <div class="flex items-center gap-2 min-w-0">
+        <button type="button" onclick="toggleRadarVisibility()" class="p-1.5 rounded-lg bg-slate-900 border border-slate-800 hover:border-rose-500/40 text-slate-400 hover:text-white transition shrink-0" title="Show / Hide Breakdown Panel">
+          <i id="radar-toggle-icon" data-lucide="chevron-down" class="w-3.5 h-3.5 text-rose-400"></i>
+        </button>
+        <h3 class="text-xs font-extrabold text-white flex items-center gap-1.5 truncate">
+          <i data-lucide="pie-chart" class="w-3.5 h-3.5 text-rose-400 shrink-0"></i> <span class="truncate">Pinned Categories</span>
+        </h3>
+      </div>
+
+      <button type="button" onclick="openRadarFilterModal()" class="text-[11px] px-2.5 py-1 rounded-lg bg-rose-500/10 text-rose-300 border border-rose-500/30 hover:bg-rose-500/20 font-bold transition flex items-center gap-1.5 shrink-0 whitespace-nowrap">
+        <i data-lucide="sliders-horizontal" class="w-3.5 h-3.5 text-rose-400 shrink-0"></i> Cards (<span id="radar-pinned-count">0</span>)
+      </button>
+    </div>
+
+    <!-- Collapsible Container -->
+    <div id="goals-sphere-radar-container">
+      <div id="goals-sphere-radar-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5 text-xs">
+        <!-- Rendered based on custom pinned selection -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Collections (dedicated section) -->
+  <div class="glass-card rounded-2xl p-3 sm:p-4 border border-slate-800 bg-slate-950/60 space-y-2.5">
+    <div class="flex items-center justify-between gap-2">
+      <div class="flex items-center gap-2 min-w-0">
+        <div class="w-7 h-7 rounded-lg bg-violet-500/10 text-violet-300 border border-violet-500/20 flex items-center justify-center shrink-0">
+          <i data-lucide="folder" class="w-3.5 h-3.5"></i>
+        </div>
+        <h3 class="text-xs font-extrabold text-white truncate">Collections</h3>
+        <span id="goal-folders-count" class="text-[10px] font-mono text-slate-500 shrink-0">0</span>
+      </div>
+      <div class="flex items-center gap-1.5 shrink-0">
+        <button type="button" onclick="openCreateGoalFolderModal()" class="p-1.5 rounded-lg bg-slate-900 border border-slate-800 hover:border-rose-500/40 text-rose-400 hover:text-rose-300 transition" title="New Collection">
+          <i data-lucide="folder-plus" class="w-3.5 h-3.5"></i>
+        </button>
+        <button type="button" onclick="toggleFolderList()" class="p-1.5 rounded-lg bg-slate-900 border border-slate-800 hover:border-violet-500/40 text-slate-400 hover:text-white transition" title="All folders">
+          <i id="folder-list-chevron" data-lucide="chevron-down" class="w-3.5 h-3.5"></i>
+        </button>
+      </div>
+    </div>
+    <div id="goal-folders-nav" class="flex flex-wrap gap-1.5"></div>
+    <div id="folder-list-panel" class="hidden space-y-1"></div>
+  </div>
+
+
   <div class="glass-card rounded-2xl p-3 sm:p-4 border border-slate-800 bg-slate-950/60 space-y-3">
     <!-- Status pills -->
     <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar text-xs">
@@ -7216,92 +7242,6 @@ html, body {
       </div>
     </div>
 
-    <!-- Goal Collections -->
-    <div class="flex items-center gap-2 pt-3 border-t border-slate-900">
-      <span class="text-[10px] text-slate-500 uppercase font-bold shrink-0">Collections</span>
-      <span id="goal-folders-count" class="text-[10px] font-mono text-slate-500 shrink-0">0</span>
-      <div id="goal-folders-nav" class="flex items-center gap-1.5 overflow-x-auto no-scrollbar flex-1 min-w-0"></div>
-      <button type="button" onclick="openCreateGoalFolderModal()" class="p-1.5 rounded-lg bg-slate-900 border border-slate-800 hover:border-rose-500/40 text-rose-400 hover:text-rose-300 transition shrink-0" title="New Collection">
-        <i data-lucide="folder-plus" class="w-3.5 h-3.5"></i>
-      </button>
-      <button type="button" onclick="toggleFolderList()" class="p-1.5 rounded-lg bg-slate-900 border border-slate-800 hover:border-rose-500/40 text-slate-400 hover:text-rose-300 transition shrink-0 flex items-center gap-1.5" title="Show / hide folders">
-        <i data-lucide="minus" id="folder-list-icon" class="w-3.5 h-3.5 text-slate-500 shrink-0 hidden"></i>
-        <i data-lucide="plus" id="folder-list-icon" class="w-3.5 h-3.5 text-rose-400 shrink-0"></i>
-        <span class="text-[10px] font-medium">Folders</span>
-        <span id="folder-count" class="text-[9px] font-mono text-slate-500">0</span>
-      </button>
-    </div>
-
-    
-  <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3 md:gap-4">
-    <button type="button" onclick="goalKpiJump('ALL')" data-goal-kpi="ALL" class="glass-card p-3 sm:p-4 rounded-2xl border border-rose-500/20 bg-rose-500/[0.03] space-y-1.5 hover:border-rose-500/50 hover:bg-rose-500/[0.06] transition text-left active:scale-95 cursor-pointer">
-      <div class="flex justify-between items-center text-xs font-bold text-slate-400">
-        <span class="uppercase tracking-wider text-[9px]">Active Targets</span>
-        <div class="w-7 h-7 rounded-xl bg-rose-500/10 text-rose-400 flex items-center justify-center shrink-0">
-          <i data-lucide="compass" class="w-3.5 h-3.5"></i>
-        </div>
-      </div>
-      <div id="goal-stat-total" class="text-base sm:text-lg md:text-xl font-black text-slate-100">0</div>
-      <p id="goal-stat-total-sub" class="text-[10px] text-slate-500 font-mono">0 Collections active</p>
-    </button>
-
-    <button type="button" onclick="scrollToGoalsCards()" class="glass-card p-3 sm:p-4 rounded-2xl border border-emerald-500/20 bg-emerald-500/[0.03] space-y-1.5 hover:border-emerald-500/50 hover:bg-emerald-500/[0.06] transition text-left active:scale-95 cursor-pointer">
-      <div class="flex justify-between items-center text-xs font-bold text-slate-400">
-        <span class="uppercase tracking-wider text-[9px]">Avg OKR Velocity</span>
-        <div class="w-7 h-7 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center shrink-0">
-          <i data-lucide="trending-up" class="w-3.5 h-3.5"></i>
-        </div>
-      </div>
-      <div id="goal-stat-avg" class="text-base sm:text-lg md:text-xl font-black text-emerald-300">0%</div>
-      <p class="text-[10px] text-slate-500 font-mono">Overall OKR progress</p>
-    </button>
-
-    <button type="button" onclick="goalKpiJump('COMPLETED')" data-goal-kpi="COMPLETED" class="glass-card p-3 sm:p-4 rounded-2xl border border-sky-500/20 bg-sky-500/[0.03] space-y-1.5 hover:border-sky-500/50 hover:bg-sky-500/[0.06] transition text-left active:scale-95 cursor-pointer">
-      <div class="flex justify-between items-center text-xs font-bold text-slate-400">
-        <span class="uppercase tracking-wider text-[9px]">Completed</span>
-        <div class="w-7 h-7 rounded-xl bg-sky-500/10 text-sky-400 flex items-center justify-center shrink-0">
-          <i data-lucide="check-circle-2" class="w-3.5 h-3.5"></i>
-        </div>
-      </div>
-      <div id="goal-stat-completed" class="text-base sm:text-lg md:text-xl font-black text-sky-300">0</div>
-      <p class="text-[10px] text-slate-500 font-mono">Targets achieved</p>
-    </button>
-
-    <button type="button" onclick="goalKpiJump('URGENT')" data-goal-kpi="URGENT" class="glass-card p-3 sm:p-4 rounded-2xl border border-amber-500/20 bg-amber-500/[0.03] space-y-1.5 hover:border-amber-500/50 hover:bg-amber-500/[0.06] transition text-left active:scale-95 cursor-pointer">
-      <div class="flex justify-between items-center text-xs font-bold text-slate-400">
-        <span class="uppercase tracking-wider text-[9px]">Near Deadline</span>
-        <div class="w-7 h-7 rounded-xl bg-amber-500/10 text-amber-400 flex items-center justify-center shrink-0">
-          <i data-lucide="flame" class="w-3.5 h-3.5"></i>
-        </div>
-      </div>
-      <div id="goal-stat-urgent" class="text-base sm:text-lg md:text-xl font-black text-amber-400">0</div>
-      <p class="text-[10px] text-slate-500 font-mono">Due within 14 days</p>
-    </button>
-  </div>
-
-  <!-- COLLAPSIBLE & SELECTIVE CATEGORY BREAKDOWN BAR -->
-  <div class="glass-card rounded-2xl p-3.5 sm:p-4 border border-rose-500/20 bg-rose-500/[0.02] space-y-2.5">
-    <div class="flex items-center justify-between gap-2">
-      <div class="flex items-center gap-2 min-w-0">
-        <button type="button" onclick="toggleRadarVisibility()" class="p-1.5 rounded-lg bg-slate-900 border border-slate-800 hover:border-rose-500/40 text-slate-400 hover:text-white transition shrink-0" title="Show / Hide Breakdown Panel">
-          <i id="radar-toggle-icon" data-lucide="chevron-down" class="w-3.5 h-3.5 text-rose-400"></i>
-        </button>
-        <h3 class="text-xs font-extrabold text-white flex items-center gap-1.5 truncate">
-          <i data-lucide="pie-chart" class="w-3.5 h-3.5 text-rose-400 shrink-0"></i> <span class="truncate">Pinned Categories</span>
-        </h3>
-      </div>
-
-      <button type="button" onclick="openRadarFilterModal()" class="text-[11px] px-2.5 py-1 rounded-lg bg-rose-500/10 text-rose-300 border border-rose-500/30 hover:bg-rose-500/20 font-bold transition flex items-center gap-1.5 shrink-0 whitespace-nowrap">
-        <i data-lucide="sliders-horizontal" class="w-3.5 h-3.5 text-rose-400 shrink-0"></i> Cards (<span id="radar-pinned-count">0</span>)
-      </button>
-    </div>
-
-    <!-- Collapsible Container -->
-    <div id="goals-sphere-radar-container">
-      <div id="goals-sphere-radar-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5 text-xs">
-        <!-- Rendered based on custom pinned selection -->
-      </div>
-    </div>
   </div>
 
   <!-- Goal Cards Grid -->
@@ -9053,21 +8993,14 @@ html, body {
       showModalDirect('create-goal-folder-modal');
     };
 
-    // Toggle folder list expand/collapse
+    // Toggle folder list inline panel expand/collapse
     window.toggleFolderList = function() {
-      const overlay = document.getElementById('folder-list-overlay');
-      const content = document.getElementById('folder-list-content');
-      const btn = document.querySelector('.folder-list-btn');
-      const iconPlus = document.getElementById('folder-list-icon')?.nextElementSibling;
-      const iconMinus = document.getElementById('folder-list-icon')?.previousElementSibling;
-      const folderCountEl = document.getElementById('folder-count');
-
-      if (overlay.classList.contains('hidden')) {
-        // Show overlay
-        overlay.classList.remove('hidden');
-        overlay.classList.add('flex');
-        if (btn) btn.classList.add('expanded');
-
+      const panel = document.getElementById('folder-list-panel');
+      const chips = document.getElementById('goal-folders-nav');
+      const chevron = document.getElementById('folder-list-chevron');
+      if (!panel) return;
+      const isHidden = panel.classList.contains('hidden');
+      if (isHidden) {
         const folders = window.appState.goalFolders || [];
         const usedFolders = folders.filter(f => {
           const hasGoal = (window.appState.goals || []).some(g => g.folderId === f.id);
@@ -9076,64 +9009,54 @@ html, body {
 
         let listHtml = '';
         if (usedFolders.length === 0) {
-          listHtml = `<p class="text-[10px] text-slate-500">No collections yet — create one above</p>`;
+          listHtml = `<p class="text-[10px] text-slate-500 px-1 py-1">No collections yet — use the + button above to create one</p>`;
         } else {
           listHtml = `
-            <div class="space-y-1 max-h-[calc(100vh-4rem)] overflow-y-auto pr-1 scrollbar-slim">
-            ${usedFolders.map(f => `
-              <div class="flex items-center gap-2 px-2 py-1 rounded text-[10px] cursor-pointer hover:bg-slate-900/50" 
-                   onclick="toggleFolderList(); selectFolderNav('${f.id}')">
-                <i data-lucide="${f.isNodeFolder ? 'brain-circuit' : 'folder'}" class="w-3 h-3 text-rose-400 shrink-0 ${f.isNodeFolder ? '' : 'text-slate-500'}"></i>
-                <span class="truncate flex-1">${escapeHtml(f.name)}</span>
-                <span class="text-[9px] font-mono opacity-60">${(window.appState.goals || []).filter(g => g.folderId === f.id).length}</span>
-              </div>
-            `).join('')}
-            </div>
-            <div class="mt-2 text-[10px] text-slate-500">
-              <button onclick="toggleFolderList(); openCreateGoalFolderModal()" class="underline text-rose-400 hover:text-rose-300">Create new collection</button>
+            <div class="max-h-56 overflow-y-auto pr-1 scrollbar-slim space-y-1">
+              <button type="button" onclick="selectFolderNav('ALL')" class="w-full flex items-center gap-2 px-2.5 py-2 rounded-xl text-[11px] cursor-pointer transition border ${
+                (!window.appState.activeGoalFolderFilter || window.appState.activeGoalFolderFilter === 'ALL')
+                  ? 'bg-rose-600/20 text-rose-200 border-rose-500/30'
+                  : 'bg-slate-900/40 text-slate-300 border-transparent hover:bg-slate-900/70 hover:border-slate-800'
+              }">
+                <i data-lucide="layers" class="w-3.5 h-3.5 shrink-0 text-slate-500"></i>
+                <span class="truncate flex-1 text-left font-semibold">All Goals</span>
+                <span class="text-[9px] font-mono text-slate-500">${(window.appState.goals || []).length}</span>
+              </button>
+              ${usedFolders.map(f => `
+                <button type="button" onclick="selectFolderNav('${f.id}')" class="w-full flex items-center gap-2 px-2.5 py-2 rounded-xl text-[11px] cursor-pointer transition border ${
+                  window.appState.activeGoalFolderFilter === f.id
+                    ? 'bg-rose-600/20 text-rose-200 border-rose-500/30'
+                    : 'bg-slate-900/40 text-slate-300 border-transparent hover:bg-slate-900/70 hover:border-slate-800'
+                }">
+                  <i data-lucide="${f.isNodeFolder ? 'brain-circuit' : 'folder'}" class="w-3.5 h-3.5 shrink-0 ${f.isNodeFolder ? 'text-violet-300' : 'text-slate-500'}"></i>
+                  <span class="truncate flex-1 text-left font-semibold">${escapeHtml(f.name)}</span>
+                  <span class="text-[9px] font-mono text-slate-500">${(window.appState.goals || []).filter(g => g.folderId === f.id).length}</span>
+                </button>
+              `).join('')}
             </div>
           `;
         }
 
-        document.getElementById('folder-list-content').innerHTML = listHtml;
-        // Force reflow for animation
-        void overlay.offsetWidth;
-        if (folderCountEl) folderCountEl.textContent = usedFolders.length;
-        if (iconPlus) iconPlus.classList.add('hidden');
-        if (iconMinus) iconMinus.classList.remove('hidden');
-        // Trigger content entrance animation
-        setTimeout(() => content.classList.add('visible'), 50);
+        panel.innerHTML = listHtml;
+        panel.classList.remove('hidden');
+        if (chips) chips.classList.add('hidden');
+        if (chevron) chevron.style.transform = 'rotate(180deg)';
+        if (window.refreshIconsScoped) window.refreshIconsScoped(panel);
       } else {
-        // Hide overlay - remove visible first so out animation can play
-        content.classList.remove('visible');
-        if (btn) btn.classList.remove('expanded');
-        if (iconPlus) iconPlus.classList.remove('hidden');
-        if (iconMinus) iconMinus.classList.add('hidden');
-        // Hide after a brief delay so the out animation plays
-        setTimeout(() => {
-          overlay.classList.add('hidden');
-          overlay.classList.remove('flex');
-        }, 200);
+        panel.classList.add('hidden');
+        if (chips) chips.classList.remove('hidden');
+        if (chevron) chevron.style.transform = 'rotate(0deg)';
       }
     };
 
-    // Select a folder from the list and scroll to it
+    // Select a folder from the panel, apply filter, close panel
     window.selectFolderNav = function(folderId) {
-      toggleFolderList();
-      const filterBtn = document.querySelector(`[onclick*="activeGoalFolderFilter']`) || 
-                        document.querySelector(`button[onclick*="setGoalStatusFilter']`);
-      // Find the matching folder button in the nav and click it
-      const folderBtns = document.querySelectorAll('#goal-folders-nav button');
-      for (const btn of folderBtns) {
-        if (btn.getAttribute('data-id') === folderId || (btn.textContent || '').includes(folderId)) {
-          btn.click();
-          break;
-        }
-      }
-      // Also update the filter
+      triggerHaptic();
       if (window.appState) window.appState.activeGoalFolderFilter = folderId;
       window.renderGoalFoldersNav();
       window.renderGoalsView();
+      toggleFolderList();
+      scrollToGoalsCards();
     };
 
     window.openGoalFolderManager = function() {
