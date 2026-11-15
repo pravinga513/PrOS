@@ -5078,7 +5078,7 @@ html, body {
 
   <!-- KPI Overview Metrics (standalone cards, like Goals) -->
   <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 md:gap-3">
-    <div class="glass-card p-2.5 sm:p-3 rounded-2xl border border-purple-500/20 bg-purple-500/[0.03] flex items-center gap-2.5 hover:border-purple-500/50 hover:bg-purple-500/[0.06] transition">
+    <button type="button" onclick="taskKpiJump('ALL')" class="glass-card p-2.5 sm:p-3 rounded-2xl border border-purple-500/20 bg-purple-500/[0.03] flex items-center gap-2.5 hover:border-purple-500/50 hover:bg-purple-500/[0.06] transition text-left w-full active:scale-95 cursor-pointer">
       <div class="w-9 h-9 rounded-xl bg-purple-500/10 text-purple-400 border border-purple-500/20 flex items-center justify-center shrink-0">
         <i data-lucide="list-todo" class="w-4 h-4"></i>
       </div>
@@ -5087,9 +5087,9 @@ html, body {
         <div id="task-metric-total" class="text-lg sm:text-xl font-black text-slate-100 leading-tight">0</div>
         <p id="task-metric-rate" class="text-[9px] text-purple-400 font-mono leading-tight truncate">0%</p>
       </div>
-    </div>
+    </button>
 
-    <div class="glass-card p-2.5 sm:p-3 rounded-2xl border border-amber-500/20 bg-amber-500/[0.03] flex items-center gap-2.5 hover:border-amber-500/50 hover:bg-amber-500/[0.06] transition">
+    <button type="button" onclick="taskKpiJump('TODAY_NEAR')" class="glass-card p-2.5 sm:p-3 rounded-2xl border border-amber-500/20 bg-amber-500/[0.03] flex items-center gap-2.5 hover:border-amber-500/50 hover:bg-amber-500/[0.06] transition text-left w-full active:scale-95 cursor-pointer">
       <div class="w-9 h-9 rounded-xl bg-amber-500/10 text-amber-400 border border-amber-500/20 flex items-center justify-center shrink-0">
         <i data-lucide="calendar" class="w-4 h-4"></i>
       </div>
@@ -5098,9 +5098,9 @@ html, body {
         <div id="task-metric-today" class="text-lg sm:text-xl font-black text-amber-400 leading-tight">0</div>
         <p id="task-metric-overdue" class="text-[9px] text-rose-400 font-mono leading-tight truncate">⚠️ 0</p>
       </div>
-    </div>
+    </button>
 
-    <div class="glass-card p-2.5 sm:p-3 rounded-2xl border border-rose-500/20 bg-rose-500/[0.03] flex items-center gap-2.5 hover:border-rose-500/50 hover:bg-rose-500/[0.06] transition">
+    <button type="button" onclick="taskKpiJump('HIGH')" class="glass-card p-2.5 sm:p-3 rounded-2xl border border-rose-500/20 bg-rose-500/[0.03] flex items-center gap-2.5 hover:border-rose-500/50 hover:bg-rose-500/[0.06] transition text-left w-full active:scale-95 cursor-pointer">
       <div class="w-9 h-9 rounded-xl bg-rose-500/10 text-rose-400 border border-rose-500/20 flex items-center justify-center shrink-0">
         <i data-lucide="flame" class="w-4 h-4"></i>
       </div>
@@ -5109,9 +5109,9 @@ html, body {
         <div id="task-metric-high" class="text-lg sm:text-xl font-black text-rose-400 leading-tight">0</div>
         <p class="text-[9px] text-slate-500 font-mono leading-tight truncate">Urgent</p>
       </div>
-    </div>
+    </button>
 
-    <div class="glass-card p-2.5 sm:p-3 rounded-2xl border border-emerald-500/20 bg-emerald-500/[0.03] flex items-center gap-2.5 hover:border-emerald-500/50 hover:bg-emerald-500/[0.06] transition">
+    <button type="button" onclick="taskKpiJump('DONE')" class="glass-card p-2.5 sm:p-3 rounded-2xl border border-emerald-500/20 bg-emerald-500/[0.03] flex items-center gap-2.5 hover:border-emerald-500/50 hover:bg-emerald-500/[0.06] transition text-left w-full active:scale-95 cursor-pointer">
       <div class="w-9 h-9 rounded-xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 flex items-center justify-center shrink-0">
         <i data-lucide="check-circle-2" class="w-4 h-4"></i>
       </div>
@@ -5120,7 +5120,7 @@ html, body {
         <div id="task-metric-done" class="text-lg sm:text-xl font-black text-emerald-400 leading-tight">0</div>
         <p class="text-[9px] text-slate-500 font-mono leading-tight truncate">Finished</p>
       </div>
-    </div>
+    </button>
   </div>
 
   <!-- 1. LIST VIEW CONTAINER -->
@@ -6216,6 +6216,39 @@ html, body {
       const metricDone = document.getElementById('task-metric-done');
       if (metricDone) metricDone.textContent = doneCount;
     }
+
+    /* KPI click: apply matching status filter and scroll to the task list */
+    window.taskKpiJump = function(filterKey) {
+      triggerHaptic();
+      const select = document.getElementById('todo-status-filter');
+      if (select) select.value = filterKey;
+      if (window.appState.taskViewMode === 'kanban') window.renderKanbanBoard();
+      else window.renderTodoItems();
+      window.scrollToTaskList();
+    };
+
+    window.scrollToTaskList = function() {
+      const el = document.getElementById('task-container-list-view') || document.getElementById('task-container-kanban-view');
+      if (!el) return;
+      let node = el.parentElement;
+      while (node) {
+        const style = window.getComputedStyle(node);
+        const canScroll = /(auto|scroll)/.test(style.overflowY) && node.scrollHeight > node.clientHeight;
+        if (canScroll) {
+          const top = Math.max(0, el.getBoundingClientRect().top - node.getBoundingClientRect().top + node.scrollTop - 70);
+          const startTop = node.scrollTop;
+          node.scrollTo({ top, behavior: 'smooth' });
+          setTimeout(() => {
+            if (Math.abs(node.scrollTop - top) > 4 && Math.abs(node.scrollTop - startTop) < 2) {
+              node.scrollTop = top;
+            }
+          }, 350);
+          return;
+        }
+        node = node.parentElement;
+      }
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    };
 
     /* Category List Sidebar (Hides Empty Goal & Node Folders) */
     window.renderTodoListsNav = function() {
