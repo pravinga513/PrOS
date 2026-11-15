@@ -6217,11 +6217,14 @@ html, body {
       if (metricDone) metricDone.textContent = doneCount;
     }
 
-    /* KPI click: apply matching status filter and scroll to the task list */
+    /* KPI click: open the main panel in All-Folders scope, apply matching status filter (title follows it) and scroll to the task list */
     window.taskKpiJump = function(filterKey) {
       triggerHaptic();
+      tasksScopeAll = true;
+      try { window.localStorage.setItem('pros_tasks_scope_all', '1'); } catch (e) {}
       const select = document.getElementById('todo-status-filter');
       if (select) select.value = filterKey;
+      if (window.innerWidth < 1024) window.showMobileTasksPanel();
       if (window.appState.taskViewMode === 'kanban') window.renderKanbanBoard();
       else window.renderTodoItems();
       window.scrollToTaskList();
@@ -6435,8 +6438,10 @@ html, body {
       const toggleBtn = document.getElementById('btn-toggle-folder-metrics');
 
       if (tasksScopeAll) {
-        // All-Folders mode: global title, no per-folder badge, no per-folder metric toggle
-        if (titleEl) titleEl.textContent = 'All Folders';
+        // All-Folders mode: global title follows the active status filter (KPI clicks set it), no per-folder badge, no per-folder metric toggle
+        const _statusTitles = { ALL: 'All Folders', ACTIVE: 'Pending Tasks', TODAY_NEAR: 'Due Soon', HIGH: 'High Priority', RECURRING: 'Recurring', DONE: 'Completed' };
+        const _statusVal = document.getElementById('todo-status-filter')?.value || 'ALL';
+        if (titleEl) titleEl.textContent = _statusTitles[_statusVal] || 'All Folders';
         if (badgeEl) badgeEl.classList.add('hidden');
         if (toggleBtn) toggleBtn.classList.add('hidden');
       } else if (activeList) {
@@ -6754,7 +6759,9 @@ html, body {
       // Kanban always shows every folder's tasks — scope controls live in List view only
       const titleElK = document.getElementById('active-todo-list-name');
       const badgeElK = document.getElementById('active-todo-list-badge');
-      if (titleElK) titleElK.textContent = 'All Folders';
+      const _statusTitlesK = { ALL: 'All Folders', ACTIVE: 'Pending Tasks', TODAY_NEAR: 'Due Soon', HIGH: 'High Priority', RECURRING: 'Recurring', DONE: 'Completed' };
+      const _statusValK = document.getElementById('todo-status-filter')?.value || 'ALL';
+      if (titleElK) titleElK.textContent = _statusTitlesK[_statusValK] || 'All Folders';
       if (badgeElK) badgeElK.classList.add('hidden');
       const incBtnK = document.getElementById('btn-toggle-folder-metrics');
       if (incBtnK) incBtnK.classList.add('hidden');
