@@ -7157,54 +7157,34 @@ html, body {
     </button>
   </div>
 
-  <!-- Pinned Categories (right after KPIs) -->
-  <div class="glass-card rounded-2xl p-3.5 sm:p-4 border border-rose-500/20 bg-rose-500/[0.02] space-y-2.5">
-    <div class="flex items-center justify-between gap-2">
-      <div class="flex items-center gap-2 min-w-0">
-        <button type="button" onclick="toggleRadarVisibility()" class="p-1.5 rounded-lg bg-slate-900 border border-slate-800 hover:border-rose-500/40 text-slate-400 hover:text-white transition shrink-0" title="Show / Hide Breakdown Panel">
-          <i id="radar-toggle-icon" data-lucide="chevron-down" class="w-3.5 h-3.5 text-rose-400"></i>
-        </button>
-        <h3 class="text-xs font-extrabold text-white flex items-center gap-1.5 truncate">
-          <i data-lucide="pie-chart" class="w-3.5 h-3.5 text-rose-400 shrink-0"></i> <span class="truncate">Pinned Categories</span>
-        </h3>
-      </div>
+  <!-- Goal Workspace: Collections rail (desktop) + Filters & Cards -->
+  <div class="grid grid-cols-1 lg:grid-cols-12 gap-3 items-start">
 
-      <button type="button" onclick="openRadarFilterModal()" class="text-[11px] px-2.5 py-1 rounded-lg bg-rose-500/10 text-rose-300 border border-rose-500/30 hover:bg-rose-500/20 font-bold transition flex items-center gap-1.5 shrink-0 whitespace-nowrap">
-        <i data-lucide="sliders-horizontal" class="w-3.5 h-3.5 text-rose-400 shrink-0"></i> Cards (<span id="radar-pinned-count">0</span>)
-      </button>
-    </div>
-
-    <!-- Collapsible Container -->
-    <div id="goals-sphere-radar-container">
-      <div id="goals-sphere-radar-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5 text-xs">
-        <!-- Rendered based on custom pinned selection -->
-      </div>
-    </div>
-  </div>
-
-  <!-- Collections (dedicated section) -->
-  <div class="glass-card rounded-2xl p-3 sm:p-4 border border-slate-800 bg-slate-950/60 space-y-2.5">
-    <div class="flex items-center justify-between gap-2">
-      <div class="flex items-center gap-2 min-w-0">
-        <div class="w-7 h-7 rounded-lg bg-violet-500/10 text-violet-300 border border-violet-500/20 flex items-center justify-center shrink-0">
-          <i data-lucide="folder" class="w-3.5 h-3.5"></i>
+    <!-- LEFT RAIL: Collections (desktop sidebar, like Tasks / Notes) -->
+    <div class="lg:col-span-4 glass-card rounded-2xl p-3 sm:p-4 border border-violet-500/20 bg-violet-500/[0.02] space-y-2.5">
+      <div class="flex items-center justify-between gap-2">
+        <div class="flex items-center gap-2 min-w-0">
+          <div class="w-7 h-7 rounded-lg bg-violet-500/10 text-violet-300 border border-violet-500/20 flex items-center justify-center shrink-0">
+            <i data-lucide="folder" class="w-3.5 h-3.5"></i>
+          </div>
+          <h3 class="text-xs font-extrabold text-white truncate">Collections</h3>
+          <span id="goal-folders-count" class="text-[10px] font-mono text-slate-500 shrink-0">0</span>
         </div>
-        <h3 class="text-xs font-extrabold text-white truncate">Collections</h3>
-        <span id="goal-folders-count" class="text-[10px] font-mono text-slate-500 shrink-0">0</span>
+        <div class="flex items-center gap-1.5 shrink-0">
+          <button type="button" onclick="openCreateGoalFolderModal()" class="p-1.5 rounded-lg bg-slate-900 border border-slate-800 hover:border-rose-500/40 text-rose-400 hover:text-rose-300 transition" title="New Collection">
+            <i data-lucide="folder-plus" class="w-3.5 h-3.5"></i>
+          </button>
+          <button type="button" onclick="toggleFolderList()" class="p-1.5 rounded-lg bg-slate-900 border border-slate-800 hover:border-violet-500/40 text-slate-400 hover:text-white transition lg:hidden" title="All folders">
+            <i id="folder-list-chevron" data-lucide="chevron-down" class="w-3.5 h-3.5"></i>
+          </button>
+        </div>
       </div>
-      <div class="flex items-center gap-1.5 shrink-0">
-        <button type="button" onclick="openCreateGoalFolderModal()" class="p-1.5 rounded-lg bg-slate-900 border border-slate-800 hover:border-rose-500/40 text-rose-400 hover:text-rose-300 transition" title="New Collection">
-          <i data-lucide="folder-plus" class="w-3.5 h-3.5"></i>
-        </button>
-        <button type="button" onclick="toggleFolderList()" class="p-1.5 rounded-lg bg-slate-900 border border-slate-800 hover:border-violet-500/40 text-slate-400 hover:text-white transition" title="All folders">
-          <i id="folder-list-chevron" data-lucide="chevron-down" class="w-3.5 h-3.5"></i>
-        </button>
-      </div>
+      <div id="goal-folders-nav" class="flex flex-wrap gap-1.5 lg:flex-col lg:items-stretch"></div>
+      <div id="folder-list-panel" class="hidden space-y-1 lg:hidden"></div>
     </div>
-    <div id="goal-folders-nav" class="flex flex-wrap gap-1.5"></div>
-    <div id="folder-list-panel" class="hidden space-y-1"></div>
-  </div>
 
+    <!-- RIGHT: Filters + Category Breakdown (filter-aware) + Goal Cards -->
+    <div class="lg:col-span-8 space-y-3 min-w-0">
 
   <div class="glass-card rounded-2xl p-3 sm:p-4 border border-slate-800 bg-slate-950/60 space-y-3">
     <!-- Status pills -->
@@ -7244,10 +7224,34 @@ html, body {
 
   </div>
 
-  <!-- Goal Cards Grid -->
-  <div id="goals-main-workspace" class="space-y-3">
-    <div id="goals-cards-container" class="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
-      <!-- Injected via JS -->
+      <!-- Category Breakdown (compact, stats follow the applied filters) -->
+      <div class="glass-card rounded-2xl p-3 sm:p-4 border border-rose-500/20 bg-rose-500/[0.02] space-y-2.5">
+        <div class="flex items-center justify-between gap-2">
+          <button type="button" onclick="toggleRadarVisibility()" class="flex items-center gap-2 min-w-0 text-left group/radar" title="Show / Hide Breakdown">
+            <i id="radar-toggle-icon" data-lucide="chevron-down" class="w-3.5 h-3.5 text-rose-400 shrink-0"></i>
+            <i data-lucide="pie-chart" class="w-3.5 h-3.5 text-rose-400 shrink-0"></i>
+            <h3 class="text-xs font-extrabold text-white truncate">Category Breakdown</h3>
+            <span class="text-[9px] font-mono text-slate-500 shrink-0 hidden sm:inline">for current filters</span>
+          </button>
+          <button type="button" onclick="openRadarFilterModal()" class="text-[11px] px-2.5 py-1 rounded-lg bg-rose-500/10 text-rose-300 border border-rose-500/30 hover:bg-rose-500/20 font-bold transition flex items-center gap-1.5 shrink-0 whitespace-nowrap">
+            <i data-lucide="sliders-horizontal" class="w-3.5 h-3.5 text-rose-400 shrink-0"></i> Cards (<span id="radar-pinned-count">0</span>)
+          </button>
+        </div>
+
+        <!-- Collapsible Container -->
+        <div id="goals-sphere-radar-container">
+          <div id="goals-sphere-radar-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs">
+            <!-- Rendered based on custom pinned selection -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Goal Cards Grid -->
+      <div id="goals-main-workspace" class="space-y-3">
+        <div id="goals-cards-container" class="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
+          <!-- Injected via JS -->
+        </div>
+      </div>
     </div>
   </div>
 
@@ -8365,7 +8369,45 @@ html, body {
       let pinned = getPinnedRadarCategories();
 
       pinned = pinned.filter(p => allCategories.some(c => c.toLowerCase() === p.toLowerCase()));
-      const allGoals = (window.appState.goals || []).filter(g => !g.isArchived);
+
+      // Scope to the currently applied filters (status / collection / category / search)
+      // so the breakdown always reflects what the user is looking at.
+      const radarStatusFilter = window.appState?.goalStatusFilter || 'ALL';
+      const radarCatFilter = document.getElementById('goal-category-filter')?.value || 'ALL';
+      const radarFolderFilter = window.appState.activeGoalFolderFilter || 'ALL';
+
+      let scopedGoals = [...(window.appState.goals || [])];
+      if (radarStatusFilter === 'ARCHIVED') {
+        scopedGoals = scopedGoals.filter(g => !!g.isArchived);
+      } else {
+        scopedGoals = scopedGoals.filter(g => !g.isArchived);
+        if (radarStatusFilter === 'ACTIVE') {
+          scopedGoals = scopedGoals.filter(g => (g.progress || 0) < 100);
+        } else if (radarStatusFilter === 'COMPLETED') {
+          scopedGoals = scopedGoals.filter(g => (g.progress || 0) >= 100);
+        } else if (radarStatusFilter === 'URGENT') {
+          scopedGoals = scopedGoals.filter(g => {
+            if (!g.targetDate) return false;
+            const diffDays = Math.ceil((new Date(g.targetDate) - new Date(todayDateStr)) / (1000 * 60 * 60 * 24));
+            return diffDays >= 0 && diffDays <= 14 && (g.progress || 0) < 100;
+          });
+        }
+      }
+      if (radarFolderFilter !== 'ALL') {
+        scopedGoals = scopedGoals.filter(g => (g.folderId || 'gf_default') === radarFolderFilter);
+      }
+      if (radarCatFilter !== 'ALL') {
+        scopedGoals = scopedGoals.filter(g => (g.category || '').toLowerCase() === radarCatFilter.toLowerCase());
+      }
+      if (goalSearchQuery) {
+        scopedGoals = scopedGoals.filter(g =>
+          (g.title && g.title.toLowerCase().includes(goalSearchQuery)) ||
+          (g.category && g.category.toLowerCase().includes(goalSearchQuery)) ||
+          (g.notes && g.notes.toLowerCase().includes(goalSearchQuery)) ||
+          (Array.isArray(g.keyResults) && g.keyResults.some(kr => kr.text.toLowerCase().includes(goalSearchQuery)))
+        );
+      }
+      const allGoals = scopedGoals;
 
       // only categories that actually have goals — empty pins are just noise
       let populated = pinned
@@ -8389,13 +8431,13 @@ html, body {
             return { catName, count: matching.length, avg };
           })
           .filter(c => c.count > 0);
-        if (populated.length > 0) fallbackNote = `<div class="col-span-full text-[9px] text-slate-500 font-mono">showing categories with goals — pin yours from the Cards button</div>`;
+        if (populated.length > 0) fallbackNote = `<div class="col-span-full text-[9px] text-slate-500 font-mono">showing categories with goals in the current filter — pin yours from the Cards button</div>`;
       }
 
       if (populated.length === 0) {
         container.innerHTML = `
-          <div class="col-span-full p-4 text-center text-xs text-slate-500 bg-slate-950/60 rounded-xl border border-slate-800">
-            No categories with goals yet. Pin categories via <button type="button" onclick="openRadarFilterModal()" class="text-rose-400 underline font-semibold">Cards</button> — they appear here once goals exist.
+          <div class="col-span-full p-3 text-center text-[11px] text-slate-500 bg-slate-950/60 rounded-xl border border-slate-800">
+            No categories with goals in the current filter. Pin categories via <button type="button" onclick="openRadarFilterModal()" class="text-rose-400 underline font-semibold">Cards</button> — they appear here once filtered goals exist.
           </div>
         `;
         return;
