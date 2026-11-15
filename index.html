@@ -16326,71 +16326,84 @@ html, body {
     </div>
   </div>
 
-  <!-- 6-CARD METRIC TELEMETRY GRID -->
-  <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5 sm:gap-3">
+  <!-- 6-CARD METRIC TELEMETRY GRID (unified KPI style, clickable) -->
+  <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 md:gap-3">
     <!-- 1. Total Links -->
-    <div class="glass-card rounded-2xl p-3.5 space-y-1 border border-slate-800/80 hover:border-cyan-500/30 transition">
-      <div class="flex justify-between items-center text-xs font-bold text-slate-400">
-        <span class="uppercase tracking-wider text-[8px]">Total Vault</span>
-        <i data-lucide="link-2" class="w-3.5 h-3.5 text-cyan-400"></i>
+    <button type="button" onclick="bmKpiJump('TOTAL')" class="glass-card p-2.5 sm:p-3 rounded-2xl border border-cyan-500/20 bg-cyan-500/[0.03] flex lg:flex-col min-w-0 overflow-hidden items-center lg:items-start gap-2.5 hover:border-cyan-500/50 hover:bg-cyan-500/[0.06] transition text-left w-full active:scale-95 cursor-pointer">
+      <div class="w-9 h-9 rounded-xl bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 flex items-center justify-center shrink-0">
+        <i data-lucide="link-2" class="w-4 h-4"></i>
       </div>
-      <div id="bm-stat-total" class="text-sm sm:text-base font-black text-white font-mono truncate">0</div>
-      <p class="text-[9px] text-slate-500 font-mono truncate">Archived links</p>
-    </div>
+      <div class="min-w-0">
+        <div class="text-[9px] uppercase tracking-wider text-slate-500 font-bold truncate">Total Vault</div>
+        <div id="bm-stat-total" class="text-lg sm:text-xl font-black text-white leading-tight truncate">0</div>
+        <p class="text-[9px] text-slate-500 font-mono leading-tight truncate">Archived links</p>
+      </div>
+    </button>
 
     <!-- 2. Starred Favorites -->
-    <div class="glass-card rounded-2xl p-3.5 space-y-1 border border-slate-800/80 hover:border-amber-500/30 transition">
-      <div class="flex justify-between items-center text-xs font-bold text-slate-400">
-        <span class="uppercase tracking-wider text-[8px]">Starred Pins</span>
-        <i data-lucide="star" class="w-3.5 h-3.5 text-amber-400"></i>
+    <button type="button" onclick="bmKpiJump('PINNED')" class="glass-card p-2.5 sm:p-3 rounded-2xl border border-amber-500/20 bg-amber-500/[0.03] flex lg:flex-col min-w-0 overflow-hidden items-center lg:items-start gap-2.5 hover:border-amber-500/50 hover:bg-amber-500/[0.06] transition text-left w-full active:scale-95 cursor-pointer">
+      <div class="w-9 h-9 rounded-xl bg-amber-500/10 text-amber-400 border border-amber-500/20 flex items-center justify-center shrink-0">
+        <i data-lucide="star" class="w-4 h-4"></i>
       </div>
-      <div id="bm-stat-pinned" class="text-sm sm:text-base font-black text-amber-400 font-mono truncate">0</div>
-      <p class="text-[9px] text-slate-500 font-mono truncate">High-priority</p>
-    </div>
+      <div class="min-w-0">
+        <div class="text-[9px] uppercase tracking-wider text-slate-500 font-bold truncate">Starred Pins</div>
+        <div id="bm-stat-pinned" class="text-lg sm:text-xl font-black text-amber-400 leading-tight truncate">0</div>
+        <p class="text-[9px] text-slate-500 font-mono leading-tight truncate">High-priority</p>
+      </div>
+    </button>
 
     <!-- 3. Reading Queue -->
-    <div class="glass-card rounded-2xl p-3.5 space-y-1 border border-slate-800/80 hover:border-indigo-500/30 transition">
-      <div class="flex justify-between items-center text-xs font-bold text-slate-400">
-        <span class="uppercase tracking-wider text-[8px]">Reading List</span>
-        <i data-lucide="book-open" class="w-3.5 h-3.5 text-indigo-400"></i>
+    <button type="button" onclick="bmKpiJump('READING')" class="glass-card p-2.5 sm:p-3 rounded-2xl border border-indigo-500/20 bg-indigo-500/[0.03] flex lg:flex-col min-w-0 overflow-hidden items-center lg:items-start gap-2.5 hover:border-indigo-500/50 hover:bg-indigo-500/[0.06] transition text-left w-full active:scale-95 cursor-pointer">
+      <div class="w-9 h-9 rounded-xl bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 flex items-center justify-center shrink-0">
+        <i data-lucide="book-open" class="w-4 h-4"></i>
       </div>
-      <div id="bm-stat-reading" class="text-sm sm:text-base font-black text-indigo-400 font-mono truncate">0</div>
-      <p class="text-[9px] text-slate-500 font-mono truncate">Unread articles</p>
-    </div>
+      <div class="min-w-0">
+        <div class="text-[9px] uppercase tracking-wider text-slate-500 font-bold truncate">Reading List</div>
+        <div id="bm-stat-reading" class="text-lg sm:text-xl font-black text-indigo-400 leading-tight truncate">0</div>
+        <p class="text-[9px] text-slate-500 font-mono leading-tight truncate">Unread articles</p>
+      </div>
+    </button>
 
     <!-- 4. Active Tags -->
-    <div class="glass-card rounded-2xl p-3.5 space-y-1 border border-slate-800/80 hover:border-emerald-500/30 transition">
-      <div class="flex justify-between items-center text-xs font-bold text-slate-400">
-        <span class="uppercase tracking-wider text-[8px]">Tags &amp; Spheres</span>
-        <i data-lucide="tags" class="w-3.5 h-3.5 text-emerald-400"></i>
+    <button type="button" onclick="bmKpiJump('TAGS')" class="glass-card p-2.5 sm:p-3 rounded-2xl border border-emerald-500/20 bg-emerald-500/[0.03] flex lg:flex-col min-w-0 overflow-hidden items-center lg:items-start gap-2.5 hover:border-emerald-500/50 hover:bg-emerald-500/[0.06] transition text-left w-full active:scale-95 cursor-pointer">
+      <div class="w-9 h-9 rounded-xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 flex items-center justify-center shrink-0">
+        <i data-lucide="tags" class="w-4 h-4"></i>
       </div>
-      <div id="bm-stat-tags" class="text-sm sm:text-base font-black text-emerald-400 font-mono truncate">0</div>
-      <p class="text-[9px] text-slate-500 font-mono truncate">Categorized</p>
-    </div>
+      <div class="min-w-0">
+        <div class="text-[9px] uppercase tracking-wider text-slate-500 font-bold truncate">Tags &amp; Spheres</div>
+        <div id="bm-stat-tags" class="text-lg sm:text-xl font-black text-emerald-400 leading-tight truncate">0</div>
+        <p class="text-[9px] text-slate-500 font-mono leading-tight truncate">Categorized</p>
+      </div>
+    </button>
 
     <!-- 5. Total Visits / Hits -->
-    <div class="glass-card rounded-2xl p-3.5 space-y-1 border border-slate-800/80 hover:border-sky-500/30 transition">
-      <div class="flex justify-between items-center text-xs font-bold text-slate-400">
-        <span class="uppercase tracking-wider text-[8px]">Access Clicks</span>
-        <i data-lucide="mouse-pointer-click" class="w-3.5 h-3.5 text-sky-400"></i>
+    <button type="button" onclick="bmKpiJump('CLICKS')" class="glass-card p-2.5 sm:p-3 rounded-2xl border border-sky-500/20 bg-sky-500/[0.03] flex lg:flex-col min-w-0 overflow-hidden items-center lg:items-start gap-2.5 hover:border-sky-500/50 hover:bg-sky-500/[0.06] transition text-left w-full active:scale-95 cursor-pointer">
+      <div class="w-9 h-9 rounded-xl bg-sky-500/10 text-sky-400 border border-sky-500/20 flex items-center justify-center shrink-0">
+        <i data-lucide="mouse-pointer-click" class="w-4 h-4"></i>
       </div>
-      <div id="bm-stat-clicks" class="text-sm sm:text-base font-black text-sky-400 font-mono truncate">0</div>
-      <p class="text-[9px] text-slate-500 font-mono truncate">Outbound hits</p>
-    </div>
+      <div class="min-w-0">
+        <div class="text-[9px] uppercase tracking-wider text-slate-500 font-bold truncate">Access Clicks</div>
+        <div id="bm-stat-clicks" class="text-lg sm:text-xl font-black text-sky-400 leading-tight truncate">0</div>
+        <p class="text-[9px] text-slate-500 font-mono leading-tight truncate">Outbound hits</p>
+      </div>
+    </button>
 
     <!-- 6. Top Web Domain -->
-    <div class="glass-card rounded-2xl p-3.5 space-y-1 border border-slate-800/80 hover:border-purple-500/30 transition">
-      <div class="flex justify-between items-center text-xs font-bold text-slate-400">
-        <span class="uppercase tracking-wider text-[8px]">Top Domain</span>
-        <i data-lucide="globe" class="w-3.5 h-3.5 text-purple-400"></i>
+    <button type="button" onclick="bmKpiJump('DOMAIN')" class="glass-card p-2.5 sm:p-3 rounded-2xl border border-purple-500/20 bg-purple-500/[0.03] flex lg:flex-col min-w-0 overflow-hidden items-center lg:items-start gap-2.5 hover:border-purple-500/50 hover:bg-purple-500/[0.06] transition text-left w-full active:scale-95 cursor-pointer">
+      <div class="w-9 h-9 rounded-xl bg-purple-500/10 text-purple-400 border border-purple-500/20 flex items-center justify-center shrink-0">
+        <i data-lucide="globe" class="w-4 h-4"></i>
       </div>
-      <div id="bm-stat-topdomain" class="text-sm sm:text-base font-black text-purple-400 font-mono truncate">None</div>
-      <p class="text-[9px] text-slate-500 font-mono truncate">Most referenced</p>
-    </div>
+      <div class="min-w-0">
+        <div class="text-[9px] uppercase tracking-wider text-slate-500 font-bold truncate">Top Domain</div>
+        <div id="bm-stat-topdomain" class="text-sm sm:text-base font-black text-purple-400 leading-tight truncate">None</div>
+        <p class="text-[9px] text-slate-500 font-mono leading-tight truncate">Most referenced</p>
+      </div>
+    </button>
   </div>
 
-  <!-- SEARCH, SORT, VIEW TOGGLE & DYNAMIC CATEGORY PILLS BAR -->
-  <div class="glass-card rounded-2xl p-3.5 sm:p-4 border border-slate-800 space-y-3">
+  <!-- SEARCH, SORT, CATEGORY PILLS + LINKS GRID (one section) -->
+  <div class="glass-card rounded-2xl border border-slate-800">
+    <div class="p-3.5 sm:p-4 space-y-3 border-b border-slate-800/80">
     <div class="flex flex-wrap items-center justify-between gap-2.5 text-xs">
       <!-- Search Input -->
       <div class="relative flex-1 min-w-[200px]">
@@ -16417,14 +16430,17 @@ html, body {
     </div>
 
     <!-- Scrollable Category Filter Pills -->
-    <div id="bm-tag-chips-container" class="flex items-center gap-1.5 overflow-x-auto pt-2 border-t border-slate-800/80 scrollbar-none pb-0.5">
+    <div id="bm-tag-chips-container" class="flex items-center gap-1.5 overflow-x-auto scrollbar-none pb-0.5">
       <!-- Injected dynamically via JS -->
     </div>
-  </div>
+    </div>
 
-  <!-- BOOKMARK CARDS GRID CONTAINER -->
-  <div id="bookmarks-grid-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5 sm:gap-4">
-    <!-- Dynamic Cards Injected via JS -->
+    <!-- Bookmark Cards Grid (inside the same section) -->
+    <div class="p-3.5 sm:p-4">
+      <div id="bookmarks-grid-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5 sm:gap-4">
+        <!-- Dynamic Cards Injected via JS -->
+      </div>
+    </div>
   </div>
 
 
@@ -16632,6 +16648,43 @@ html, body {
     window.handleDropdownTagChange = function(val) {
       window.appState.activeBookmarkTagFilter = val;
       window.renderBookmarksGrid();
+    };
+
+    /* KPI click: apply the matching filter/sort/search and scroll to the links grid */
+    window.bmKpiJump = function(key) {
+      if (typeof triggerHaptic === 'function') triggerHaptic();
+      const filterSelect = document.getElementById('bm-tag-filter-select');
+      const sortSelect = document.getElementById('bm-sort-by-select');
+      const searchInput = document.getElementById('bm-search-input');
+      if (key === 'TOTAL') {
+        if (filterSelect) filterSelect.value = 'ALL';
+        window.appState.activeBookmarkTagFilter = 'ALL';
+        if (searchInput) searchInput.value = '';
+        const clearBtn = document.getElementById('bm-search-clear-btn');
+        if (clearBtn) clearBtn.classList.add('hidden');
+      } else if (key === 'PINNED') {
+        if (filterSelect) filterSelect.value = 'PINNED';
+        window.appState.activeBookmarkTagFilter = 'PINNED';
+      } else if (key === 'READING') {
+        if (filterSelect) filterSelect.value = 'READING_LIST';
+        window.appState.activeBookmarkTagFilter = 'READING_LIST';
+      } else if (key === 'CLICKS') {
+        if (sortSelect) sortSelect.value = 'CLICKS';
+      } else if (key === 'DOMAIN') {
+        const domain = document.getElementById('bm-stat-topdomain')?.textContent || '';
+        if (domain && domain !== 'None' && searchInput) {
+          searchInput.value = domain;
+          const clearBtn = document.getElementById('bm-search-clear-btn');
+          if (clearBtn) clearBtn.classList.remove('hidden');
+        }
+      } else if (key === 'TAGS') {
+        const chips = document.getElementById('bm-tag-chips-container');
+        if (chips) chips.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        return;
+      }
+      window.renderBookmarksGrid();
+      const grid = document.getElementById('bookmarks-grid-container');
+      if (grid) grid.scrollIntoView({ behavior: 'smooth', block: 'start' });
     };
 
     window.trackBookmarkVisit = function(id, url) {
