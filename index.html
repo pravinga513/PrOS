@@ -7183,10 +7183,12 @@ html, body {
       <div id="folder-list-panel" class="hidden space-y-1 lg:hidden"></div>
     </div>
 
-    <!-- RIGHT: Filters + Category Breakdown (filter-aware) + Goal Cards -->
-    <div class="lg:col-span-8 space-y-3 min-w-0">
+    <!-- RIGHT: one section — filter header + goal cards -->
+    <div class="lg:col-span-8 min-w-0">
+      <div class="glass-card rounded-2xl border border-slate-800 bg-slate-950/60">
 
-  <div class="glass-card rounded-2xl p-3 sm:p-4 border border-slate-800 bg-slate-950/60 space-y-3">
+      <!-- Filter header -->
+      <div class="p-3 sm:p-4 space-y-3 border-b border-slate-800/80">
     <!-- Status pills -->
     <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar text-xs">
       <button type="button" onclick="setGoalStatusFilter('ALL')" id="goal-filter-all" class="goal-pill-btn bg-rose-600 text-white font-bold px-2.5 py-1.5 rounded-xl transition touch-manipulation shadow-sm flex items-center gap-1.5 shrink-0">
@@ -7232,13 +7234,15 @@ html, body {
       </div>
     </div>
 
-  </div>
+      </div>
 
       <!-- Goal Cards Grid -->
-      <div id="goals-main-workspace" class="space-y-3">
+      <div id="goals-main-workspace" class="p-3 sm:p-4">
         <div id="goals-cards-container" class="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
           <!-- Injected via JS -->
         </div>
+      </div>
+
       </div>
     </div>
   </div>
