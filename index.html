@@ -21320,9 +21320,241 @@ html, body {
     </div>
   </div>
 
+  <!-- DEMO DATA: seed or remove sample records across every module -->
+  <div class="glass-card rounded-2xl p-4 sm:p-5 border border-cyan-500/20 bg-cyan-500/[0.02] space-y-3">
+    <div class="flex items-center justify-between gap-2 border-b border-slate-800/80 pb-2">
+      <h3 class="text-xs font-extrabold text-white uppercase tracking-wider flex items-center gap-1.5">
+        <i data-lucide="flask-conical" class="w-4 h-4 text-cyan-400"></i> Demo Data (Testing)
+      </h3>
+      <span id="demo-data-status" class="text-[10px] font-mono text-slate-500"></span>
+    </div>
+    <p class="text-[11px] text-slate-400 leading-relaxed">Adds realistic sample records to every module — tasks, goals, notes, logbook, habits, time logs, finance, subscriptions, vehicle fuel logs, bookmarks, mindmap nodes and calendar events. Every demo record is tagged <span class="font-mono text-cyan-300">dem-</span> and can be wiped in one click without touching your real data.</p>
+    <div class="flex flex-wrap gap-2">
+      <button type="button" onclick="loadDemoData()" class="px-3.5 py-2 bg-cyan-600 hover:bg-cyan-500 text-slate-950 font-bold text-xs rounded-xl shadow-lg shadow-cyan-600/20 transition flex items-center gap-1.5 active:scale-95 touch-manipulation">
+        <i data-lucide="database" class="w-3.5 h-3.5"></i> Load Demo Data
+      </button>
+      <button type="button" onclick="clearDemoData()" class="px-3.5 py-2 bg-slate-900 border border-slate-800 hover:border-rose-500/40 text-rose-300 font-semibold text-xs rounded-xl transition flex items-center gap-1.5 active:scale-95 touch-manipulation">
+        <i data-lucide="eraser" class="w-3.5 h-3.5"></i> Remove Demo Data
+      </button>
+    </div>
+  </div>
+
 </section>
 
 
+
+<!-- ========================================================================= -->
+<!-- DEMO DATA ENGINE: seed / remove sample records across every module        -->
+<!-- ========================================================================= -->
+<script>
+  (function() {
+    const DEMO_PREFIX = 'dem-';
+
+    function demDate(offsetDays) {
+      const d = new Date();
+      d.setDate(d.getDate() + offsetDays);
+      return d.toISOString().split('T')[0];
+    }
+
+    function persistAll() {
+      const S = window.appState;
+      const keyMap = {
+        pros_tasks: S.tasks, pros_task_lists: S.taskLists,
+        pros_goals: S.goals, pros_goal_folders: S.goalFolders, pros_goal_categories: S.goalCategories,
+        pros_notes: S.notes, pros_note_folders: S.noteFolders,
+        pros_habits: S.habits, pros_habit_categories: S.habitCategories,
+        pros_time_logs: S.timeLogs, pros_time_projects: S.timeProjects,
+        pros_bookmarks: S.bookmarks, pros_bookmark_tags: S.bookmarkTags,
+        pros_mindmaps: S.mindmaps, pros_mindmap_nodes: S.mindmapNodes, pros_mindmap_connections: S.mindmapConnections,
+        pros_categories: S.categories, pros_diary_entries: S.diaryEntries,
+        pros_vehicle_metrics: S.vehicleMetrics
+      };
+      Object.keys(keyMap).forEach(k => { try { window.Store.set(k, JSON.stringify(keyMap[k])); } catch (e) {} });
+      try {
+        const root = window.Store.get('pros_state');
+        if (root) { const p = JSON.parse(root); p.diaryEntries = S.diaryEntries; window.Store.set('pros_state', JSON.stringify(p)); }
+      } catch (e) {}
+      try { window.saveLocalCache(); } catch (e) {}
+      return window.Store.flushNow();
+    }
+
+    function setDemoStatus(msg) {
+      const el = document.getElementById('demo-data-status');
+      if (el) el.textContent = msg || '';
+    }
+
+    window.loadDemoData = function() {
+      const S = window.appState;
+      if (!S) return;
+      const nowIso = new Date().toISOString();
+      let added = 0;
+      const addUnique = (arr, rec) => {
+        if (!arr.some(x => x.id === rec.id)) { arr.push(rec); added++; }
+      };
+
+      /* TASKS */
+      const lists = S.taskLists || [];
+      const inbox = lists.find(l => /inbox/i.test(l.name || '')) || lists[0] || { id: 'list-general' };
+      const personal = lists.find(l => /personal/i.test(l.name || '')) || inbox;
+      const vehicleList = lists.find(l => /vehicle maintenance/i.test(l.name || '')) || personal;
+      if (!Array.isArray(S.tasks)) S.tasks = [];
+      addUnique(S.tasks, { id: 'dem-task-1', listId: personal.id, title: 'Finish quarterly tax paperwork #finance', completed: false, status: 'progress', priority: 'High', dueDate: demDate(0), notes: 'Collect invoices + receipts #demo' });
+      addUnique(S.tasks, { id: 'dem-task-2', listId: personal.id, title: 'Book dentist appointment', completed: false, status: 'progress', priority: 'Medium', dueDate: demDate(3), notes: '' });
+      addUnique(S.tasks, { id: 'dem-task-3', listId: inbox.id, title: 'Pay electricity bill #bills', completed: false, status: 'progress', priority: 'High', dueDate: demDate(-2), notes: '' });
+      addUnique(S.tasks, { id: 'dem-task-4', listId: personal.id, title: 'Plan weekend trek itinerary', completed: false, status: 'progress', priority: 'Low', dueDate: demDate(5), notes: 'Check weather + permits #demo' });
+      addUnique(S.tasks, { id: 'dem-task-5', listId: vehicleList.id, title: 'Replace cabin air filter', completed: false, status: 'progress', priority: 'Medium', dueDate: demDate(10), notes: '' });
+      addUnique(S.tasks, { id: 'dem-task-6', listId: vehicleList.id, title: 'Update insurance policy documents', completed: false, status: 'progress', priority: 'Low', dueDate: demDate(14), notes: '' });
+      addUnique(S.tasks, { id: 'dem-task-7', listId: inbox.id, title: 'Water the plants', completed: true, status: 'done', priority: 'Low', dueDate: demDate(0), notes: '' });
+      addUnique(S.tasks, { id: 'dem-task-8', listId: personal.id, title: 'Refactor task render pipeline #prOS', completed: false, status: 'progress', priority: 'High', dueDate: '', notes: '' });
+
+      /* GOALS */
+      if (!Array.isArray(S.goalCategories)) S.goalCategories = [];
+      if (!S.goalCategories.includes('Health & Fitness')) S.goalCategories.push('Health & Fitness');
+      if (!Array.isArray(S.goals)) S.goals = [];
+      addUnique(S.goals, { id: 'dem-goal-1', folderId: 'gf_default', category: 'Personal Project', title: 'Ship games513 alpha demo', targetDate: demDate(25), progress: 45, keyResults: [{ text: 'Polish 5 core levels', completed: true }, { text: 'Record trailer', completed: false }, { text: 'Submit to itch.io', completed: false }], notes: 'Seeded demo goal', createdAt: nowIso, updatedAt: nowIso });
+      addUnique(S.goals, { id: 'dem-goal-2', folderId: 'gf_default', category: 'Health & Fitness', title: 'Run 5K under 25 minutes', targetDate: demDate(60), progress: 30, keyResults: [{ text: 'Run 3x per week', completed: false }, { text: 'Buy proper shoes', completed: true }], notes: '', createdAt: nowIso, updatedAt: nowIso });
+      addUnique(S.goals, { id: 'dem-goal-3', folderId: 'gf_default', category: 'Personal Project', title: 'Read 12 books this year', targetDate: demDate(-5), progress: 100, keyResults: [{ text: 'Finish "Deep Work"', completed: true }, { text: 'Finish "Atomic Habits"', completed: true }], notes: '', createdAt: nowIso, updatedAt: nowIso });
+
+      /* NOTES */
+      if (!Array.isArray(S.notes)) S.notes = [];
+      addUnique(S.notes, { id: 'dem-note-1', title: 'Demo: Weekly Review Template', topic: 'Productivity', folderId: '', content: '# Weekly Review\n\n## Wins this week\n- Unified KPI design across modules\n- Sidebar pills now filter folders\n\n## Next week\n- Analytics page polish\n- Finance recurring view', pinned: true, revisions: [], createdAt: nowIso, updatedAt: nowIso });
+      addUnique(S.notes, { id: 'dem-note-2', title: 'Demo: Game design brainstorm', topic: 'games513', folderId: '', content: '# games513 brainstorm\n\n- Boss rush mode every 5 levels\n- Co-op via WebRTC?\n- Pixel-art palette: 12 colors max\n\n> Keep scope tight for the alpha.', pinned: false, revisions: [], createdAt: nowIso, updatedAt: nowIso });
+      addUnique(S.notes, { id: 'dem-note-3', title: 'Demo: Reading list Q4', topic: 'Learning', folderId: '', content: '# Q4 reading list\n\n1. The Pragmatic Programmer\n2. Designing Data-Intensive Applications\n3. Atomic Habits (re-read)', pinned: false, revisions: [], createdAt: nowIso, updatedAt: nowIso });
+
+      /* DIARY / LOGBOOK */
+      if (!Array.isArray(S.diaryEntries)) S.diaryEntries = [];
+      addUnique(S.diaryEntries, { id: 'dem-diary-1', date: demDate(0), time: '09:41 AM', type: 'Milestone / Win', mood: '😄', energy: 4, isPinned: true, location: 'Home Office', tags: '#prOS #demo', text: 'Finished the unified KPI redesign — Tasks, Goals, Vault, Time and Vehicle all share one card language now.', mediaUrl: '', createdAt: nowIso, updatedAt: nowIso });
+      addUnique(S.diaryEntries, { id: 'dem-diary-2', date: demDate(-1), time: '08:15 PM', type: 'Key Learning', mood: '🙂', energy: 3, isPinned: false, location: 'Home Office', tags: '#demo #learning', text: 'Seeding demo data through module storage keys is safer than DOM injection — everything survives reload.', mediaUrl: '', createdAt: nowIso, updatedAt: nowIso });
+      addUnique(S.diaryEntries, { id: 'dem-diary-3', date: demDate(-3), time: '07:30 AM', type: 'Gratitude', mood: '😊', energy: 5, isPinned: false, location: 'Balcony', tags: '#gratitude', text: 'Quiet morning, good coffee, zero notifications. Best way to start the day.', mediaUrl: '', createdAt: nowIso, updatedAt: nowIso });
+
+      /* HABITS */
+      if (!Array.isArray(S.habits)) S.habits = [];
+      addUnique(S.habits, { id: 'dem-habit-1', name: 'Demo: Read 20 pages', category: 'Mind & Study', history: { [demDate(-4)]: true, [demDate(-3)]: true, [demDate(-2)]: true, [demDate(-1)]: true, [demDate(0)]: true }, streak: 5, bestStreak: 9 });
+      addUnique(S.habits, { id: 'dem-habit-2', name: 'Demo: Morning run', category: 'Health & Fitness', history: { [demDate(-4)]: true, [demDate(-3)]: false, [demDate(-2)]: true, [demDate(-1)]: true }, streak: 2, bestStreak: 6 });
+      addUnique(S.habits, { id: 'dem-habit-3', name: 'Demo: No sugar day', category: 'Health & Fitness', history: { [demDate(-1)]: true, [demDate(0)]: true }, streak: 2, bestStreak: 4 });
+
+      /* TIME LOGS */
+      if (!Array.isArray(S.timeLogs)) S.timeLogs = [];
+      if (!Array.isArray(S.timeProjects)) S.timeProjects = [];
+      ['games513', 'Client Work'].forEach(p => { if (!S.timeProjects.includes(p)) S.timeProjects.push(p); });
+      addUnique(S.timeLogs, { id: 'dem-time-1', project: 'PrOS Development', desc: 'Seeded: sidebar type-pill filtering', hours: 1.5, date: demDate(0) });
+      addUnique(S.timeLogs, { id: 'dem-time-2', project: 'games513', desc: 'Seeded: level design pass', hours: 2, date: demDate(0) });
+      addUnique(S.timeLogs, { id: 'dem-time-3', project: 'games513', desc: 'Seeded: sprite polish', hours: 1.25, date: demDate(-1) });
+      addUnique(S.timeLogs, { id: 'dem-time-4', project: 'Client Work', desc: 'Seeded: client call + notes', hours: 1, date: demDate(-2) });
+      addUnique(S.timeLogs, { id: 'dem-time-5', project: 'PrOS Development', desc: 'Seeded: KPI card system', hours: 2.5, date: demDate(-3) });
+      addUnique(S.timeLogs, { id: 'dem-time-6', project: 'games513', desc: 'Seeded: bugfix sprint', hours: 3, date: demDate(-7) });
+
+      /* FINANCE */
+      if (!Array.isArray(S.categories)) S.categories = [];
+      [['dem-cat-food', 'Food & Groceries', 'expense'], ['dem-cat-fun', 'Entertainment', 'expense'], ['dem-cat-util', 'Utilities', 'expense'], ['dem-cat-work', 'Freelance', 'income']]
+        .forEach(([id, name, type]) => { if (!S.categories.some(c => c.id === id) && !S.categories.some(c => c.name === name)) S.categories.push({ id, name, type, isDefault: false }); });
+      if (!Array.isArray(S.transactions)) S.transactions = [];
+      addUnique(S.transactions, { id: 'dem-tr-1', type: 'income', title: 'Freelance invoice — demo', amount: 45000, category: 'Freelance', date: demDate(0), personName: '', dueDate: '', isSettled: false });
+      addUnique(S.transactions, { id: 'dem-tr-2', type: 'expense', title: 'Fuel refill — HP pump #demo', amount: 850, category: 'Vehicle', date: demDate(0), personName: '', dueDate: '', isSettled: false });
+      addUnique(S.transactions, { id: 'dem-tr-3', type: 'expense', title: 'Fuel refill — IndianOil #demo', amount: 1200, category: 'Vehicle', date: demDate(-5), personName: '', dueDate: '', isSettled: false });
+      addUnique(S.transactions, { id: 'dem-tr-4', type: 'expense', title: 'Weekly groceries #demo', amount: 3200, category: 'Food & Groceries', date: demDate(-1), personName: '', dueDate: '', isSettled: false });
+      addUnique(S.transactions, { id: 'dem-tr-5', type: 'expense', title: 'Domain renewals #demo', amount: 1899, category: 'Utilities', date: demDate(-4), personName: '', dueDate: '', isSettled: false });
+      addUnique(S.transactions, { id: 'dem-tr-6', type: 'expense', title: 'Movie night #demo', amount: 640, category: 'Entertainment', date: demDate(-2), personName: '', dueDate: '', isSettled: false });
+
+      /* SUBSCRIPTIONS */
+      if (!Array.isArray(S.subscriptions)) S.subscriptions = [];
+      addUnique(S.subscriptions, { id: 'dem-sub-1', name: 'Spotify Duo (demo)', amount: 149, cycle: 'monthly', nextBilling: demDate(5) });
+      addUnique(S.subscriptions, { id: 'dem-sub-2', name: 'games513.dev domain (demo)', amount: 899, cycle: 'yearly', nextBilling: demDate(16) });
+
+      /* VEHICLE (linked to the fuel transactions above) */
+      if (!S.vehicleMetrics || typeof S.vehicleMetrics !== 'object') S.vehicleMetrics = {};
+      if (!S.vehicleMetrics['dem-tr-2']) { S.vehicleMetrics['dem-tr-2'] = { km: 310, liters: 9.5 }; added++; }
+      if (!S.vehicleMetrics['dem-tr-3']) { S.vehicleMetrics['dem-tr-3'] = { km: 145, liters: 4.8 }; added++; }
+      if (!Array.isArray(S.fuelLogs)) S.fuelLogs = [];
+      addUnique(S.fuelLogs, { id: 'dem-fuel-1', km: 310, liters: 9.5, cost: 850, date: demDate(0) });
+      addUnique(S.fuelLogs, { id: 'dem-fuel-2', km: 145, liters: 4.8, cost: 1200, date: demDate(-5) });
+
+      /* BOOKMARKS */
+      if (!Array.isArray(S.bookmarkTags)) S.bookmarkTags = [];
+      ['Documentation', 'Design', 'Learning', 'Inspiration'].forEach(t => { if (!S.bookmarkTags.includes(t)) S.bookmarkTags.push(t); });
+      if (!Array.isArray(S.bookmarks)) S.bookmarks = [];
+      addUnique(S.bookmarks, { id: 'dem-bm-1', title: 'MDN Web Docs', url: 'https://developer.mozilla.org', tag: 'Documentation', pinned: true, clicks: 12, notes: 'JS + CSS reference', readingList: false });
+      addUnique(S.bookmarks, { id: 'dem-bm-2', title: 'Tailwind CSS', url: 'https://tailwindcss.com', tag: 'Dev Tools', clicks: 8, notes: '', readingList: false });
+      addUnique(S.bookmarks, { id: 'dem-bm-3', title: 'Refactoring UI', url: 'https://refactoringui.com', tag: 'Learning', clicks: 3, notes: 'Must re-read ch.4', readingList: true });
+      addUnique(S.bookmarks, { id: 'dem-bm-4', title: 'Dribbble dashboards', url: 'https://dribbble.com/tags/dashboard', tag: 'Inspiration', clicks: 6, notes: '', readingList: true });
+      addUnique(S.bookmarks, { id: 'dem-bm-5', title: 'GitHub — PrOS repo', url: 'https://github.com/pravinga513/PrOS', tag: 'Dev Tools', clicks: 5, notes: '', readingList: false });
+
+      /* MINDMAP */
+      if (!Array.isArray(S.mindmapNodes)) S.mindmapNodes = [];
+      addUnique(S.mindmapNodes, { id: 'dem-node-1', mapId: 'map-pravinga513', text: '🎯 Demo: Content Pipeline', entityTag: 'ContentPipeline', x: 660, y: 430, color: 'bg-sky-600', _w: 176, _h: 92 });
+      addUnique(S.mindmapNodes, { id: 'dem-node-2', mapId: 'map-pravinga513', text: '📚 Demo: Reading Nook', entityTag: 'ReadingNook', x: 890, y: 300, color: 'bg-violet-600', _w: 176, _h: 92 });
+      if (!Array.isArray(S.mindmapConnections)) S.mindmapConnections = [];
+      [{ from: 'node-root', to: 'dem-node-1' }, { from: 'dem-node-1', to: 'dem-node-2' }].forEach(c => {
+        if (!S.mindmapConnections.some(x => x.from === c.from && x.to === c.to)) { S.mindmapConnections.push(c); added++; }
+      });
+
+      /* CALENDAR */
+      if (!Array.isArray(S.calendarEvents)) S.calendarEvents = [];
+      addUnique(S.calendarEvents, { id: 'dem-ev-1', title: 'Team standup (demo)', type: 'EVENT', recurrence: 'DAILY', date: demDate(0), time: '10:00', birthYear: null, location: 'Discord', notes: 'Seeded demo event', createdAt: nowIso });
+      addUnique(S.calendarEvents, { id: 'dem-ev-2', title: 'Dentist appointment (demo)', type: 'EVENT', recurrence: 'NONE', date: demDate(3), time: '16:30', birthYear: null, location: 'Smile Care Clinic', notes: '', createdAt: nowIso });
+      addUnique(S.calendarEvents, { id: 'dem-ev-3', title: 'games513 demo day (demo)', type: 'EVENT', recurrence: 'NONE', date: demDate(7), time: '18:00', birthYear: null, location: 'Online', notes: 'Invite 5 testers', createdAt: nowIso });
+      addUnique(S.calendarEvents, { id: 'dem-ev-4', title: "Mom's birthday (demo)", type: 'BIRTHDAY', recurrence: 'YEARLY', date: demDate(10), time: '', birthYear: 1971, location: '', notes: 'Order cake', createdAt: nowIso });
+
+      persistAll().then(() => {
+        setDemoStatus(added + ' demo records loaded — reloading...');
+        setTimeout(() => location.reload(), 400);
+      });
+    };
+
+    window.clearDemoData = function() {
+      const S = window.appState;
+      if (!S) return;
+      const isDem = (x) => x && typeof x.id === 'string' && x.id.startsWith(DEMO_PREFIX);
+      let removed = 0;
+      const strip = (arr) => {
+        if (!Array.isArray(arr)) return arr;
+        const before = arr.length;
+        const after = arr.filter(x => !isDem(x));
+        removed += before - after.length;
+        return after;
+      };
+      S.tasks = strip(S.tasks); S.taskLists = (S.taskLists || []).filter(l =>
+        !isDem(l) && !(l.goalId || '').startsWith(DEMO_PREFIX) && !(l.nodeId || '').startsWith(DEMO_PREFIX) && !l.id.includes(DEMO_PREFIX));
+      S.goals = strip(S.goals); S.notes = strip(S.notes); S.diaryEntries = strip(S.diaryEntries);
+      S.habits = strip(S.habits); S.timeLogs = strip(S.timeLogs); S.transactions = strip(S.transactions);
+      S.subscriptions = strip(S.subscriptions); S.bookmarks = strip(S.bookmarks);
+      S.calendarEvents = strip(S.calendarEvents); S.mindmapNodes = strip(S.mindmapNodes);
+      S.fuelLogs = strip(S.fuelLogs);
+      S.mindmapConnections = (S.mindmapConnections || []).filter(c =>
+        !String(c.from || '').startsWith(DEMO_PREFIX) && !String(c.to || '').startsWith(DEMO_PREFIX));
+      Object.keys(S.vehicleMetrics || {}).forEach(k => { if (k.startsWith(DEMO_PREFIX)) { delete S.vehicleMetrics[k]; removed++; } });
+      S.categories = (S.categories || []).filter(c => !String(c.id || '').startsWith(DEMO_PREFIX));
+
+      /* Remove sync folders left behind by demo goals / mindmap nodes */
+      S.taskLists = (S.taskLists || []).filter(l => {
+        const goal = (S.goals || []).find(g => g.id === l.goalId);
+        const node = (S.mindmapNodes || []).find(n => n.id === l.nodeId);
+        return goal || node || (!l.isGoalFolder && !l.isNodeFolder);
+      });
+      S.noteFolders = (S.noteFolders || []).filter(f =>
+        (S.mindmapNodes || []).some(n => n.id === f.nodeId) || !f.isNodeFolder);
+
+      persistAll().then(() => {
+        setDemoStatus(removed + ' demo records removed — reloading...');
+        setTimeout(() => location.reload(), 400);
+      });
+    };
+
+    /* Show how many demo records exist */
+    function countDemo() {
+      try {
+        const S = window.appState || {};
+        const isDem = (x) => x && typeof x.id === 'string' && x.id.startsWith(DEMO_PREFIX);
+        return ['tasks', 'goals', 'notes', 'diaryEntries', 'habits', 'timeLogs', 'transactions', 'subscriptions', 'bookmarks', 'calendarEvents', 'mindmapNodes', 'fuelLogs']
+          .reduce((n, k) => n + (Array.isArray(S[k]) ? S[k].filter(isDem).length : 0), 0);
+      } catch (e) { return 0; }
+    }
+    setTimeout(() => {
+      const n = countDemo();
+      if (n > 0) setDemoStatus(n + ' demo records active');
+    }, 800);
+  })();
+</script>
 
 <!-- ========================================================================= -->
 <!-- DYNAMIC MOBILE BOTTOM NAVIGATION DOCK CONTAINER                           -->
@@ -24000,6 +24232,7 @@ html, body {
           if (parsed.stickyNotes) window.appState.stickyNotes = parsed.stickyNotes;
           if (parsed.linkBlocks) window.appState.linkBlocks = parsed.linkBlocks;
           if (parsed.mindmapConnections) window.appState.mindmapConnections = parsed.mindmapConnections;
+          if (parsed.calendarEvents) window.appState.calendarEvents = parsed.calendarEvents;
           if (parsed.moodLogs) window.appState.moodLogs = parsed.moodLogs;
         }
       } catch (e) {
