@@ -21328,7 +21328,7 @@ html, body {
       </h3>
       <span id="demo-data-status" class="text-[10px] font-mono text-slate-500"></span>
     </div>
-    <p class="text-[11px] text-slate-400 leading-relaxed">Adds realistic sample records to every module — tasks, goals, notes, logbook, habits, time logs, finance, subscriptions, vehicle fuel logs, bookmarks, mindmap nodes and calendar events. Every demo record is tagged <span class="font-mono text-cyan-300">dem-</span> and can be wiped in one click without touching your real data.</p>
+    <p class="text-[11px] text-slate-400 leading-relaxed">Tops <span class="font-bold text-cyan-300">every module up to 100 demo records</span> — tasks, goals, notes, logbook, habits, time logs, finance, subscriptions, vehicle fuel logs, bookmarks, mindmap nodes and calendar events — spread across realistic dates, statuses and categories. Every demo record is tagged <span class="font-mono text-cyan-300">dem-</span> and can be wiped in one click without touching your real data.</p>
     <div class="flex flex-wrap gap-2">
       <button type="button" onclick="loadDemoData()" class="px-3.5 py-2 bg-cyan-600 hover:bg-cyan-500 text-slate-950 font-bold text-xs rounded-xl shadow-lg shadow-cyan-600/20 transition flex items-center gap-1.5 active:scale-95 touch-manipulation">
         <i data-lucide="database" class="w-3.5 h-3.5"></i> Load Demo Data
@@ -21494,6 +21494,150 @@ html, body {
       addUnique(S.calendarEvents, { id: 'dem-ev-2', title: 'Dentist appointment (demo)', type: 'EVENT', recurrence: 'NONE', date: demDate(3), time: '16:30', birthYear: null, location: 'Smile Care Clinic', notes: '', createdAt: nowIso });
       addUnique(S.calendarEvents, { id: 'dem-ev-3', title: 'games513 demo day (demo)', type: 'EVENT', recurrence: 'NONE', date: demDate(7), time: '18:00', birthYear: null, location: 'Online', notes: 'Invite 5 testers', createdAt: nowIso });
       addUnique(S.calendarEvents, { id: 'dem-ev-4', title: "Mom's birthday (demo)", type: 'BIRTHDAY', recurrence: 'YEARLY', date: demDate(10), time: '', birthYear: 1971, location: '', notes: 'Order cake', createdAt: nowIso });
+
+      /* =============================================================
+         TOP UP — bring every module to 100 demo records
+         ============================================================= */
+      const TOP = 100;
+      const pick = (arr, i) => arr[i % arr.length];
+      const prio = ['High', 'Medium', 'Low'];
+      const taskTags = ['finance', 'bills', 'prOS', 'demo', 'urgent', 'home', 'work'];
+      const taskTitles = ['Update project roadmap', 'Review pull requests', 'Write release notes', 'Clean up email inbox', 'Backup photo library', 'Renew gym membership', 'Order dog food', 'Fix dripping kitchen tap', 'Call internet provider', 'Prepare presentation deck', 'Refactor auth service', 'Test dark mode contrast', 'Update dependencies', 'Schedule team 1:1s', 'Draft blog post', 'Archive old tickets', 'Sync note templates', 'Review budget categories', 'Plan grocery run', 'Audit keyboard shortcuts'];
+      const basicLists = (S.taskLists || []).filter(l => !l.isGoalFolder && !l.isNodeFolder);
+      const baseLists = basicLists.length ? basicLists : [{ id: 'list-general' }];
+
+      /* Tasks → 100 */
+      for (let i = 1; i <= TOP; i++) {
+        const done = i % 4 === 0;
+        addUnique(S.tasks, {
+          id: 'dem-task-t' + i, listId: pick(baseLists, i).id,
+          title: `${pick(taskTitles, i)} (demo ${i}) #${pick(taskTags, i)}`,
+          completed: done, status: done ? 'done' : 'progress', priority: pick(prio, i * 3),
+          dueDate: demDate((i % 90) - 30), notes: i % 5 === 0 ? 'Auto demo note for task ' + i : ''
+        });
+      }
+
+      /* Goals → 100 */
+      for (let i = 1; i <= TOP; i++) {
+        addUnique(S.goals, {
+          id: 'dem-goal-t' + i, folderId: 'gf_default', category: pick(S.goalCategories, i * 7),
+          title: `Demo goal ${i}: ${pick(taskTitles, i * 5)}`,
+          targetDate: demDate((i % 180) - 20), progress: i % 101,
+          keyResults: [{ text: 'Milestone A of goal ' + i, completed: i % 3 === 0 }, { text: 'Milestone B of goal ' + i, completed: i % 4 === 0 }, { text: 'Milestone C of goal ' + i, completed: false }],
+          notes: '', createdAt: nowIso, updatedAt: nowIso
+        });
+      }
+
+      /* Notes → 100 */
+      const noteTopics = ['Productivity', 'games513', 'Learning', 'Research', 'Meetings'];
+      const noteTitles = ['Standup notes', 'Architecture sketch', 'Weekly plan', 'Book highlights', 'Idea backlog', 'Debug journal', 'Interview prep', 'Retro notes'];
+      for (let i = 1; i <= TOP; i++) {
+        addUnique(S.notes, {
+          id: 'dem-note-t' + i, title: `Demo note ${i}: ${pick(noteTitles, i)}`, topic: pick(noteTopics, i), folderId: '',
+          content: `# Demo note ${i}\n\n- Point one for note ${i}\n- Point two with **bold** text\n- Follow-up: review on ${demDate(i % 30)}\n\n> Auto-generated demo content.`,
+          pinned: i % 10 === 0, revisions: [], createdAt: nowIso, updatedAt: nowIso
+        });
+      }
+
+      /* Diary → 100 (past 100 days) */
+      const diaryTypes = ['Daily Thought', 'Milestone / Win', 'Key Learning', 'Gratitude', 'Life Experience', 'Challenge', 'Decision Log'];
+      const moods = ['😄', '🙂', '😊', '😐', '😅', '😴'];
+      const diaryTexts = ['Shipped a small feature and it felt great.', 'Long debugging session finally paid off.', 'Quiet day, caught up on reading.', 'Walked in the evening rain, cleared my head.', 'Learned something new about IndexedDB internals.', 'Great call with the team, momentum is building.', 'Fixed an annoying race condition today.'];
+      for (let i = 1; i <= TOP; i++) {
+        addUnique(S.diaryEntries, {
+          id: 'dem-diary-t' + i, date: demDate(-i), time: `${String(7 + (i % 12)).padStart(2, '0')}:${i % 2 ? '15' : '45'} ${i % 2 ? 'AM' : 'PM'}`,
+          type: pick(diaryTypes, i), mood: pick(moods, i), energy: 1 + (i % 5), isPinned: i % 25 === 0,
+          location: pick(['Home Office', 'Balcony', 'Cafe', 'Gym'], i), tags: `#demo #day${i}`,
+          text: `${pick(diaryTexts, i)} (demo entry ${i})`, mediaUrl: '', createdAt: nowIso, updatedAt: nowIso
+        });
+      }
+
+      /* Habits → 100 */
+      const habitCats = (S.habitCategories && S.habitCategories.length) ? S.habitCategories : ['Health & Fitness'];
+      const habitNames = ['Stretch 10 min', 'Drink 3L water', 'Journal one line', 'Walk 8k steps', 'Practice guitar', 'Meditate 10 min', 'No phone in bed', 'Vitamins', 'Sketch daily', 'Sleep before 11'];
+      for (let i = 1; i <= TOP; i++) {
+        const history = {};
+        for (let d = 0; d < 30; d++) { if ((i + d) % 3 !== 0) history[demDate(-d)] = true; }
+        addUnique(S.habits, {
+          id: 'dem-habit-t' + i, name: `Demo: ${pick(habitNames, i)} ${i}`, category: pick(habitCats, i),
+          history, streak: 1 + (i % 9), bestStreak: 3 + (i % 15)
+        });
+      }
+
+      /* Time logs → 100 (past 60 days) */
+      const timeProjectsPool = ['PrOS Development', 'games513', 'Client Work', 'Learning'];
+      const timeDescs = ['Deep work session', 'Bugfix sprint', 'Feature build', 'Planning & review', 'Research spike', 'Refactor pass', 'Meeting + notes'];
+      for (let i = 1; i <= TOP; i++) {
+        addUnique(S.timeLogs, {
+          id: 'dem-time-t' + i, project: pick(timeProjectsPool, i), desc: `${pick(timeDescs, i)} (demo ${i})`,
+          hours: 0.25 + (i % 16) / 4, date: demDate(-(i % 60))
+        });
+      }
+
+      /* Finance → 100 (every 12th is a fuel refill → feeds Vehicle) */
+      const expCats = ['Food & Groceries', 'Utilities', 'Entertainment', 'Vehicle', 'Health'];
+      if (!S.categories.some(c => c.name === 'Health')) S.categories.push({ id: 'dem-cat-health', name: 'Health', type: 'expense', isDefault: false });
+      for (let i = 1; i <= TOP; i++) {
+        if (i % 8 === 0) {
+          addUnique(S.transactions, { id: 'dem-tr-t' + i, type: 'income', title: `Freelance payout (demo ${i})`, amount: 5000 + i * 100, category: i % 16 === 0 ? 'Salary' : 'Freelance', date: demDate(-(i % 45)), personName: '', dueDate: '', isSettled: false });
+        } else if (i % 12 === 0) {
+          const id = 'dem-tr-t' + i;
+          addUnique(S.transactions, { id, type: 'expense', title: `Fuel refill — station #${i} #demo`, amount: 800 + (i % 40) * 10, category: 'Vehicle', date: demDate(-(i % 45)), personName: '', dueDate: '', isSettled: false });
+          if (!S.vehicleMetrics[id]) S.vehicleMetrics[id] = { km: 150 + (i % 250), liters: 6 + (i % 8) };
+        } else {
+          addUnique(S.transactions, { id: 'dem-tr-t' + i, type: 'expense', title: `${pick(expCats, i)} expense (demo ${i})`, amount: 120 + (i * 37) % 4200, category: pick(expCats, i), date: demDate(-(i % 45)), personName: '', dueDate: '', isSettled: false });
+        }
+      }
+
+      /* Subscriptions → 100 */
+      for (let i = 1; i <= TOP; i++) {
+        addUnique(S.subscriptions, {
+          id: 'dem-sub-t' + i, name: `Demo Service ${i}`, amount: 99 + (i % 9) * 100,
+          cycle: pick(['monthly', 'yearly'], i), nextBilling: demDate(i % 120)
+        });
+      }
+
+      /* Bookmarks → 100 */
+      const bmTagsPool = (S.bookmarkTags && S.bookmarkTags.length) ? S.bookmarkTags : ['Dev Tools'];
+      const bmSites = [['MDN Web Docs', 'https://developer.mozilla.org'], ['GitHub', 'https://github.com'], ['Hacker News', 'https://news.ycombinator.com'], ['Smashing Magazine', 'https://smashingmagazine.com'], ['Can I Use', 'https://caniuse.com'], ['CSS Tricks', 'https://css-tricks.com'], ['Lighthouse scores', 'https://web.dev'], ['Figma community', 'https://figma.com/community']];
+      for (let i = 1; i <= TOP; i++) {
+        const site = pick(bmSites, i);
+        addUnique(S.bookmarks, {
+          id: 'dem-bm-t' + i, title: `${site[0]} (demo ${i})`, url: site[1], tag: pick(bmTagsPool, i * 3),
+          pinned: i % 15 === 0, clicks: i % 20, notes: i % 7 === 0 ? 'Reference for demo ' + i : '', readingList: i % 5 === 0
+        });
+      }
+
+      /* Mindmap → 100 nodes (grid layout, every 10th linked to root) */
+      const nodeNames = ['Idea: caching layer', 'Sprint backlog', 'Content calendar', 'Hobby tracker', 'API checklist', 'Game economy', 'Reading queue', 'Home repairs', 'Fitness plan', 'Finance goals'];
+      const nodeColors = ['bg-sky-600', 'bg-violet-600', 'bg-rose-600', 'bg-emerald-600', 'bg-amber-600', 'bg-indigo-600'];
+      for (let i = 1; i <= TOP; i++) {
+        addUnique(S.mindmapNodes, {
+          id: 'dem-node-t' + i, mapId: 'map-pravinga513',
+          text: `🧩 Demo ${i}: ${pick(nodeNames, i)}`, entityTag: 'Demo' + i,
+          x: 40 + ((i * 7) % 8) * 205, y: 500 + Math.floor(i / 8) * 118,
+          color: pick(nodeColors, i), _w: 176, _h: 92
+        });
+        if (i % 10 === 0) {
+          const c = { from: 'node-root', to: 'dem-node-t' + i };
+          if (!S.mindmapConnections.some(x => x.from === c.from && x.to === c.to)) { S.mindmapConnections.push(c); added++; }
+        }
+      }
+
+      /* Calendar → 100 (every 20th a yearly birthday) */
+      const evTitles = ['Sprint review', 'Dentist checkup', 'Weekly sync', 'Gym session', 'Family dinner', 'Client call', 'Demo rehearsal', 'Grocery pickup'];
+      for (let i = 1; i <= TOP; i++) {
+        const isBday = i % 20 === 0;
+        addUnique(S.calendarEvents, {
+          id: 'dem-ev-t' + i,
+          title: isBday ? `Demo birthday ${i}` : `${pick(evTitles, i)} (demo ${i})`,
+          type: isBday ? 'BIRTHDAY' : 'EVENT',
+          recurrence: isBday ? 'YEARLY' : pick(['NONE', 'WEEKLY', 'NONE'], i),
+          date: demDate((i % 90) - 20), time: `${String(8 + (i % 10)).padStart(2, '0')}:00`,
+          birthYear: isBday ? 1960 + (i % 30) : null,
+          location: pick(['Online', 'Office', 'Home', 'Downtown'], i), notes: '', createdAt: nowIso
+        });
+      }
 
       persistAll().then(() => {
         setDemoStatus(added + ' demo records loaded — reloading...');
