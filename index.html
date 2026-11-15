@@ -5146,10 +5146,10 @@ html, body {
       <div class="flex items-center gap-1.5">
         <!-- Folder Type Filters -->
         <div class="flex items-center gap-1 overflow-x-auto no-scrollbar min-w-0 flex-1">
-          <button type="button" onclick="setFolderTypeFilter('ALL')" id="folder-filter-btn-all" class="px-3.5 py-2 sm:px-2.5 sm:py-1 text-[12px] sm:text-[11px] rounded-lg font-bold transition bg-purple-600 text-white shrink-0 shadow-sm">All</button>
-          <button type="button" onclick="setFolderTypeFilter('GOAL')" id="folder-filter-btn-goal" class="px-3.5 py-2 sm:px-2.5 sm:py-1 text-[12px] sm:text-[11px] rounded-lg font-medium text-slate-400 hover:text-white bg-slate-900 border border-slate-800 shrink-0">🎯 Goals</button>
-          <button type="button" onclick="setFolderTypeFilter('NODE')" id="folder-filter-btn-node" class="px-3.5 py-2 sm:px-2.5 sm:py-1 text-[12px] sm:text-[11px] rounded-lg font-medium text-slate-400 hover:text-white bg-slate-900 border border-slate-800 shrink-0">🧠 Nodes</button>
-          <button type="button" onclick="setFolderTypeFilter('NORMAL')" id="folder-filter-btn-normal" class="px-3.5 py-2 sm:px-2.5 sm:py-1 text-[12px] sm:text-[11px] rounded-lg font-medium text-slate-400 hover:text-white bg-slate-900 border border-slate-800 shrink-0">📁 Custom</button>
+          <button type="button" onclick="setFolderTypeFilter('ALL')" id="folder-filter-btn-all" class="px-3.5 py-2 sm:px-2.5 sm:py-1 text-[12px] sm:text-[11px] rounded-lg font-bold transition bg-purple-600 text-white shrink-0 shadow-sm">All <span id="folder-filter-count-all" class="ml-0.5 font-mono text-[10px] opacity-75">0</span></button>
+          <button type="button" onclick="setFolderTypeFilter('GOAL')" id="folder-filter-btn-goal" class="px-3.5 py-2 sm:px-2.5 sm:py-1 text-[12px] sm:text-[11px] rounded-lg font-medium text-slate-400 hover:text-white bg-slate-900 border border-slate-800 shrink-0">🎯 Goals <span id="folder-filter-count-goal" class="ml-0.5 font-mono text-[10px] opacity-75">0</span></button>
+          <button type="button" onclick="setFolderTypeFilter('NODE')" id="folder-filter-btn-node" class="px-3.5 py-2 sm:px-2.5 sm:py-1 text-[12px] sm:text-[11px] rounded-lg font-medium text-slate-400 hover:text-white bg-slate-900 border border-slate-800 shrink-0">🧠 Nodes <span id="folder-filter-count-node" class="ml-0.5 font-mono text-[10px] opacity-75">0</span></button>
+          <button type="button" onclick="setFolderTypeFilter('NORMAL')" id="folder-filter-btn-normal" class="px-3.5 py-2 sm:px-2.5 sm:py-1 text-[12px] sm:text-[11px] rounded-lg font-medium text-slate-400 hover:text-white bg-slate-900 border border-slate-800 shrink-0">📁 Custom <span id="folder-filter-count-normal" class="ml-0.5 font-mono text-[10px] opacity-75">0</span></button>
         </div>
 
         <!-- Compact Sort (icon-embedded select, no label bar) -->
@@ -6259,23 +6259,32 @@ html, body {
 
       let taskLists = [...(window.appState.taskLists || [])];
 
+      const _isGoalFolderL = l => l.isGoalFolder || l.folderType === 'goal';
+      const _isNodeFolderL = l => (l.isNodeFolder || l.folderType === 'node') && !l.isGoalFolder;
+
       // 1. Filter by Selected Folder Type
       if (activeFolderTypeFilter === 'GOAL') {
-        taskLists = taskLists.filter(l => l.isGoalFolder || l.folderType === 'goal');
+        taskLists = taskLists.filter(_isGoalFolderL);
       } else if (activeFolderTypeFilter === 'NODE') {
-        taskLists = taskLists.filter(l => (l.isNodeFolder || l.folderType === 'node') && !l.isGoalFolder);
+        taskLists = taskLists.filter(_isNodeFolderL);
       } else if (activeFolderTypeFilter === 'NORMAL') {
-        taskLists = taskLists.filter(l => !l.isGoalFolder && !l.isNodeFolder && l.folderType !== 'goal' && l.folderType !== 'node');
+        taskLists = taskLists.filter(l => !_isGoalFolderL(l) && !_isNodeFolderL(l));
       }
+      // Empty folders are intentionally NOT hidden anymore:
+      // each pill "opens" its group of folders so switching pills always gives visible feedback,
+      // and "All" opens every folder.
 
-      // 2. Hide Empty Goal & Node Folders (Except default General list)
-      taskLists = taskLists.filter(list => {
-        const isDynamicFolder = list.isGoalFolder || list.isNodeFolder || list.folderType === 'goal' || list.folderType === 'node';
-        if (isDynamicFolder && list.id !== 'list-general') {
-          const totalTasksInList = (window.appState.tasks || []).filter(t => t.listId === list.id).length;
-          return totalTasksInList > 0;
-        }
-        return true;
+      // 1b. Live counts on the type pills
+      const _allLists = [...(window.appState.taskLists || [])];
+      const _pillCounts = {
+        all: _allLists.length,
+        goal: _allLists.filter(_isGoalFolderL).length,
+        node: _allLists.filter(_isNodeFolderL).length,
+        normal: _allLists.filter(l => !_isGoalFolderL(l) && !_isNodeFolderL(l)).length
+      };
+      Object.keys(_pillCounts).forEach(key => {
+        const el = document.getElementById(`folder-filter-count-${key}`);
+        if (el) el.textContent = _pillCounts[key];
       });
 
       // 3. Sort by Selected Option
@@ -6290,11 +6299,6 @@ html, body {
         if (activeFolderSortOption === 'NAME_ASC') return (a.name || '').localeCompare(b.name || '');
         return 0;
       });
-
-      if (taskLists.length === 0) {
-        container.innerHTML = `<div class="p-4 text-center text-xs text-slate-500 bg-slate-950 rounded-xl border border-slate-800">No active folders with tasks found.</div>`;
-        return;
-      }
 
       const fragment = document.createDocumentFragment();
 
@@ -6325,9 +6329,13 @@ html, body {
       fragment.appendChild(allBtn);
 
       if (taskLists.length === 0) {
+        const emptyLabel = activeFolderTypeFilter === 'GOAL' ? '🎯 goal folders yet'
+          : activeFolderTypeFilter === 'NODE' ? '🧠 node folders yet'
+          : activeFolderTypeFilter === 'NORMAL' ? '📁 custom folders yet'
+          : 'folders match this filter.';
         const note = document.createElement('div');
         note.className = 'p-3 text-center text-[11px] text-slate-500 bg-slate-950 rounded-xl border border-slate-800';
-        note.textContent = 'No folders match this filter.';
+        note.textContent = `No ${emptyLabel}`;
         fragment.appendChild(note);
       }
 
