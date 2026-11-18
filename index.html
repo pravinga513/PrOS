@@ -3406,6 +3406,50 @@ html, body {
       return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
     }
 
+    /* --------------------------------------------------------------------- */
+    /* PROGRESSIVE RENDERING — keep 100+ record modules responsive            */
+    /* Each long list renders a first page and offers "Show more".            */
+    /* --------------------------------------------------------------------- */
+    window.__listLimits = window.__listLimits || { folders: 25, tasks: 40, kanban: 12, goals: 24, finance: 40, notes: 30, bookmarks: 36, subs: 36 };
+    window.__listSteps = window.__listSteps || { folders: 50, tasks: 60, kanban: 12, goals: 24, finance: 60, notes: 30, bookmarks: 36, subs: 36 };
+    window.__renderForScope = window.__renderForScope || {
+      folders: 'renderTodoListsNav', tasks: 'renderTodoItems', kanban: 'renderKanbanBoard',
+      goals: 'renderGoalsView', finance: 'renderFinanceList', notes: 'renderNotesList', bookmarks: 'renderBookmarksGrid', subs: 'renderSubscriptionsList'
+    };
+    window.__showMore = window.__showMore || function(scope) {
+      window.__listLimits[scope] = (window.__listLimits[scope] || 40) + (window.__listSteps[scope] || 40);
+      const fn = window[window.__renderForScope[scope]];
+      if (typeof fn === 'function') fn();
+    };
+    window.__showLess = window.__showLess || function(scope) {
+      window.__listLimits[scope] = window.__listSteps[scope] || 40;
+      const fn = window[window.__renderForScope[scope]];
+      if (typeof fn === 'function') fn();
+    };
+    window.__moreHtml = window.__moreHtml || function(scope, shown, total, extraCls) {
+      if (total <= shown) return '';
+      const step = window.__listSteps[scope] || 40;
+      const next = Math.min(step, total - shown);
+      return `<div class="col-span-full flex flex-col sm:flex-row items-center justify-center gap-2 py-1.5 w-full ${extraCls || ''}">
+        <button type="button" onclick="__showMore('${scope}')" class="px-3.5 py-2 bg-slate-900 border border-slate-800 hover:border-emerald-500/40 text-emerald-300 rounded-xl text-[11px] font-bold transition flex items-center gap-1.5 active:scale-95">
+          <i data-lucide="chevrons-down" class="w-3.5 h-3.5"></i> Show ${next} more
+        </button>
+        <span class="text-[10px] text-slate-500 font-mono">${shown} of ${total} shown</span>
+        <button type="button" onclick="__showLess('${scope}')" class="px-3 py-2 bg-slate-950 border border-slate-800 hover:border-slate-600 text-slate-400 rounded-xl text-[11px] font-semibold transition active:scale-95">Collapse</button>
+      </div>`;
+    };
+    window.__moreCompact = window.__moreCompact || function(scope, shown, total) {
+      if (total <= shown) return '';
+      const step = window.__listSteps[scope] || 40;
+      const next = Math.min(step, total - shown);
+      return `<div class="flex flex-col gap-1.5 pt-1">
+        <button type="button" onclick="__showMore('${scope}')" class="w-full text-center p-2 rounded-xl bg-slate-900/70 border border-slate-800 hover:border-emerald-500/40 text-emerald-300 text-[10px] font-bold transition active:scale-[0.98]">
+          ↓ Show ${next} more folders
+        </button>
+        <span class="text-center text-[9px] text-slate-500 font-mono">${shown} of ${total}</span>
+      </div>`;
+    };
+
     function refreshIcons() {
       if (window.lucide && typeof window.lucide.createIcons === 'function') {
         window.lucide.createIcons();
@@ -4403,12 +4447,15 @@ html, body {
         }
       }
 
+      const finTotalCount = items.length;
+      const finVisible = items.slice(0, window.__listLimits.finance);
+
       if (items.length === 0) {
         container.innerHTML = '<div class="p-5 text-center text-xs text-slate-500 bg-slate-950 rounded-xl border border-slate-800">No records found matching filter.</div>';
       } else {
         const fragment = document.createDocumentFragment();
 
-        items.forEach(item => {
+        finVisible.forEach(item => {
           const row = document.createElement('div');
           row.dataset.transId = item.id;
           row.className = 'bg-slate-950 p-2.5 rounded-xl flex items-center justify-between text-xs border border-slate-800 hover:border-slate-700 transition gap-2 min-w-0 box-border';
@@ -4468,9 +4515,16 @@ html, body {
         container.appendChild(fragment);
       }
 
+      if (finTotalCount > finVisible.length) {
+        const moreWrap = document.createElement('div');
+        moreWrap.innerHTML = window.__moreHtml('finance', finVisible.length, finTotalCount);
+        container.appendChild(moreWrap);
+        refreshIconsScoped(moreWrap);
+      }
+
       window.renderCategoryBudgets();
       window.renderSubscriptionsList();
-      refreshIcons();
+      refreshIconsScoped(container);
     };
 
     window.submitFullTransactionForm = function(e) {
@@ -4647,8 +4701,10 @@ html, body {
 
       const fragment = document.createDocumentFragment();
       const today = new Date().toISOString().split('T')[0];
+      const subTotalCount = items.length;
+      const subVisible = items.slice(0, window.__listLimits.subs);
 
-      items.forEach(s => {
+      subVisible.forEach(s => {
         const isEmi = (s.commitmentType === 'emi');
         const card = document.createElement('div');
         card.className = `glass-card px-2.5 py-2 rounded-xl border ${isEmi ? 'border-purple-900/50 hover:border-purple-500/50' : 'border-slate-800 hover:border-sky-500/40'} flex flex-col justify-between gap-2 transition min-w-0 box-border`;
@@ -4725,7 +4781,12 @@ html, body {
       });
 
       container.appendChild(fragment);
-      refreshIcons();
+      if (subTotalCount > subVisible.length) {
+        const moreWrap = document.createElement('div');
+        moreWrap.innerHTML = window.__moreHtml('subs', subVisible.length, subTotalCount);
+        container.appendChild(moreWrap);
+      }
+      refreshIconsScoped(container);
     };
 
     window.addNewSubscription = function() {
@@ -6304,11 +6365,17 @@ html, body {
       });
 
       // 3. Sort by Selected Option
+      // Precompute per-folder task arrays once (avoids filtering 111 tasks per comparison)
+      const _tasksByList = {};
+      (window.appState.tasks || []).forEach(t => { (_tasksByList[t.listId] = _tasksByList[t.listId] || []).push(t); });
+      const _pendingByList = {};
+      Object.keys(_tasksByList).forEach(lid => { _pendingByList[lid] = _tasksByList[lid].filter(t => !t.completed && t.status !== 'done').length; });
+
       taskLists.sort((a, b) => {
-        const tasksA = (window.appState.tasks || []).filter(t => t.listId === a.id);
-        const tasksB = (window.appState.tasks || []).filter(t => t.listId === b.id);
-        const pendingA = tasksA.filter(t => !t.completed && t.status !== 'done').length;
-        const pendingB = tasksB.filter(t => !t.completed && t.status !== 'done').length;
+        const tasksA = _tasksByList[a.id] || [];
+        const tasksB = _tasksByList[b.id] || [];
+        const pendingA = _pendingByList[a.id] || 0;
+        const pendingB = _pendingByList[b.id] || 0;
 
         if (activeFolderSortOption === 'TASKS_DESC') return tasksB.length - tasksA.length;
         if (activeFolderSortOption === 'PENDING_DESC') return pendingB - pendingA;
@@ -6355,13 +6422,16 @@ html, body {
         fragment.appendChild(note);
       }
 
-      taskLists.forEach(list => {
+      const folderTotalCount = taskLists.length;
+      const visibleLists = taskLists.slice(0, window.__listLimits.folders);
+
+      visibleLists.forEach(list => {
         const isNodeList = list.isNodeFolder || list.folderType === 'node';
         const isGoalList = list.isGoalFolder || list.folderType === 'goal';
         const isExcluded = !!list.excludeFromTotal;
 
-        const totalListTasks = (window.appState.tasks || []).filter(t => t.listId === list.id);
-        const pendingCount = totalListTasks.filter(t => !t.completed && t.status !== 'done').length;
+        const totalListTasks = _tasksByList[list.id] || [];
+        const pendingCount = _pendingByList[list.id] || 0;
 
         const isActive = (list.id === window.appState.activeListId);
         const btn = document.createElement('button');
@@ -6422,6 +6492,13 @@ html, body {
 
         fragment.appendChild(btn);
       });
+
+      if (folderTotalCount > visibleLists.length) {
+        const moreWrap = document.createElement('div');
+        moreWrap.innerHTML = window.__moreCompact('folders', visibleLists.length, folderTotalCount);
+        fragment.appendChild(moreWrap);
+        refreshIconsScoped(moreWrap);
+      }
 
       container.appendChild(fragment);
       refreshIconsScoped(container);
@@ -6563,7 +6640,9 @@ html, body {
       }
 
       let lastGroupId = null;
-      tasks.forEach(task => {
+      const taskTotalCount = tasks.length;
+      const visibleTasks = tasks.slice(0, window.__listLimits.tasks);
+      visibleTasks.forEach(task => {
         if (tasksScopeAll && task.listId !== lastGroupId) {
           lastGroupId = task.listId;
           const meta = getListMeta(task.listId);
@@ -6647,6 +6726,12 @@ html, body {
       });
 
       container.appendChild(fragment);
+      if (taskTotalCount > visibleTasks.length) {
+        const moreWrap = document.createElement('div');
+        moreWrap.innerHTML = window.__moreHtml('tasks', visibleTasks.length, taskTotalCount);
+        container.appendChild(moreWrap);
+        refreshIconsScoped(moreWrap);
+      }
       refreshIconsScoped(container);
       updateTaskMetrics();
       renderHashtagFilterBar();
@@ -6818,7 +6903,9 @@ html, body {
 
         const fragment = document.createDocumentFragment();
 
-        items.forEach(t => {
+        const kColTotal = items.length;
+        const kVisible = items.slice(0, window.__listLimits.kanban);
+        kVisible.forEach(t => {
           const isDone = (col === 'done' || t.completed);
           const subtasks = Array.isArray(t.subtasks) ? t.subtasks : [];
           const completedSubtasks = subtasks.filter(s => s.completed).length;
@@ -6876,6 +6963,11 @@ html, body {
         });
 
         container.appendChild(fragment);
+        if (kColTotal > kVisible.length) {
+          const moreWrap = document.createElement('div');
+          moreWrap.innerHTML = window.__moreCompact('kanban', kVisible.length, kColTotal);
+          container.appendChild(moreWrap);
+        }
         refreshIconsScoped(container);
       });
 
@@ -8652,7 +8744,9 @@ html, body {
 
       const fragment = document.createDocumentFragment();
 
-      goals.forEach(g => {
+      const goalTotalCount = goals.length;
+      const visibleGoals = goals.slice(0, window.__listLimits.goals);
+      visibleGoals.forEach(g => {
         const folder = (window.appState.goalFolders || []).find(f => f.id === (g.folderId || 'gf_default'));
         const isNodeFolder = folder?.isNodeFolder || !!g.nodeTag;
         const isAchieved = (g.progress || 0) >= 100;
@@ -8807,6 +8901,12 @@ html, body {
       });
 
       container.appendChild(fragment);
+      if (goalTotalCount > visibleGoals.length) {
+        const moreWrap = document.createElement('div');
+        moreWrap.innerHTML = window.__moreHtml('goals', visibleGoals.length, goalTotalCount);
+        container.appendChild(moreWrap);
+        refreshIconsScoped(moreWrap);
+      }
       refreshIconsScoped(container);
       if (typeof window.scrollKRListsToChecked === 'function') window.scrollKRListsToChecked(container);
     };
@@ -12536,7 +12636,9 @@ html, body {
 
       const fragment = document.createDocumentFragment();
 
-      notes.forEach(note => {
+      const notesTotal = notes.length;
+      const visibleNotes = notes.slice(0, window.__listLimits.notes);
+      visibleNotes.forEach(note => {
         const isSelected = note.id === window.appState.activeNoteId;
         const folder = (window.appState.noteFolders || []).find(f => f.id === note.folderId);
         const wordCount = note.content ? note.content.trim().split(/\s+/).length : 0;
@@ -12576,6 +12678,11 @@ html, body {
       });
 
       container.appendChild(fragment);
+      if (notesTotal > visibleNotes.length) {
+        const moreWrap = document.createElement('div');
+        moreWrap.innerHTML = window.__moreHtml('notes', visibleNotes.length, notesTotal);
+        container.appendChild(moreWrap);
+      }
       renderHashtagFilterBar();
       refreshIconsScoped(container);
     };
@@ -16943,7 +17050,9 @@ html, body {
 
       const fragment = document.createDocumentFragment();
 
-      items.forEach(bm => {
+      const bmTotalCount = items.length;
+      const visibleBookmarks = items.slice(0, window.__listLimits.bookmarks);
+      visibleBookmarks.forEach(bm => {
         const domain = extractDomainName(bm.url);
         const faviconUrl = getFaviconUrl(bm.url);
 
@@ -17013,6 +17122,11 @@ html, body {
       });
 
       container.appendChild(fragment);
+      if (bmTotalCount > visibleBookmarks.length) {
+        const moreWrap = document.createElement('div');
+        moreWrap.innerHTML = window.__moreHtml('bookmarks', visibleBookmarks.length, bmTotalCount);
+        container.appendChild(moreWrap);
+      }
       refreshIconsScoped(container);
     };
 
@@ -24530,21 +24644,40 @@ html, body {
     window.switchTab = window.switchAppView;
 
         window.refreshAllViews = function() {
-      if (typeof window.renderDashboard === 'function') window.renderDashboard();
-      if (typeof window.renderCalendarView === 'function') window.renderCalendarView();
-      if (typeof window.renderFinanceList === 'function') window.renderFinanceList();
-      if (typeof window.renderCategoryBudgets === 'function') window.renderCategoryBudgets();
-      if (typeof window.renderSubscriptionsList === 'function') window.renderSubscriptionsList();
-      if (typeof window.renderTodoListsNav === 'function') window.renderTodoListsNav();
-      if (typeof window.renderTodoItems === 'function') window.renderTodoItems();
-      if (typeof window.renderKanbanBoard === 'function') window.renderKanbanBoard();
-      if (typeof window.renderGoalsView === 'function') window.renderGoalsView();
-      if (typeof window.renderTimeTrackerView === 'function') window.renderTimeTrackerView();
-      if (typeof window.renderHabitsView === 'function') window.renderHabitsView();
-      if (typeof window.renderVehicleLogs === 'function') window.renderVehicleLogs();
-      if (typeof window.renderNotesList === 'function') window.renderNotesList();
-      if (typeof window.renderBookmarksGrid === 'function') window.renderBookmarksGrid();
-      if (typeof window.renderMindmapNodes === 'function') window.renderMindmapNodes();
+      /* Only the active view is re-rendered. Switching views re-renders the
+         target view itself, so refreshing all 14 modules on every edit is
+         pure waste — with 100+ records per module that was ~1.5s per action. */
+      const activeView = (window.appState && window.appState.currentView) || 'dashboard';
+      switch (activeView) {
+        case 'dashboard': if (typeof window.renderDashboard === 'function') window.renderDashboard(); break;
+        case 'finance':
+          if (typeof window.renderFinanceList === 'function') window.renderFinanceList();
+          if (typeof window.renderCategoryBudgets === 'function') window.renderCategoryBudgets();
+          if (typeof window.renderSubscriptionsList === 'function') window.renderSubscriptionsList();
+          break;
+        case 'goals': if (typeof window.renderGoalsView === 'function') window.renderGoalsView(); break;
+        case 'tasks':
+          if (typeof window.renderTodoListsNav === 'function') window.renderTodoListsNav();
+          if (window.appState && window.appState.taskViewMode === 'kanban') {
+            if (typeof window.renderKanbanBoard === 'function') window.renderKanbanBoard();
+          } else if (typeof window.renderTodoItems === 'function') {
+            window.renderTodoItems();
+          }
+          break;
+        case 'calendar': if (typeof window.renderCalendarView === 'function') window.renderCalendarView(); break;
+        case 'time': if (typeof window.renderTimeTrackerView === 'function') window.renderTimeTrackerView(); break;
+        case 'logbook': if (typeof window.renderLogbookTimeline === 'function') window.renderLogbookTimeline(true); break;
+        case 'notes': if (typeof window.renderNotesList === 'function') window.renderNotesList(); break;
+        case 'habits':
+          if (typeof window.renderHabitsView === 'function') window.renderHabitsView();
+          else if (typeof window.renderHabitsMatrix === 'function') window.renderHabitsMatrix();
+          break;
+        case 'bookmarks': if (typeof window.renderBookmarksGrid === 'function') window.renderBookmarksGrid(); break;
+        case 'vehicle': if (typeof window.renderVehicleLogs === 'function') window.renderVehicleLogs(); break;
+        case 'mindmap': if (typeof window.renderMindmapNodes === 'function') window.renderMindmapNodes(); break;
+        case 'analytics': if (typeof window.renderAnalyticsView === 'function') window.renderAnalyticsView(); break;
+        default: if (typeof window.renderDashboard === 'function') window.renderDashboard(); break;
+      }
       if (typeof window.updateBadges === 'function') window.updateBadges();
     };
 
@@ -24552,6 +24685,9 @@ html, body {
       // Wait until the IndexedDB store is primed before hydrating app state
       await window.StoreReady;
       window.loadLocalCache();
+      if (typeof window.ensureLogbookInitialized === 'function') {
+        try { window.ensureLogbookInitialized(); } catch (e) {}
+      }
       window.initFirebase();
       if (typeof window.populateCategoryDropdowns === 'function') window.populateCategoryDropdowns();
       window.refreshAllViews();
