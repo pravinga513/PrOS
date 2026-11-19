@@ -21919,6 +21919,39 @@ html, body {
       vehicles: 'vehicle'
     };
 
+    /* --------------------------------------------------------------------- */
+    /* VIEW DOM RELEASE — free memory held by modules you're not looking at   */
+    /* Hidden views keep their rendered lists in RAM. On switch-away we empty */
+    /* the heavy containers; switching back re-renders them (switchAppView    */
+    /* already dispatches a render for the target view).                      */
+    /* --------------------------------------------------------------------- */
+    window.__viewContainers = window.__viewContainers || {
+      tasks: ['todo-lists-nav', 'todo-items-container', 'kanban-col-backlog', 'kanban-col-progress', 'kanban-col-review', 'kanban-col-done'],
+      goals: ['goals-cards-container', 'goal-folders-nav'],
+      finance: ['finance-list-container', 'category-budgets-container', 'subscriptions-grid-container'],
+      notes: ['notes-list', 'note-folders-nav'],
+      logbook: ['logbook-timeline-container'],
+      time: ['time-logs-history-container'],
+      vehicle: ['fuel-logs-table-container'],
+      mindmap: ['mindmap-nodes-layer', 'mindmap-svg-connections'],
+      calendar: ['calendar-days-grid'],
+      habits: ['habits-matrix-container'],
+      bookmarks: ['bookmarks-grid-container']
+    };
+    window.releaseViewDom = window.releaseViewDom || function(viewId) {
+      const ids = window.__viewContainers[viewId];
+      if (!ids) return 0;
+      let freed = 0;
+      ids.forEach(id => {
+        const el = document.getElementById(id);
+        if (el && el.childNodes.length) {
+          freed += el.querySelectorAll('*').length;
+          el.innerHTML = '';
+        }
+      });
+      return freed;
+    };
+
     window.switchAppView = function(viewId) {
       if (typeof triggerHaptic === 'function') triggerHaptic();
       if (!viewId) return;
@@ -21941,6 +21974,11 @@ html, body {
       // Scroll memory for the outgoing view
       if (window.appState?.preferences?.independentScroll !== false) {
         viewScrollMemory[currentViewId] = getEffectiveScrollTop(currentViewEl);
+      }
+
+      // Free the outgoing module's rendered DOM (memory) — it re-renders on return
+      if (currentViewId !== targetViewId && typeof window.releaseViewDom === 'function') {
+        try { window.__lastReleasedNodes = window.releaseViewDom(currentViewId); } catch (e) {}
       }
 
       // 1. DOM Isolation: hide all views and show the target
@@ -22020,6 +22058,11 @@ html, body {
           case 'analytics': window.renderAnalyticsView?.(); break;
         }
         if (typeof window.updateBadges === 'function') window.updateBadges();
+
+        // Re-apply scroll memory now that the released view has been re-rendered
+        if (targetViewEl && (window.appState?.preferences?.independentScroll !== false)) {
+          try { applyScrollTop(targetViewEl, viewScrollMemory[targetViewId] || 0); } catch (e) {}
+        }
       }, 20);
     };
 
