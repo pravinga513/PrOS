@@ -5860,6 +5860,64 @@ body.sidebar-open #pros-mobile-nav {
       if (main) main.classList.remove('hidden');
     };
 
+    /* --------------------------------------------------------------------- */
+    /* Folder visibility rule (single source of truth)                        */
+    /* Auto-generated folders (from mindmap nodes / goals) only earn a slot   */
+    /* when something is attached to them. Manual folders always pass.        */
+    /* --------------------------------------------------------------------- */
+    window.folderHasContent = function(folder, countsByList) {
+      if (!folder) return false;
+      const S = window.appState || {};
+      const isGoal = folder.isGoalFolder || folder.folderType === 'goal';
+      const isNode = (folder.isNodeFolder || folder.folderType === 'node') && !folder.isGoalFolder;
+      if (!isGoal && !isNode) return true; // manual folder — always visible
+
+      const taskCount = countsByList
+        ? (countsByList[folder.id] || 0)
+        : (S.tasks || []).filter(t => t.listId === folder.id).length;
+      if (taskCount > 0) return true;
+
+      // Never hide the folder the user is currently working in
+      if (folder.id === S.activeListId || folder.id === 'list-inbox') return true;
+
+      if (isGoal) {
+        const goalId = folder.goalId || (String(folder.id).startsWith('list_goal_') ? String(folder.id).slice('list_goal_'.length) : null);
+        return (S.goals || []).some(g => g.id === goalId || g.folderId === folder.id);
+      }
+
+      // Node folder: keep when its node still exists AND has notes or goals linked
+      const key = String(
+        folder.nodeId ||
+        (String(folder.id || '').startsWith('list_node_') ? String(folder.id).slice('list_node_'.length) : '') ||
+        folder.nodeTag || folder.nodeText || ''
+      ).replace(/^🧠\s*/, '').trim().toLowerCase();
+      if (!key) return false;
+
+      const node = (S.mindmapNodes || []).find(n => String(n.id).toLowerCase() === key);
+      if (!node) return false; // stale folder, node was deleted
+
+      const nodeText = String(node.text || node.entityTag || folder.name || '')
+        .replace(/^🧠\s*/, '').toLowerCase().trim();
+
+      const noteFolders = (S.noteFolders || []).filter(nf => {
+        const tag = String(nf.nodeTag || nf.name || '').replace(/^🧠\s*/, '').toLowerCase().trim();
+        return String(nf.nodeId || '').toLowerCase() === key || (!!nodeText && tag === nodeText);
+      });
+      const noteIds = new Set(noteFolders.map(nf => nf.id));
+      if ((S.notes || []).some(n => noteIds.has(n.folderId))) return true;
+
+      const goalFolders = (S.goalFolders || []).filter(gf => {
+        const tag = String(gf.name || '').replace(/^🧠\s*/, '').toLowerCase().trim();
+        return String(gf.nodeId || '').toLowerCase() === key || (!!nodeText && tag === nodeText);
+      });
+      const goalFolderIds = new Set(goalFolders.map(gf => gf.id));
+      if ((S.goals || []).some(g =>
+        goalFolderIds.has(g.folderId) ||
+        (!!nodeText && String(g.nodeTag || '').toLowerCase().trim() === nodeText))) return true;
+
+      return false;
+    };
+
     function populateTaskListDropdownInModal(selectedListId = '') {
       window.syncGoalAndNodeFolders();
       const select = document.getElementById('task-input-list');
@@ -5882,8 +5940,16 @@ body.sidebar-open #pros-mobile-nav {
 
       // Organize lists into categories for clean scanning
       const customLists = lists.filter(l => l.id !== 'list-inbox' && !l.isGoalFolder && !l.isNodeFolder && l.folderType !== 'goal' && l.folderType !== 'node');
-      const nodeLists = lists.filter(l => l.isNodeFolder || l.folderType === 'node');
-      const goalLists = lists.filter(l => l.isGoalFolder || l.folderType === 'goal');
+
+      // Empty auto folders (node/goal) are noise here too — but never drop the
+      // folder that is already selected, otherwise editing a task would lose it.
+      const keepAlways = new Set([selectedListId, window.appState?.activeListId].filter(Boolean));
+      const countsByList = {};
+      (window.appState?.tasks || []).forEach(t => { countsByList[t.listId] = (countsByList[t.listId] || 0) + 1; });
+      const isUseful = (l) => keepAlways.has(l.id) || (typeof window.folderHasContent === 'function' ? window.folderHasContent(l, countsByList) : true);
+
+      const nodeLists = lists.filter(l => (l.isNodeFolder || l.folderType === 'node') && isUseful(l));
+      const goalLists = lists.filter(l => (l.isGoalFolder || l.folderType === 'goal') && isUseful(l));
 
       if (customLists.length > 0) {
         const groupCustom = document.createElement('optgroup');
@@ -6370,52 +6436,13 @@ body.sidebar-open #pros-mobile-nav {
          when something is actually attached — otherwise the sidebar fills up
          with dozens of empty "node" folders. User-created folders always stay,
          and so does the folder you are currently viewing. */
-      const _nodeKeyOf = (f) => String(
-        f.nodeId ||
-        (String(f.id || '').startsWith('list_node_') ? String(f.id).slice('list_node_'.length) : '') ||
-        f.nodeTag || f.nodeText || ''
-      ).replace(/^🧠\s*/, '').trim().toLowerCase();
-
-      const _folderHasContent = (f) => {
-        if ((_tasksByList[f.id] || []).length > 0) return true;
-        if (f.id === _S.activeListId || f.id === 'list-inbox') return true;
-
-        if (_isGoalFolderL(f)) {
-          const goalId = f.goalId || (String(f.id).startsWith('list_goal_') ? String(f.id).slice('list_goal_'.length) : null);
-          return (_S.goals || []).some(g => g.id === goalId || g.folderId === f.id);
-        }
-
-        if (_isNodeFolderL(f)) {
-          const key = _nodeKeyOf(f);
-          if (!key) return false;
-          const node = (_S.mindmapNodes || []).find(n => String(n.id).toLowerCase() === key);
-          if (!node) return false; // stale folder, node was deleted
-
-          const nodeText = String(node.text || node.entityTag || f.name || '')
-            .replace(/^🧠\s*/, '').toLowerCase().trim();
-
-          // Notes that live in a folder derived from this node
-          const noteFolders = (_S.noteFolders || []).filter(nf => {
-            const tag = String(nf.nodeTag || nf.name || '').replace(/^🧠\s*/, '').toLowerCase().trim();
-            return String(nf.nodeId || '').toLowerCase() === key || (!!nodeText && tag === nodeText);
-          });
-          const noteIds = new Set(noteFolders.map(nf => nf.id));
-          if ((_S.notes || []).some(n => noteIds.has(n.folderId))) return true;
-
-          // Goals attached to this node (by folder link or tag)
-          const goalFolders = (_S.goalFolders || []).filter(gf => {
-            const tag = String(gf.name || '').replace(/^🧠\s*/, '').toLowerCase().trim();
-            return String(gf.nodeId || '').toLowerCase() === key || (!!nodeText && tag === nodeText);
-          });
-          const goalFolderIds = new Set(goalFolders.map(gf => gf.id));
-          if ((_S.goals || []).some(g =>
-            goalFolderIds.has(g.folderId) ||
-            (!!nodeText && String(g.nodeTag || '').toLowerCase().trim() === nodeText))) return true;
-
-          return false;
-        }
-        return true; // user-created folder: always visible
-      };
+      /* Auto-generated folders only earn a slot when something is attached.
+         The rule itself lives in window.folderHasContent so the sidebar and
+         the "Assign to List" picker can never disagree. */
+      const _folderHasContent = (f) =>
+        (typeof window.folderHasContent === 'function')
+          ? window.folderHasContent(f, _tasksByList)
+          : true;
 
       // 1. Filter by Selected Folder Type
       if (activeFolderTypeFilter === 'GOAL') {
@@ -15660,7 +15687,12 @@ body.sidebar-open #pros-mobile-nav {
       const listSelect = document.getElementById('mm-task-input-list');
       if (listSelect) {
         listSelect.innerHTML = '';
+        const keepIds = new Set([targetFolderId, window.appState?.activeListId].filter(Boolean));
+        const countsByList = {};
+        (window.appState?.tasks || []).forEach(t => { countsByList[t.listId] = (countsByList[t.listId] || 0) + 1; });
         (window.appState?.taskLists || []).forEach(l => {
+          const isAuto = l.isNodeFolder || l.folderType === 'node' || l.isGoalFolder || l.folderType === 'goal';
+          if (isAuto && !keepIds.has(l.id) && typeof window.folderHasContent === 'function' && !window.folderHasContent(l, countsByList)) return;
           const opt = document.createElement('option');
           opt.value = l.id;
           opt.textContent = l.name;
