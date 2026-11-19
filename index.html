@@ -208,6 +208,19 @@ html, body {
     padding-bottom: 3rem !important;
   }
 }
+
+/* Mobile bottom dock: hide while the sidebar drawer is open, keep a11y focus ring */
+#pros-mobile-nav { will-change: transform; }
+body.sidebar-open #pros-mobile-nav {
+  transform: translateY(calc(100% + 1.25rem));
+  opacity: 0;
+  pointer-events: none;
+}
+#pros-mobile-nav button:focus-visible {
+  outline: 2px solid rgba(16, 185, 129, 0.55);
+  outline-offset: 2px;
+  border-radius: 0.75rem;
+}
   </style>
 
 
@@ -410,24 +423,25 @@ html, body {
   </div>
 
   <!-- User Session & Cloud Sync Status -->
-  <div class="p-3.5 border-t border-slate-800/80 space-y-2 bg-slate-950/80">
-    <div class="flex items-center justify-between">
-      <div class="flex items-center gap-2.5 overflow-hidden min-w-0">
-        <img id="user-avatar-img" src="https://placehold.co/100x100/1e293b/10b981?text=U" alt="Avatar" class="w-7 h-7 rounded-full border border-slate-700 object-cover shrink-0" />
-        <div class="truncate min-w-0">
-          <p id="user-display-email" class="text-xs font-bold text-slate-200 truncate">Offline Guest</p>
-          <p id="sync-status-indicator" class="text-[10px] text-amber-400 flex items-center gap-1 font-mono">
-            <span class="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse"></span> Local Mode
-          </p>
-        </div>
+  <div class="p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] border-t border-slate-800/80 space-y-2 bg-slate-950/80">
+    <div class="flex items-center gap-2.5 min-w-0 rounded-xl bg-slate-900/70 border border-slate-800/80 px-2.5 py-2">
+      <div class="relative shrink-0">
+        <img id="user-avatar-img" src="https://placehold.co/100x100/1e293b/10b981?text=U" alt="Avatar" class="w-8 h-8 rounded-full border border-slate-700 object-cover" />
+        <span class="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-amber-400 ring-2 ring-slate-950"></span>
+      </div>
+      <div class="min-w-0 flex-1">
+        <p id="user-display-email" class="text-xs font-bold text-slate-100 truncate leading-tight">Offline Guest</p>
+        <p id="sync-status-indicator" class="text-[10px] text-amber-400 flex items-center gap-1 font-semibold truncate">
+          <span class="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse shrink-0"></span> Local only — not synced
+        </p>
       </div>
     </div>
-    
-    <div class="flex gap-1.5 pt-0.5">
-      <button type="button" id="btn-google-login" onclick="if(typeof googleSignIn === 'function') googleSignIn()" class="flex-1 py-1.5 bg-slate-900 hover:bg-slate-800 border border-slate-800 rounded-xl text-[11px] font-semibold text-emerald-400 transition flex items-center justify-center gap-1 active:scale-95 shadow-sm">
-        <i data-lucide="log-in" class="w-3 h-3"></i> Cloud Sync
+
+    <div class="flex gap-1.5">
+      <button type="button" id="btn-google-login" onclick="if(typeof googleSignIn === 'function') googleSignIn()" class="flex-1 h-8 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 rounded-xl text-[11px] font-bold text-emerald-300 transition flex items-center justify-center gap-1.5 active:scale-[0.98] shadow-sm">
+        <i data-lucide="log-in" class="w-3.5 h-3.5"></i> Sign in to sync
       </button>
-      <button type="button" id="btn-user-logout" onclick="if(typeof signOutUser === 'function') signOutUser()" class="hidden py-1.5 px-2.5 bg-slate-900 hover:bg-rose-500/20 text-rose-400 border border-slate-800 rounded-xl text-[11px] font-bold transition active:scale-95" title="Sign Out">
+      <button type="button" id="btn-user-logout" onclick="if(typeof signOutUser === 'function') signOutUser()" class="hidden h-8 px-2.5 bg-slate-900 hover:bg-rose-500/20 text-rose-400 border border-slate-800 rounded-xl text-[11px] font-bold transition active:scale-[0.98] flex items-center justify-center" title="Sign Out">
         <i data-lucide="log-out" class="w-3.5 h-3.5"></i>
       </button>
     </div>
@@ -466,9 +480,11 @@ html, body {
       if (shouldOpen) {
         sidebar.classList.remove('-translate-x-full');
         if (backdrop) backdrop.classList.remove('hidden');
+        document.body.classList.add('sidebar-open');
       } else {
         sidebar.classList.add('-translate-x-full');
         if (backdrop) backdrop.classList.add('hidden');
+        document.body.classList.remove('sidebar-open');
       }
     };
 
@@ -22396,35 +22412,36 @@ html, body {
       const midPoint = Math.ceil(totalTabs / 2);
 
       tabObjects.forEach((tab, index) => {
-        // Render Elevated Action (+) Button in Center
+        // Reserve a flex slot; the elevated (+) is absolutely centered so it never
+        // overlaps neighbouring labels on narrow phones.
         if (navConfig.hasCenterBtn && index === midPoint) {
-          navHtml += `
-            <div class="relative flex items-center justify-center shrink-0 -mt-7 z-50">
-              <button type="button" onclick="executeMobileCenterAction()" class="w-12 h-12 rounded-full ${activeSectionDef.bgClass} shadow-xl shadow-black/80 flex items-center justify-center active:scale-90 transition-transform touch-manipulation border-2 border-slate-900">
-                <i data-lucide="plus" class="w-6 h-6 stroke-[3]"></i>
-              </button>
-            </div>
-          `;
+          navHtml += `<div class="w-14 shrink-0" aria-hidden="true"></div>`;
         }
 
         const isActive = (tab.id === active);
-        const activeClass = `${tab.colorClass} font-black scale-105`;
-        const inactiveClass = 'text-slate-400 hover:text-slate-200 font-medium';
+        const activeClass = `${tab.colorClass} font-bold`;
+        const inactiveClass = 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/50 font-medium';
 
         let showLabel = true;
         if (navConfig.labelVisibility === 'none') showLabel = false;
         if (navConfig.labelVisibility === 'active-only' && !isActive) showLabel = false;
 
         navHtml += `
-          <button type="button" onclick="switchAppView('${tab.id}')" class="flex-1 flex flex-col items-center justify-center gap-0.5 py-1 ${isActive ? activeClass : inactiveClass} transition active:scale-95 touch-manipulation min-w-0">
-            <div class="relative flex items-center justify-center">
-              <i data-lucide="${tab.icon}" class="w-4 h-4 shrink-0"></i>
-              ${isActive ? `<span class="absolute -bottom-1 w-1 h-1 rounded-full ${tab.colorClass.replace('text-', 'bg-')} animate-pulse"></span>` : ''}
-            </div>
-            ${showLabel ? `<span class="text-[8px] sm:text-[9px] tracking-tight truncate max-w-[48px] text-center leading-tight mt-0.5">${escapeHtml(tab.label)}</span>` : ''}
+          <button type="button" onclick="switchAppView('${tab.id}')" ${isActive ? 'aria-current="page"' : ''} aria-label="${escapeHtml(tab.label)}" class="flex-1 flex flex-col items-center justify-center gap-0.5 py-1.5 px-0.5 rounded-xl min-w-0 transition touch-manipulation active:scale-95 ${isActive ? 'bg-slate-800/80 ' + activeClass : inactiveClass}">
+            <i data-lucide="${tab.icon}" class="w-[18px] h-[18px] shrink-0"></i>
+            ${showLabel ? `<span class="text-[9px] tracking-tight truncate max-w-[56px] text-center leading-none">${escapeHtml(tab.label)}</span>` : ''}
           </button>
         `;
       });
+
+      // Elevated center action, pinned to the dock's midpoint
+      if (navConfig.hasCenterBtn) {
+        navHtml += `
+          <button type="button" onclick="executeMobileCenterAction()" aria-label="Quick create" title="Quick create" class="absolute left-1/2 -translate-x-1/2 -top-5 w-12 h-12 rounded-full ${activeSectionDef.bgClass} shadow-xl shadow-black/80 flex items-center justify-center active:scale-90 transition-transform touch-manipulation border-[3px] border-slate-950 z-50">
+            <i data-lucide="plus" class="w-6 h-6 stroke-[3]"></i>
+          </button>
+        `;
+      }
 
       navEl.innerHTML = navHtml;
       refreshIcons();
@@ -24557,7 +24574,7 @@ html, body {
 
           if (user) {
             if (emailEl) emailEl.textContent = user.displayName || user.email || 'Google User';
-            if (statusEl) statusEl.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span> Online (Synced)`;
+            if (statusEl) statusEl.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span> Synced · cloud backup`;
             if (statusEl) statusEl.className = 'text-[10px] text-emerald-400 flex items-center gap-1 font-semibold';
             if (loginBtn) loginBtn.classList.add('hidden');
             if (logoutBtn) logoutBtn.classList.remove('hidden');
@@ -24566,7 +24583,7 @@ html, body {
             subscribeToUserFirestore(user.uid);
           } else {
             if (emailEl) emailEl.textContent = 'Offline Guest';
-            if (statusEl) statusEl.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span> Local Storage`;
+            if (statusEl) statusEl.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse"></span> Local only — not synced`;
             if (statusEl) statusEl.className = 'text-[10px] text-amber-400 flex items-center gap-1 font-semibold';
             if (loginBtn) loginBtn.classList.remove('hidden');
             if (logoutBtn) logoutBtn.classList.add('hidden');
