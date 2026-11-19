@@ -492,58 +492,65 @@ body.sidebar-open #pros-mobile-nav {
 
 
     /* Dispatches Contextual Creation Modal */
-    window.executeContextActionFromSidebar = function() {
-      const CAP_ALIASES = { links: 'bookmarks', vehicles: 'vehicle' };
-      const activeId = CAP_ALIASES[window.appState?.currentView] || window.appState?.currentView || 'dashboard';
-      
-      switch (activeId) {
+    /* --------------------------------------------------------------------- */
+    /* CONTEXT-AWARE CREATE — single source of truth for "make a new thing"   */
+    /* Used by the sidebar CTA, the mobile dock (+) and keyboard shortcuts.   */
+    /* --------------------------------------------------------------------- */
+    window.runContextCreate = function(viewId) {
+      const CREATE_ALIASES = {
+        diary: 'logbook', kanban: 'tasks', todo: 'tasks', okrs: 'goals',
+        links: 'bookmarks', vehicles: 'vehicle', studio: 'settings', insights: 'analytics'
+      };
+      const raw = viewId || window.appState?.currentView || 'dashboard';
+      const view = CREATE_ALIASES[raw] || raw;
+      const call = (fn) => { try { if (typeof fn === 'function') { fn(); return true; } } catch (e) { console.warn('context create failed:', e); } return false; };
+
+      switch (view) {
         case 'tasks':
-          if (typeof window.openAddTaskModal === 'function') return window.openAddTaskModal();
-          break;
+          return call(window.openAddTaskModal);
         case 'finance':
-          if (typeof window.openAddTransactionModal === 'function') return window.openAddTransactionModal();
-          break;
+          return call(window.openAddTransactionModal);
         case 'goals':
-          if (typeof window.openCreateGoalModal === 'function') return window.openCreateGoalModal();
-          break;
+          return call(window.openCreateGoalModal);
         case 'notes':
-          if (typeof window.openCreateNoteModal === 'function') return window.openCreateNoteModal();
-          break;
+          return call(window.createNewNote) || call(window.openDedicatedNoteModal);
         case 'logbook':
-          if (typeof window.openLogbookModal === 'function') return window.openLogbookModal();
-          break;
+          return call(window.openLogbookModal);
         case 'habits':
-          if (typeof window.openCreateHabitModal === 'function') return window.openCreateHabitModal();
-          if (typeof window.openAddHabitModal === 'function') return window.openAddHabitModal();
-          break;
+          return call(window.openCreateHabitModal);
         case 'mindmap':
-          if (typeof window.openNodeModal === 'function') return window.openNodeModal(null);
-          break;
+          return call(() => window.openNodeModal(null));
         case 'calendar':
-          if (typeof window.openAddCalendarEventModal === 'function') return window.openAddCalendarEventModal();
-          break;
+          return call(window.openAddCalendarEventModal);
         case 'time':
-          if (typeof window.scrollToTimeForm === 'function') return window.scrollToTimeForm();
-          break;
-        case 'vehicles':
-          if (typeof window.openAddFuelLogModal === 'function') return window.openAddFuelLogModal();
-          break;
+          return call(window.scrollToTimeForm);
         case 'bookmarks':
-        case 'vehicle':
-        case 'links':
-          if (typeof window.openAddLinkModal === 'function') return window.openAddLinkModal();
-          break;
-        case 'focus':
-          if (window.switchTab) window.switchTab('time');
-          if (typeof window.toggleTimerEngine === 'function') return window.toggleTimerEngine();
-          break;
+          return call(window.openAddBookmarkModal);
+        case 'vehicle': {
+          /* Fuel logs are recorded in the finance ledger, so pre-tag the category */
+          const opened = call(window.openAddTransactionModal);
+          if (opened) {
+            try {
+              const sel = document.getElementById('tx-category') || document.querySelector('#add-transaction-form select[name="category"]') || document.querySelector('#add-transaction-modal select');
+              if (sel) {
+                const opt = [...sel.options].find(o => /vehicle|fuel/i.test(o.value) || /vehicle|fuel/i.test(o.textContent));
+                if (opt) { sel.value = opt.value; sel.dispatchEvent(new Event('change', { bubbles: true })); }
+              }
+            } catch (e) {}
+          }
+          return opened;
+        }
         case 'analytics':
-          if (typeof window.exportCompleteBackupJSON === 'function') return window.exportCompleteBackupJSON();
-          break;
+        case 'settings':
+        case 'dashboard':
         default:
-          if (typeof window.openAddTaskModal === 'function') return window.openAddTaskModal();
-          if (typeof window.openAddTransactionModal === 'function') return window.openAddTransactionModal();
+          return call(window.openAddTaskModal) || call(window.openAddTransactionModal);
       }
+    };
+
+    window.executeContextActionFromSidebar = function() {
+      if (window.runContextCreate()) return;
+      if (typeof window.showToast === 'function') window.showToast('Nothing to create in this view', 'info');
     };
 
     /* Live Data Badges Updater */
@@ -1270,16 +1277,14 @@ body.sidebar-open #pros-mobile-nav {
       if (window.switchTab) window.switchTab(targetTab);
 
       setTimeout(() => {
-        if (targetTab === 'calendar' && typeof window.openAddCalendarEventModal === 'function') window.openAddCalendarEventModal();
-        else if (targetTab === 'finance' && typeof window.openAddTransactionModal === 'function') window.openAddTransactionModal();
-        else if (targetTab === 'tasks' && typeof window.openAddTaskModal === 'function') window.openAddTaskModal();
-        else if (targetTab === 'notes' && typeof window.openCreateNoteModal === 'function') window.openCreateNoteModal();
-        else if (targetTab === 'vehicles' && typeof window.openAddFuelLogModal === 'function') window.openAddFuelLogModal();
-        else if (targetTab === 'goals' && typeof window.openCreateGoalModal === 'function') window.openCreateGoalModal();
-        else if (targetTab === 'mindmap' && typeof window.openNodeModal === 'function') window.openNodeModal(null);
-        else if (targetTab === 'links' && typeof window.openAddLinkModal === 'function') window.openAddLinkModal();
-        else if (targetTab === 'focus' && typeof window.toggleTimerEngine === 'function') window.toggleTimerEngine();
-      }, 40);
+        // One router for every module so launchpad shortcuts can't drift
+        if (!window.runContextCreate) return;
+        if (targetTab === 'focus') {
+          if (typeof window.toggleTimerEngine === 'function') window.toggleTimerEngine();
+          return;
+        }
+        window.runContextCreate(targetTab);
+      }, 60);
     };
 
     /* Set Dashboard Period Filter */
@@ -21098,28 +21103,28 @@ body.sidebar-open #pros-mobile-nav {
       </h2>
       <p class="text-xs text-slate-400 mt-0.5">Control global themes, UI density, sound effects, typography, wallpaper backgrounds, and mobile dock styles.</p>
     </div>
-    <div class="flex items-center gap-2 self-end sm:self-auto flex-wrap">
-      <button type="button" onclick="exportThemeConfiguration()" class="px-3 py-1.5 bg-slate-900 border border-slate-800 hover:border-slate-700 text-sky-400 text-xs font-semibold rounded-xl transition flex items-center gap-1.5 active:scale-95">
-        <i data-lucide="download" class="w-3.5 h-3.5"></i>
-        <span>Export Theme</span>
+    <div class="grid grid-cols-3 gap-2 w-full sm:w-auto sm:flex sm:items-center">
+      <button type="button" onclick="exportThemeConfiguration()" title="Export theme as JSON" class="px-2.5 py-2 bg-slate-900 border border-slate-800 hover:border-slate-700 text-sky-400 text-xs font-semibold rounded-xl transition flex items-center justify-center gap-1.5 active:scale-95">
+        <i data-lucide="download" class="w-3.5 h-3.5 shrink-0"></i>
+        <span>Export</span>
       </button>
-      <button type="button" onclick="triggerImportTheme()" class="px-3 py-1.5 bg-slate-900 border border-slate-800 hover:border-slate-700 text-emerald-400 text-xs font-semibold rounded-xl transition flex items-center gap-1.5 active:scale-95">
-        <i data-lucide="upload" class="w-3.5 h-3.5"></i>
+      <button type="button" onclick="triggerImportTheme()" title="Import theme JSON" class="px-2.5 py-2 bg-slate-900 border border-slate-800 hover:border-slate-700 text-emerald-400 text-xs font-semibold rounded-xl transition flex items-center justify-center gap-1.5 active:scale-95">
+        <i data-lucide="upload" class="w-3.5 h-3.5 shrink-0"></i>
         <span>Import</span>
       </button>
       <input type="file" id="theme-import-file" accept=".json" class="hidden" onchange="importThemeConfiguration(event)" />
-      <button type="button" onclick="resetAllCustomizationsToDefault()" class="px-3 py-1.5 bg-slate-900 border border-slate-800 hover:border-slate-700 text-amber-400 text-xs font-semibold rounded-xl transition flex items-center gap-1.5 active:scale-95">
-        <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
-        <span>Reset Defaults</span>
+      <button type="button" onclick="resetAllCustomizationsToDefault()" title="Reset all customizations to defaults" class="px-2.5 py-2 bg-slate-900 border border-slate-800 hover:border-slate-700 text-amber-400 text-xs font-semibold rounded-xl transition flex items-center justify-center gap-1.5 active:scale-95">
+        <i data-lucide="rotate-ccw" class="w-3.5 h-3.5 shrink-0"></i>
+        <span>Reset</span>
       </button>
     </div>
   </div>
 
   <!-- Real-Time Interactive Component Preview Box -->
   <div class="glass-card rounded-2xl p-4 sm:p-5 border border-slate-800 space-y-3 bg-slate-950/70">
-    <div class="flex justify-between items-center text-[10px] font-bold text-slate-400 uppercase tracking-wider">
-      <span class="flex items-center gap-1.5"><i data-lucide="eye" class="w-3.5 h-3.5 text-sky-400"></i> Global UI Preview</span>
-      <span id="preview-active-theme-text" class="font-mono text-emerald-400 truncate max-w-[280px]">Theme: Emerald Neo | Radius: Balanced</span>
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1.5 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+      <span class="flex items-center gap-1.5"><i data-lucide="eye" class="w-3.5 h-3.5 text-sky-400 shrink-0"></i> Global UI Preview</span>
+      <span id="preview-active-theme-text" class="font-mono text-[10px] text-emerald-400 normal-case tracking-normal break-words sm:text-right leading-snug">Theme: Emerald Neo | Radius: Balanced</span>
     </div>
     
     <div class="p-4 rounded-xl bg-slate-900/90 border border-slate-800 grid grid-cols-1 sm:grid-cols-3 gap-3 items-center">
@@ -21162,11 +21167,11 @@ body.sidebar-open #pros-mobile-nav {
 
   <!-- MODULE 1: GLOBAL ACCENT PALETTES & CUSTOM COLOR -->
   <div class="glass-card rounded-2xl p-4 sm:p-5 border border-slate-800 space-y-3.5">
-    <div class="flex justify-between items-center">
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1">
       <h3 class="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-2">
-        <i data-lucide="palette" class="w-4 h-4 text-emerald-400"></i> 1. Global Accent Color Engine
+        <i data-lucide="palette" class="w-4 h-4 text-emerald-400 shrink-0"></i> 1. Global Accent Color Engine
       </h3>
-      <span class="text-[10px] text-slate-400">Syncs charts, badges, highlights &amp; primary buttons</span>
+      <span class="text-[10px] text-slate-400 leading-snug">Syncs charts, badges, highlights &amp; primary buttons</span>
     </div>
     
     <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-2 text-xs font-semibold">
@@ -21320,14 +21325,14 @@ body.sidebar-open #pros-mobile-nav {
 
   <!-- MODULE 4: MOBILE DOCK & PHONE NAVIGATION -->
   <div class="glass-card rounded-2xl p-4 sm:p-5 border border-slate-800 space-y-4">
-    <div class="flex justify-between items-center border-b border-slate-800 pb-2.5">
-      <div>
+    <div class="flex flex-wrap items-start justify-between gap-2 border-b border-slate-800 pb-2.5">
+      <div class="min-w-0">
         <h3 class="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-2">
-          <i data-lucide="smartphone" class="w-4 h-4 text-sky-400"></i> 4. Mobile Bottom Dock Configuration
+          <i data-lucide="smartphone" class="w-4 h-4 text-sky-400 shrink-0"></i> 4. Mobile Bottom Dock Configuration
         </h3>
-        <p class="text-[10px] text-slate-400">Tailor the dock layout when viewing PrOS on phones and touchscreens</p>
+        <p class="text-[10px] text-slate-400 leading-snug">Tailor the dock layout when viewing PrOS on phones and touchscreens</p>
       </div>
-      <span id="selected-tabs-counter" class="text-[11px] font-mono app-accent-badge px-2 py-0.5 rounded-lg border font-bold">4 / 5 Active</span>
+      <span id="selected-tabs-counter" class="shrink-0 text-[11px] font-mono app-accent-badge px-2 py-0.5 rounded-lg border font-bold">6 / 6 Active</span>
     </div>
 
     <!-- Dock Style Selector -->
@@ -21379,7 +21384,7 @@ body.sidebar-open #pros-mobile-nav {
 
     <!-- Active Mobile Tabs Checklist -->
     <div class="space-y-2">
-      <label class="block text-slate-300 font-bold text-xs">Available Sections in Mobile Dock (Max 5)</label>
+      <label class="block text-slate-300 font-bold text-xs">Available Sections in Mobile Dock (Max 6)</label>
       <div id="available-tabs-checklist" class="grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs">
         <!-- Injected dynamically -->
       </div>
@@ -21401,10 +21406,16 @@ body.sidebar-open #pros-mobile-nav {
       <div>
         <label class="block text-slate-400 text-xs font-semibold mb-1">Center Button Action Trigger</label>
         <select id="select-center-action-target" onchange="updateMobileNavPreferences()" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-slate-200 outline-none text-xs font-semibold">
-          <option value="openAddTransactionModal">💰 Log Expense / Financial Entry</option>
-          <option value="openAddTaskModal">✅ Quick Task Creator</option>
-          <option value="openAddNoteModal">📝 Quick Note Creator</option>
+          <option value="auto">✨ Auto — match the current module (recommended)</option>
+          <option value="openAddTaskModal">✅ Quick Task</option>
+          <option value="openAddTransactionModal">💰 Log Expense</option>
+          <option value="createNewNote">📝 Quick Note</option>
+          <option value="openAddBookmarkModal">🔖 Save Link</option>
+          <option value="openLogbookModal">📔 Diary Entry</option>
+          <option value="openCreateHabitModal">🔥 Log Habit</option>
+          <option value="openCreateGoalModal">🎯 New Goal</option>
         </select>
+        <p class="text-[10px] text-slate-500 mt-1 leading-snug">Auto opens the right editor for whatever module you're viewing — Task in Tasks, Expense in Finance, Note in Notes, and so on.</p>
       </div>
     </div>
   </div>
@@ -21833,7 +21844,7 @@ body.sidebar-open #pros-mobile-nav {
 <!-- ========================================================================= -->
 <!-- DYNAMIC MOBILE BOTTOM NAVIGATION DOCK CONTAINER                           -->
 <!-- ========================================================================= -->
-<nav id="pros-mobile-nav" class="sm:hidden fixed z-40 transition-all duration-300"></nav>
+<nav id="pros-mobile-nav" role="navigation" aria-label="Primary" class="sm:hidden fixed z-40 transition-all duration-300"></nav>
 
 <!-- ========================================================================= -->
 <!-- COMPLETE CUSTOMIZATION & THEME LOGIC ENGINE                               -->
@@ -22134,19 +22145,43 @@ body.sidebar-open #pros-mobile-nav {
       soundEffects: false
     };
 
+    /* Normalize stored preferences and run one-time migrations. */
+    function normalizeCustomizationState(pref) {
+      if (!pref || typeof pref !== 'object') pref = {};
+      const base = defaultCustomizationState.mobileNav;
+      if (!pref.mobileNav || typeof pref.mobileNav !== 'object') {
+        pref.mobileNav = JSON.parse(JSON.stringify(base));
+      }
+      const nav = pref.mobileNav;
+      if (!nav.style) nav.style = base.style;
+      if (!nav.labelVisibility) nav.labelVisibility = base.labelVisibility;
+      if (!Array.isArray(nav.visibleTabs) || nav.visibleTabs.length === 0) nav.visibleTabs = base.visibleTabs.slice();
+      if (typeof nav.hasCenterBtn !== 'boolean') nav.hasCenterBtn = base.hasCenterBtn;
+      if (!nav.centerAction) nav.centerAction = 'auto';
+
+      /* Older builds shipped "Log Expense" as the pinned center action, which
+         made (+) open the transaction modal on every module. Migrate once so
+         the button is context-aware again; a deliberate re-pick still sticks. */
+      if (!nav.centerActionMigrated && nav.centerAction === 'openAddTransactionModal') {
+        nav.centerAction = 'auto';
+      }
+      nav.centerActionMigrated = true;
+      return pref;
+    }
+
     function getCustomizationState() {
       if (!window.appState) window.appState = {};
-      if (window.appState.preferences) return window.appState.preferences;
+      if (window.appState.preferences) return normalizeCustomizationState(window.appState.preferences);
 
       try {
         const stored = localStorage.getItem('pros_preferences');
         if (stored) {
-          window.appState.preferences = JSON.parse(stored);
+          window.appState.preferences = normalizeCustomizationState(JSON.parse(stored));
           return window.appState.preferences;
         }
       } catch(e) {}
 
-      window.appState.preferences = JSON.parse(JSON.stringify(defaultCustomizationState));
+      window.appState.preferences = normalizeCustomizationState(JSON.parse(JSON.stringify(defaultCustomizationState)));
       return window.appState.preferences;
     }
 
@@ -22301,10 +22336,15 @@ body.sidebar-open #pros-mobile-nav {
       if (centerToggle) pref.mobileNav.hasCenterBtn = centerToggle.checked;
       if (actionSelect) pref.mobileNav.centerAction = actionSelect.value;
 
-      const checkedTabs = [];
-      document.querySelectorAll('.mobile-tab-checkbox:checked').forEach(cb => {
-        checkedTabs.push(cb.value);
-      });
+      let boxes = [...document.querySelectorAll('.mobile-tab-checkbox')];
+      let checkedTabs = boxes.filter(cb => cb.checked).map(cb => cb.value);
+      if (checkedTabs.length > 6) {
+        const previous = pref.mobileNav.visibleTabs || [];
+        const extra = boxes.find(cb => cb.checked && !previous.includes(cb.value));
+        if (extra) extra.checked = false;
+        checkedTabs = boxes.filter(cb => cb.checked).map(cb => cb.value);
+        if (typeof window.showToast === 'function') window.showToast('The dock fits 6 modules — untick one first', 'info');
+      }
 
       if (checkedTabs.length > 0) {
         pref.mobileNav.visibleTabs = checkedTabs.slice(0, 6);
@@ -22392,13 +22432,13 @@ body.sidebar-open #pros-mobile-nav {
 
       let shellClass = '';
       if (navConfig.style === 'floating-dock') {
-        shellClass = 'bottom-3 left-2.5 right-2.5 bg-slate-900/90 backdrop-blur-2xl border border-slate-800/90 rounded-2xl px-2 py-2 shadow-2xl shadow-black/80 flex items-center justify-between gap-1';
+        shellClass = 'bottom-[max(0.75rem,env(safe-area-inset-bottom))] left-2.5 right-2.5 bg-slate-900/95 backdrop-blur-2xl border border-slate-800/90 rounded-2xl px-2 py-2 shadow-[0_-8px_28px_rgba(0,0,0,0.55)] flex items-center justify-between gap-1';
       } else if (navConfig.style === 'pill-glow') {
-        shellClass = 'bottom-3 left-2.5 right-2.5 bg-slate-950/95 backdrop-blur-xl border border-slate-800 rounded-full px-2.5 py-1.5 shadow-xl flex items-center justify-between gap-1';
+        shellClass = 'bottom-[max(0.75rem,env(safe-area-inset-bottom))] left-2.5 right-2.5 bg-slate-950/95 backdrop-blur-xl border border-slate-800 rounded-full px-2.5 py-1.5 shadow-[0_-8px_28px_rgba(0,0,0,0.55)] flex items-center justify-between gap-1';
       } else if (navConfig.style === 'floating-capsule') {
-        shellClass = 'bottom-4 left-4 right-4 bg-slate-900/95 backdrop-blur-xl border border-slate-700/80 rounded-full px-3 py-2 shadow-2xl flex items-center justify-between gap-1';
+        shellClass = 'bottom-[max(1rem,env(safe-area-inset-bottom))] left-4 right-4 bg-slate-900/95 backdrop-blur-xl border border-slate-700/80 rounded-full px-3 py-2 shadow-[0_-8px_28px_rgba(0,0,0,0.55)] flex items-center justify-between gap-1';
       } else if (navConfig.style === 'split-island') {
-        shellClass = 'bottom-3 left-3 right-3 bg-slate-950/90 backdrop-blur-2xl border border-slate-800/90 rounded-3xl px-2.5 py-2 shadow-2xl flex items-center justify-between gap-1';
+        shellClass = 'bottom-[max(0.75rem,env(safe-area-inset-bottom))] left-3 right-3 bg-slate-950/90 backdrop-blur-2xl border border-slate-800/90 rounded-3xl px-2.5 py-2 shadow-[0_-8px_28px_rgba(0,0,0,0.55)] flex items-center justify-between gap-1';
       } else if (navConfig.style === 'compact-minimal') {
         shellClass = 'bottom-0 left-0 right-0 bg-slate-950/95 border-t border-slate-800/80 px-1.5 py-1 flex items-center justify-around pb-[max(0.35rem,env(safe-area-inset-bottom))]';
       } else {
@@ -22427,9 +22467,9 @@ body.sidebar-open #pros-mobile-nav {
         if (navConfig.labelVisibility === 'active-only' && !isActive) showLabel = false;
 
         navHtml += `
-          <button type="button" onclick="switchAppView('${tab.id}')" ${isActive ? 'aria-current="page"' : ''} aria-label="${escapeHtml(tab.label)}" class="flex-1 flex flex-col items-center justify-center gap-0.5 py-1.5 px-0.5 rounded-xl min-w-0 transition touch-manipulation active:scale-95 ${isActive ? 'bg-slate-800/80 ' + activeClass : inactiveClass}">
+          <button type="button" onclick="switchAppView('${tab.id}')" ${isActive ? 'aria-current="page"' : ''} aria-label="${escapeHtml(tab.label)}" class="flex-1 flex flex-col items-center justify-center gap-0.5 py-1.5 px-0.5 rounded-xl min-w-0 min-h-[44px] transition touch-manipulation active:scale-95 ${isActive ? 'bg-slate-800/80 ' + activeClass : inactiveClass}">
             <i data-lucide="${tab.icon}" class="w-[18px] h-[18px] shrink-0"></i>
-            ${showLabel ? `<span class="text-[9px] tracking-tight truncate max-w-[56px] text-center leading-none">${escapeHtml(tab.label)}</span>` : ''}
+            ${showLabel ? `<span class="text-[10px] tracking-tight truncate max-w-[58px] text-center leading-none">${escapeHtml(tab.label)}</span>` : ''}
           </button>
         `;
       });
@@ -22451,58 +22491,21 @@ body.sidebar-open #pros-mobile-nav {
     window.executeMobileCenterAction = function() {
       triggerHaptic();
       const pref = getCustomizationState();
-      const navConfig = pref.mobileNav || defaultCustomizationState.mobileNav;
+      const navConfig = (pref && pref.mobileNav) || defaultCustomizationState.mobileNav;
       const centerMode = navConfig.centerAction || 'auto';
-      const activeView = window.appState?.currentView || 'dashboard';
 
-      // 1. Explicit Mode Override
+      // 1. Explicit override, only when it resolves to a real handler
       if (centerMode !== 'auto') {
-        if (typeof window[centerMode] === 'function') {
-          window[centerMode]();
+        const handler = window[centerMode];
+        if (typeof handler === 'function') {
+          try { handler(); } catch (e) { console.warn('center action failed:', e); }
           return;
         }
       }
 
-      // 2. Smart Context-Aware Routing based on Active Section
-      switch (activeView) {
-        case 'tasks':
-          if (typeof window.openAddTaskModal === 'function') return window.openAddTaskModal();
-          break;
-        case 'finance':
-          if (typeof window.openAddTransactionModal === 'function') return window.openAddTransactionModal();
-          break;
-        case 'notes':
-          if (typeof window.openCreateNoteModal === 'function') return window.openCreateNoteModal();
-          break;
-        case 'goals':
-          if (typeof window.openCreateGoalModal === 'function') return window.openCreateGoalModal();
-          break;
-        case 'calendar':
-          if (typeof window.openAddCalendarEventModal === 'function') return window.openAddCalendarEventModal();
-          break;
-        case 'habits':
-          if (typeof window.openAddHabitModal === 'function') return window.openAddHabitModal();
-          break;
-        case 'mindmap':
-          if (typeof window.openNodeModal === 'function') return window.openNodeModal(null);
-          break;
-        case 'time':
-          if (typeof window.scrollToTimeForm === 'function') return window.scrollToTimeForm();
-          break;
-        case 'vehicles':
-          if (typeof window.openAddFuelLogModal === 'function') return window.openAddFuelLogModal();
-          break;
-        case 'links':
-          if (typeof window.openAddLinkModal === 'function') return window.openAddLinkModal();
-          break;
-        case 'focus':
-          if (window.switchTab) window.switchTab('time');
-          if (typeof window.toggleTimerEngine === 'function') return window.toggleTimerEngine();
-          break;
-        default:
-          if (typeof window.openAddTaskModal === 'function') return window.openAddTaskModal();
-          if (typeof window.openAddTransactionModal === 'function') return window.openAddTransactionModal();
-      }
+      // 2. Context-aware routing (falls back inside runContextCreate)
+      if (typeof window.runContextCreate === 'function' && window.runContextCreate()) return;
+      if (typeof window.showToast === 'function') window.showToast('Nothing to create in this view', 'info');
     };
 
     /* ------------------------------------------------------------------------- */
