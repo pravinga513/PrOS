@@ -12665,7 +12665,16 @@ body.sidebar-open #pros-mobile-nav {
       if (folderSelect) {
         const curSelected = folderSelect.value;
         folderSelect.innerHTML = '';
+        const notes = window.appState.notes || [];
         folders.forEach(f => {
+          const isNode = f.isNodeFolder || !!f.nodeTag;
+          // Same rule as the sidebar/filter: an auto node folder with no notes
+          // is not offered. The folder already assigned to the open note is
+          // always kept so switching it never silently moves the note.
+          if (isNode && f.id !== 'nf_default' && f.id !== curSelected) {
+            const noteCount = notes.filter(n => n.folderId === f.id).length;
+            if (noteCount === 0) return;
+          }
           const opt = document.createElement('option');
           opt.value = f.id;
           opt.textContent = `${f.isNodeFolder ? '🧠 ' : '📁 '}${f.name}`;
