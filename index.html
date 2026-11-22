@@ -424,31 +424,33 @@ body.sidebar-open #pros-mobile-nav {
 
   <!-- User Session & Cloud Sync Status -->
   <div class="p-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] border-t border-slate-800/80 space-y-1.5 bg-slate-950/60">
-    <div class="flex items-center gap-2 min-w-0 rounded-lg bg-slate-900/50 border border-slate-800/60 px-2 py-1.5">
-      <div class="relative shrink-0">
-        <img id="user-avatar-img" src="https://placehold.co/100x100/1e293b/10b981?text=U" alt="Avatar" class="w-7 h-7 rounded-full border border-slate-700 object-cover" />
-        <span class="absolute -bottom-0.5 -right-0.5 w-2 h-2 rounded-full bg-amber-400 ring-1.5 ring-slate-950"></span>
-      </div>
-      <div class="min-w-0 flex-1">
-        <p id="user-display-email" class="text-[11px] font-bold text-slate-100 truncate leading-tight">Offline Guest</p>
-        <p id="sync-status-indicator" class="text-[9px] text-amber-400 flex items-center gap-1 font-medium truncate">
-          <span class="w-1 h-1 rounded-full bg-amber-400 animate-pulse shrink-0"></span> Local only
-        </p>
-      </div>
-    </div>
-
-    <!-- Subscription Status in Sidebar -->
+    <!-- Combined: Avatar + Email/Sync + Subscription Status -->
     <button type="button" id="sidebar-subscription-status" onclick="window.showUpgradeModal ? window.showUpgradeModal() : {}" class="w-full px-2 py-1.5 rounded-lg border border-slate-700/50 bg-slate-900/50 transition flex items-center justify-between gap-2 hover:bg-slate-900/80 hover:border-emerald-500/30 active:scale-[0.98]" title="Click to view/upgrade subscription">
-      <div class="flex items-center gap-1.5 min-w-0 flex-1">
-        <div id="sidebar-sub-icon" class="w-6 h-6 rounded-lg flex items-center justify-center shrink-0 bg-slate-800 text-slate-400 border border-slate-700">
-          <i data-lucide="user" class="w-3.5 h-3.5"></i>
+      <div class="flex items-center gap-2 min-w-0 flex-1">
+        <!-- Avatar -->
+        <div class="relative shrink-0">
+          <img id="user-avatar-img" src="https://placehold.co/100x100/1e293b/10b981?text=U" alt="Avatar" class="w-7 h-7 rounded-full border border-slate-700 object-cover" />
+          <span id="user-status-dot" class="absolute -bottom-0.5 -right-0.5 w-2 h-2 rounded-full bg-amber-400 ring-1.5 ring-slate-950"></span>
         </div>
-        <div class="min-w-0">
-          <p id="sidebar-sub-label" class="text-[11px] font-bold text-slate-100 truncate">Free Plan</p>
-          <p id="sidebar-sub-detail" class="text-[9px] text-slate-500 truncate">Limited · Tap to upgrade</p>
+        <!-- Email + Sync status -->
+        <div class="min-w-0 flex-1">
+          <p id="user-display-email" class="text-[11px] font-bold text-slate-100 truncate leading-tight">Offline Guest</p>
+          <p id="sync-status-indicator" class="text-[9px] text-amber-400 flex items-center gap-1 font-medium truncate">
+            <span class="w-1 h-1 rounded-full bg-amber-400 animate-pulse shrink-0"></span> Local only
+          </p>
+        </div>
+        <!-- Subscription badge (compact) -->
+        <div id="sidebar-sub-badge" class="flex items-center gap-1.5 shrink-0 ml-1">
+          <div id="sidebar-sub-icon" class="w-5 h-5 rounded-lg flex items-center justify-center shrink-0 bg-slate-800 text-slate-400 border border-slate-700">
+            <i data-lucide="user" class="w-3 h-3"></i>
+          </div>
+          <div class="hidden sm:block min-w-0 text-right">
+            <p id="sidebar-sub-label" class="text-[10px] font-bold text-slate-100 truncate">Free Plan</p>
+            <p id="sidebar-sub-detail" class="text-[8px] text-slate-500 truncate">Limited · Tap to upgrade</p>
+          </div>
         </div>
       </div>
-      <i data-lucide="chevron-right" class="w-3 h-3 text-slate-500 shrink-0"></i>
+      <i data-lucide="chevron-right" class="w-3 h-3 text-slate-500 shrink-0 ml-2"></i>
     </button>
 
     <div class="flex gap-1">
@@ -25388,35 +25390,39 @@ body.sidebar-open #pros-mobile-nav {
         }
       }
 
-      // Update sidebar subscription indicator
+      // Update sidebar subscription indicator (compact combined row)
       const sideIcon = document.getElementById('sidebar-sub-icon');
       const sideLabel = document.getElementById('sidebar-sub-label');
       const sideDetail = document.getElementById('sidebar-sub-detail');
       const sideBtn = document.getElementById('sidebar-subscription-status');
+      const statusDot = document.getElementById('user-status-dot');
       if (sideIcon && sideLabel && sideDetail && sideBtn) {
         if (pro) {
           if (subData.isLifetime || subData.plan === 'lifetime') {
-            sideIcon.className = 'w-6 h-6 rounded-lg flex items-center justify-center shrink-0 bg-amber-500/10 text-amber-400 border border-amber-500/30';
-            sideIcon.innerHTML = '<i data-lucide="gem" class="w-3.5 h-3.5"></i>';
+            sideIcon.className = 'w-5 h-5 rounded-lg flex items-center justify-center shrink-0 bg-amber-500/10 text-amber-400 border border-amber-500/30';
+            sideIcon.innerHTML = '<i data-lucide="gem" class="w-3 h-3"></i>';
             sideLabel.textContent = 'Lifetime';
-            sideDetail.textContent = 'One-time · Unlimited forever';
+            sideDetail.textContent = 'Unlimited forever';
+            if (statusDot) statusDot.className = 'absolute -bottom-0.5 -right-0.5 w-2 h-2 rounded-full bg-amber-400 ring-1.5 ring-slate-950';
           } else {
-            sideIcon.className = 'w-6 h-6 rounded-lg flex items-center justify-center shrink-0 bg-emerald-500/10 text-emerald-400 border border-emerald-500/30';
-            sideIcon.innerHTML = '<i data-lucide="crown" class="w-3.5 h-3.5"></i>';
+            sideIcon.className = 'w-5 h-5 rounded-lg flex items-center justify-center shrink-0 bg-emerald-500/10 text-emerald-400 border border-emerald-500/30';
+            sideIcon.innerHTML = '<i data-lucide="crown" class="w-3 h-3"></i>';
             let planText = String(subData.plan || subData.planId || 'pro').replace(/_/g, ' ').toUpperCase();
             sideLabel.textContent = planText;
             if (subData.renewsAt) {
               const d = subData.renewsAt?.toDate ? subData.renewsAt.toDate() : new Date(subData.renewsAt);
-              sideDetail.textContent = `Renews ${d.toLocaleDateString()} · Unlimited`;
+              sideDetail.textContent = `Renews ${d.toLocaleDateString()}`;
             } else {
-              sideDetail.textContent = 'Unlimited access unlocked';
+              sideDetail.textContent = 'Unlimited';
             }
+            if (statusDot) statusDot.className = 'absolute -bottom-0.5 -right-0.5 w-2 h-2 rounded-full bg-emerald-400 ring-1.5 ring-slate-950';
           }
         } else {
-          sideIcon.className = 'w-6 h-6 rounded-lg flex items-center justify-center shrink-0 bg-slate-800 text-slate-400 border border-slate-700';
-          sideIcon.innerHTML = '<i data-lucide="user" class="w-3.5 h-3.5"></i>';
+          sideIcon.className = 'w-5 h-5 rounded-lg flex items-center justify-center shrink-0 bg-slate-800 text-slate-400 border border-slate-700';
+          sideIcon.innerHTML = '<i data-lucide="user" class="w-3 h-3"></i>';
           sideLabel.textContent = 'Free Plan';
           sideDetail.textContent = 'Limited · Tap to upgrade';
+          if (statusDot) statusDot.className = 'absolute -bottom-0.5 -right-0.5 w-2 h-2 rounded-full bg-amber-400 ring-1.5 ring-slate-950';
         }
         if (window.lucide) window.lucide.createIcons({ root: sideBtn });
       }
@@ -25440,110 +25446,103 @@ body.sidebar-open #pros-mobile-nav {
 
       const modalDiv = document.createElement('div');
       modalDiv.id = 'upgrade-modal';
-      modalDiv.className = 'fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm';
+      modalDiv.className = 'fixed inset-0 z-50 flex items-center justify-center p-3 bg-black/70 backdrop-blur-sm';
       modalDiv.innerHTML = `
-        <div class="glass-card rounded-2xl w-full max-w-md border border-slate-700/50 overflow-hidden animate-modal-in" style="max-height: 90vh; overflow-y: auto;">
+        <div class="glass-card rounded-2xl w-full max-w-sm border border-slate-700/50 overflow-hidden animate-modal-in shadow-2xl">
           <!-- Header with gradient -->
-          <div class="relative px-5 py-4 bg-gradient-to-r from-emerald-500/10 via-sky-500/10 to-amber-500/10 border-b border-slate-700/50">
-            <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-from)_0%,_transparent_70%)] opacity-30"></div>
-            <button onclick="document.getElementById('upgrade-modal').remove()" class="absolute right-3 top-3 w-7 h-7 rounded-lg bg-slate-900/50 hover:bg-slate-900/80 border border-slate-700/50 text-slate-400 hover:text-slate-200 transition flex items-center justify-center" aria-label="Close">
-              <i data-lucide="x" class="w-4 h-4"></i>
-            </button>
-            <div class="relative text-center">
-              <div class="w-14 h-14 mx-auto mb-3 rounded-2xl bg-gradient-to-tr from-emerald-500 via-sky-500 to-amber-500 flex items-center justify-center shadow-lg shadow-emerald-500/20">
-                <i data-lucide="crown" class="w-7 h-7 text-slate-950"></i>
+          <div class="relative px-4 py-3 bg-gradient-to-r from-emerald-500/10 via-sky-500/10 to-amber-500/10 border-b border-slate-700/50 flex items-center justify-between">
+            <div class="flex items-center gap-2.5 min-w-0">
+              <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-emerald-500 via-sky-500 to-amber-500 flex items-center justify-center shrink-0 shadow-md">
+                <i data-lucide="crown" class="w-4 h-4 text-slate-950"></i>
               </div>
-              <h3 class="text-xl font-black text-white tracking-tight">Upgrade to PrOS Pro</h3>
-              <p class="text-[11px] text-slate-400 mt-1">Unlock everything — no limits, forever</p>
+              <div class="min-w-0">
+                <h3 class="text-base font-black text-white tracking-tight leading-tight">Upgrade to PrOS Pro</h3>
+                <p class="text-[10px] text-slate-400">Unlock all features — no limits</p>
+              </div>
             </div>
+            <button onclick="document.getElementById('upgrade-modal').remove()" class="w-6 h-6 rounded-lg bg-slate-900/50 hover:bg-slate-900/80 border border-slate-700/50 text-slate-400 hover:text-slate-200 transition flex items-center justify-center shrink-0" aria-label="Close">
+              <i data-lucide="x" class="w-3.5 h-3.5"></i>
+            </button>
           </div>
 
           <!-- Free Trial Banner -->
-          <div class="px-5 py-3 bg-emerald-500/10 border-b border-emerald-500/20 relative">
-            <div class="flex items-center gap-2.5">
-              <div class="w-6 h-6 rounded-lg bg-emerald-500/20 flex items-center justify-center shrink-0">
-                <i data-lucide="gift" class="w-3.5 h-3.5 text-emerald-400"></i>
-              </div>
-              <div class="flex-1 min-w-0">
-                <p class="text-[11px] font-bold text-emerald-300">🎁 7-Day Free Trial on Monthly & Yearly plans</p>
-                <p class="text-[10px] text-emerald-500/80 mt-0.5">Cancel anytime. No charge if you cancel within 7 days.</p>
-              </div>
-              <span class="text-[9px] px-2 py-1 rounded-full bg-emerald-500/20 text-emerald-300 font-mono font-bold border border-emerald-500/30 shrink-0">TRIAL</span>
+          <div class="px-3.5 py-2 bg-emerald-500/10 border-b border-emerald-500/20 flex items-center justify-between gap-2">
+            <div class="flex items-center gap-1.5 min-w-0">
+              <i data-lucide="gift" class="w-3.5 h-3.5 text-emerald-400 shrink-0"></i>
+              <span class="text-[10px] font-bold text-emerald-300 truncate">7-Day Free Trial on Monthly & Yearly</span>
             </div>
+            <span class="text-[8px] px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-mono font-bold border border-emerald-500/30 shrink-0">TRIAL</span>
           </div>
 
-          <!-- Message -->
-          ${message ? `<div class="px-5 py-3 bg-slate-900/50 border-b border-slate-700/50"><p class="text-[11px] text-slate-300 text-center">${message}</p></div>` : ''}
+          <!-- Message (optional) -->
+          ${message ? `<div class="px-3.5 py-1.5 bg-slate-900/40 border-b border-slate-700/30"><p class="text-[10px] text-slate-300 truncate text-center">${message}</p></div>` : ''}
 
           <!-- Plans -->
-          <div class="p-4 space-y-3">
+          <div class="p-3 space-y-2">
             <!-- Monthly -->
-            <button onclick="window.openRazorpayCheckout('pro_monthly')" class="w-full group relative p-4 rounded-xl bg-slate-900/60 border border-slate-700/50 hover:border-emerald-500/30 hover:bg-emerald-500/5 transition-all duration-200 active:scale-[0.98] flex items-center gap-3">
-              <div class="w-10 h-10 rounded-xl bg-emerald-500/10 group-hover:bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center shrink-0 transition-colors">
-                <i data-lucide="calendar" class="w-5 h-5 text-emerald-400"></i>
+            <button onclick="window.openRazorpayCheckout('pro_monthly')" class="w-full group p-2.5 rounded-xl bg-slate-900/60 border border-slate-700/50 hover:border-emerald-500/30 hover:bg-emerald-500/5 transition-all duration-150 active:scale-[0.98] flex items-center justify-between gap-2">
+              <div class="flex items-center gap-2 min-w-0">
+                <div class="w-7 h-7 rounded-lg bg-emerald-500/10 group-hover:bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center shrink-0">
+                  <i data-lucide="calendar" class="w-3.5 h-3.5 text-emerald-400"></i>
+                </div>
+                <div class="text-left min-w-0">
+                  <p class="text-xs font-bold text-white leading-tight">Monthly</p>
+                  <p class="text-[9px] text-slate-400">Cancel anytime</p>
+                </div>
               </div>
-              <div class="flex-1 min-w-0 text-left">
-                <p class="text-sm font-bold text-white">Monthly</p>
-                <p class="text-[10px] text-slate-400">Billed monthly, cancel anytime</p>
-              </div>
-              <div class="text-right shrink-0">
-                <p class="text-lg font-black text-emerald-400">₹49<span class="text-[10px] font-normal text-slate-500">/mo</span></p>
-                <span class="text-[9px] px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-bold border border-emerald-500/30">7-day trial</span>
+              <div class="text-right shrink-0 flex items-center gap-1.5">
+                <span class="text-[8px] px-1 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-bold border border-emerald-500/30">7-day trial</span>
+                <p class="text-sm font-black text-emerald-400">₹49<span class="text-[9px] font-normal text-slate-500">/mo</span></p>
               </div>
             </button>
 
             <!-- Yearly - Recommended -->
-            <button onclick="window.openRazorpayCheckout('pro_yearly')" class="w-full group relative p-4 rounded-xl bg-gradient-to-r from-sky-500/10 to-emerald-500/10 border border-sky-500/30 hover:border-sky-400/50 hover:bg-gradient-to-r hover:from-sky-500/15 hover:to-emerald-500/15 transition-all duration-200 active:scale-[0.98] flex items-center gap-3 ring-1 ring-sky-500/20">
-              <div class="absolute -top-2 -right-2 w-5 h-5 rounded-full bg-sky-500 flex items-center justify-center">
-                <i data-lucide="star" class="w-3 h-3 text-slate-950"></i>
+            <button onclick="window.openRazorpayCheckout('pro_yearly')" class="w-full group relative p-2.5 rounded-xl bg-gradient-to-r from-sky-500/10 to-emerald-500/10 border border-sky-500/30 hover:border-sky-400/50 transition-all duration-150 active:scale-[0.98] flex items-center justify-between gap-2 ring-1 ring-sky-500/20">
+              <div class="flex items-center gap-2 min-w-0">
+                <div class="w-7 h-7 rounded-lg bg-sky-500/10 group-hover:bg-sky-500/20 border border-sky-500/30 flex items-center justify-center shrink-0">
+                  <i data-lucide="calendar-days" class="w-3.5 h-3.5 text-sky-400"></i>
+                </div>
+                <div class="text-left min-w-0">
+                  <p class="text-xs font-bold text-white leading-tight">Yearly <span class="text-[8px] px-1 rounded bg-sky-500/20 text-sky-300 font-bold border border-sky-500/30">SAVE 15%</span></p>
+                  <p class="text-[9px] text-slate-400">Billed yearly</p>
+                </div>
               </div>
-              <div class="w-10 h-10 rounded-xl bg-sky-500/10 group-hover:bg-sky-500/20 border border-sky-500/30 flex items-center justify-center shrink-0 transition-colors">
-                <i data-lucide="calendar-days" class="w-5 h-5 text-sky-400"></i>
-              </div>
-              <div class="flex-1 min-w-0 text-left">
-                <p class="text-sm font-bold text-white">Yearly <span class="text-[9px] px-1.5 py-0.5 rounded bg-sky-500/20 text-sky-300 font-bold border border-sky-500/30 ml-1.5">BEST VALUE</span></p>
-                <p class="text-[10px] text-slate-400">Billed yearly, save 15%</p>
-              </div>
-              <div class="text-right shrink-0">
-                <p class="text-lg font-black text-sky-400">₹499<span class="text-[10px] font-normal text-slate-500">/yr</span></p>
-                <span class="text-[9px] px-1.5 py-0.5 rounded bg-sky-500/20 text-sky-300 font-bold border border-sky-500/30">7-day trial</span>
+              <div class="text-right shrink-0 flex items-center gap-1.5">
+                <span class="text-[8px] px-1 py-0.5 rounded bg-sky-500/20 text-sky-300 font-bold border border-sky-500/30">7-day trial</span>
+                <p class="text-sm font-black text-sky-400">₹499<span class="text-[9px] font-normal text-slate-500">/yr</span></p>
               </div>
             </button>
 
             <!-- Lifetime -->
-            <button onclick="window.openRazorpayCheckout('lifetime')" class="w-full group relative p-4 rounded-xl bg-slate-900/60 border border-slate-700/50 hover:border-amber-500/30 hover:bg-amber-500/5 transition-all duration-200 active:scale-[0.98] flex items-center gap-3">
-              <div class="w-10 h-10 rounded-xl bg-amber-500/10 group-hover:bg-amber-500/20 border border-amber-500/30 flex items-center justify-center shrink-0 transition-colors">
-                <i data-lucide="gem" class="w-5 h-5 text-amber-400"></i>
-              </div>
-              <div class="flex-1 min-w-0 text-left">
-                <p class="text-sm font-bold text-white">Lifetime</p>
-                <p class="text-[10px] text-slate-400">One payment, yours forever</p>
+            <button onclick="window.openRazorpayCheckout('lifetime')" class="w-full group p-2.5 rounded-xl bg-slate-900/60 border border-slate-700/50 hover:border-amber-500/30 hover:bg-amber-500/5 transition-all duration-150 active:scale-[0.98] flex items-center justify-between gap-2">
+              <div class="flex items-center gap-2 min-w-0">
+                <div class="w-7 h-7 rounded-lg bg-amber-500/10 group-hover:bg-amber-500/20 border border-amber-500/30 flex items-center justify-center shrink-0">
+                  <i data-lucide="gem" class="w-3.5 h-3.5 text-amber-400"></i>
+                </div>
+                <div class="text-left min-w-0">
+                  <p class="text-xs font-bold text-white leading-tight">Lifetime</p>
+                  <p class="text-[9px] text-slate-400">One payment, forever</p>
+                </div>
               </div>
               <div class="text-right shrink-0">
-                <p class="text-lg font-black text-amber-400">₹2,499</p>
-                <span class="text-[9px] px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 font-bold border border-amber-500/30">No trial</span>
+                <p class="text-sm font-black text-amber-400">₹2,499</p>
               </div>
             </button>
           </div>
 
-          <!-- Features list -->
-          <div class="px-5 py-3 border-t border-slate-700/50 bg-slate-900/30">
-            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">What you unlock</p>
-            <div class="grid grid-cols-2 gap-2 text-[10px]">
-              <div class="flex items-center gap-1.5 text-slate-300"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-400 shrink-0"></i>Unlimited Tasks, Goals, Habits, Notes</div>
-              <div class="flex items-center gap-1.5 text-slate-300"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-400 shrink-0"></i>Advanced Analytics & Insights</div>
-              <div class="flex items-center gap-1.5 text-slate-300"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-400 shrink-0"></i>Custom Themes & Icons</div>
-              <div class="flex items-center gap-1.5 text-slate-300"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-400 shrink-0"></i>Priority Cloud Sync</div>
-              <div class="flex items-center gap-1.5 text-slate-300"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-400 shrink-0"></i>Data Export & Backup</div>
-              <div class="flex items-center gap-1.5 text-slate-300"><i data-lucide="check" class="w-3.5 h-3.5 text-emerald-400 shrink-0"></i>No Ads, Ever</div>
+          <!-- Features list (compact 2-col) -->
+          <div class="px-3.5 py-2 border-t border-slate-700/40 bg-slate-900/20">
+            <div class="grid grid-cols-2 gap-x-2 gap-y-1 text-[9px]">
+              <div class="flex items-center gap-1 text-slate-300"><i data-lucide="check" class="w-3 h-3 text-emerald-400 shrink-0"></i>Unlimited Tasks & Notes</div>
+              <div class="flex items-center gap-1 text-slate-300"><i data-lucide="check" class="w-3 h-3 text-emerald-400 shrink-0"></i>Advanced Analytics</div>
+              <div class="flex items-center gap-1 text-slate-300"><i data-lucide="check" class="w-3 h-3 text-emerald-400 shrink-0"></i>Custom Themes</div>
+              <div class="flex items-center gap-1 text-slate-300"><i data-lucide="check" class="w-3 h-3 text-emerald-400 shrink-0"></i>Priority Cloud Sync</div>
             </div>
           </div>
 
-          <!-- Maybe later -->
-          <div class="px-5 pb-5">
-            <button onclick="document.getElementById('upgrade-modal').remove()" class="w-full py-2.5 rounded-lg text-[11px] font-medium text-slate-500 hover:text-slate-300 hover:bg-slate-900/50 transition flex items-center justify-center gap-1.5">
-              <i data-lucide="x" class="w-3.5 h-3.5"></i> Maybe later
-            </button>
+          <!-- Footer button -->
+          <div class="px-3 py-2 border-t border-slate-700/30 text-center">
+            <button onclick="document.getElementById('upgrade-modal').remove()" class="text-[10px] font-medium text-slate-500 hover:text-slate-300 transition">Maybe later</button>
           </div>
         </div>
       `;
