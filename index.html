@@ -437,6 +437,20 @@ body.sidebar-open #pros-mobile-nav {
       </div>
     </div>
 
+    <!-- Subscription Status in Sidebar -->
+    <button type="button" id="sidebar-subscription-status" onclick="window.showUpgradeModal ? window.showUpgradeModal() : {}" class="w-full px-2.5 py-2 rounded-xl border transition flex items-center justify-between gap-2 hover:shadow-lg active:scale-[0.98]" title="Click to view/upgrade subscription">
+      <div class="flex items-center gap-2 min-w-0 flex-1">
+        <div id="sidebar-sub-icon" class="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
+          <i data-lucide="crown" class="w-4 h-4"></i>
+        </div>
+        <div class="min-w-0">
+          <p id="sidebar-sub-label" class="text-xs font-bold text-slate-100 truncate">Free Plan</p>
+          <p id="sidebar-sub-detail" class="text-[10px] text-slate-500 truncate">Limited · Upgrade for unlimited</p>
+        </div>
+      </div>
+      <i data-lucide="chevron-right" class="w-3.5 h-3.5 text-slate-500 shrink-0"></i>
+    </button>
+
     <div class="flex gap-1.5">
       <button type="button" id="btn-google-login" onclick="if(typeof googleSignIn === 'function') googleSignIn()" class="flex-1 h-8 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 rounded-xl text-[11px] font-bold text-emerald-300 transition flex items-center justify-center gap-1.5 active:scale-[0.98] shadow-sm">
         <i data-lucide="log-in" class="w-3.5 h-3.5"></i> Sign in to sync
@@ -25296,11 +25310,11 @@ body.sidebar-open #pros-mobile-nav {
        FREE TIER LIMITS & PRO FEATURE GATING
        ================================================================= */
     const FREE_LIMITS = {
-      tasks: 50,
-      goals: 10,
-      habits: 10,
-      notes: 50,
-      bookmarks: 50
+      tasks: 200,
+      goals: 50,
+      habits: 25,
+      notes: 200,
+      bookmarks: 200
     };
 
     window.checkFreeLimit = function(module, currentCount) {
@@ -25373,6 +25387,40 @@ body.sidebar-open #pros-mobile-nav {
           details.textContent = 'Upgrade to PrOS Pro for unlimited access';
         }
       }
+
+      // Update sidebar subscription indicator
+      const sideIcon = document.getElementById('sidebar-sub-icon');
+      const sideLabel = document.getElementById('sidebar-sub-label');
+      const sideDetail = document.getElementById('sidebar-sub-detail');
+      const sideBtn = document.getElementById('sidebar-subscription-status');
+      if (sideIcon && sideLabel && sideDetail && sideBtn) {
+        if (pro) {
+          if (subData.isLifetime || subData.plan === 'lifetime') {
+            sideIcon.className = 'w-7 h-7 rounded-lg flex items-center justify-center shrink-0 bg-amber-500/10 text-amber-400 border border-amber-500/30';
+            sideIcon.innerHTML = '<i data-lucide="gem" class="w-4 h-4"></i>';
+            sideLabel.textContent = 'Lifetime';
+            sideDetail.textContent = 'One-time · Unlimited forever';
+          } else {
+            sideIcon.className = 'w-7 h-7 rounded-lg flex items-center justify-center shrink-0 bg-emerald-500/10 text-emerald-400 border border-emerald-500/30';
+            sideIcon.innerHTML = '<i data-lucide="crown" class="w-4 h-4"></i>';
+            let planText = String(subData.plan || subData.planId || 'pro').replace(/_/g, ' ').toUpperCase();
+            sideLabel.textContent = planText;
+            if (subData.renewsAt) {
+              const d = subData.renewsAt?.toDate ? subData.renewsAt.toDate() : new Date(subData.renewsAt);
+              sideDetail.textContent = `Renews ${d.toLocaleDateString()} · Unlimited`;
+            } else {
+              sideDetail.textContent = 'Unlimited access unlocked';
+            }
+          }
+        } else {
+          sideIcon.className = 'w-7 h-7 rounded-lg flex items-center justify-center shrink-0 bg-slate-800 text-slate-400 border border-slate-700';
+          sideIcon.innerHTML = '<i data-lucide="user" class="w-4 h-4"></i>';
+          sideLabel.textContent = 'Free Plan';
+          sideDetail.textContent = 'Limited · Upgrade for unlimited';
+        }
+        if (window.lucide) window.lucide.createIcons({ root: sideBtn });
+      }
+
       window.refreshPremiumUI();
     };
 
