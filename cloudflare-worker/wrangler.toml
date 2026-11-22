@@ -1,0 +1,14 @@
+name = "pros-payment-worker"
+main = "src/index.js"
+compatibility_date = "2024-05-01"
+
+# Public plan configuration (safe to expose — prices are shown in the UI anyway)
+[vars]
+PLANS_JSON = '{"pro_monthly":{"id":"pro_monthly","amount":4900,"interval":"monthly","name":"Pro Monthly"},"pro_yearly":{"id":"pro_yearly","amount":49900,"interval":"yearly","name":"Pro Yearly"},"lifetime":{"id":"lifetime","amount":249900,"interval":"lifetime","name":"Lifetime"}}'
+
+# Secrets (set with: npx wrangler secret put <NAME>)
+# - FIREBASE_PROJECT_ID
+# - FIRESTORE_SERVICE_ACCOUNT
+# - RAZORPAY_KEY_ID
+# - RAZORPAY_KEY_SECRET
+# - RAZORPAY_WEBHOOK_SECRET

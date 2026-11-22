@@ -1,0 +1,14 @@
+{
+  "name": "pros-payment-worker",
+  "version": "2.0.0",
+  "description": "Cloudflare Worker for free Razorpay payment processing for PrOS (no Node dependencies)",
+  "main": "src/index.js",
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy"
+  },
+  "devDependencies": {
+    "wrangler": "^3.27.0"
+  }
+}
