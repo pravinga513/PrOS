@@ -5486,7 +5486,6 @@ body.sidebar-open #pros-mobile-nav {
     try { tasksScopeAll = window.localStorage.getItem('pros_tasks_scope_all') === '1'; } catch (e) {}
     window.setTaskScopeAll = function(val) { tasksScopeAll = !!val; };
     let draggedTaskId = null;
-    let isFirebaseListenerAttached = false;
     let modalTempSubtasks = [];
 
     function escapeHtml(str) {
@@ -5730,34 +5729,8 @@ body.sidebar-open #pros-mobile-nav {
       });
     };
 
-    /* Auto-Connect Firebase Firestore Realtime Sync */
-    function attachFirebaseAutoSync() {
-      if (isFirebaseListenerAttached) return;
-      if (!window.db || !window.auth) return;
-
-      window.auth.onAuthStateChanged(user => {
-        if (!user) return;
-        isFirebaseListenerAttached = true;
-
-        window.db.collection('users').doc(user.uid).onSnapshot(doc => {
-          if (!doc.exists) return;
-          const data = doc.data() || {};
-          
-          if (Array.isArray(data.tasks)) window.appState.tasks = data.tasks;
-          if (Array.isArray(data.taskLists)) window.appState.taskLists = data.taskLists;
-          if (Array.isArray(data.goals)) window.appState.goals = data.goals;
-          if (Array.isArray(data.mindmapNodes)) window.appState.mindmapNodes = data.mindmapNodes;
-
-          window.syncGoalAndNodeFolders();
-          updateTaskMetrics();
-          window.renderTodoListsNav();
-          window.renderTodoItems();
-          if (window.appState.taskViewMode === 'kanban') window.renderKanbanBoard();
-        }, err => {
-          console.warn('Firebase sync listener warning:', err);
-        });
-      });
-    }
+    /* Cloud sync lives in the Firebase engine at the bottom of the page; the
+       old v8-compat realtime listener that used to live here was dead code. */
 
     function ensureTasksInitialized() {
       if (!window.appState) window.appState = {};
@@ -7326,7 +7299,6 @@ body.sidebar-open #pros-mobile-nav {
 
     // Auto-boot on load
     ensureTasksInitialized();
-    attachFirebaseAutoSync();
     window.renderTodoListsNav();
     window.renderTodoItems();
   })();
@@ -21616,6 +21588,19 @@ body.sidebar-open #pros-mobile-nav {
       if (el) el.textContent = msg || '';
     }
 
+    /* The cloud write is debounced now, so a reload right after seeding could
+       race it. Flush first (capped so an offline user is never stuck). */
+    function reloadAfterCloudFlush(message) {
+      const flush = (typeof window.flushCloudData === 'function')
+        ? Promise.resolve(window.flushCloudData()).catch(() => {})
+        : Promise.resolve();
+      const cap = new Promise(r => setTimeout(r, 2500));
+      Promise.race([flush, cap]).then(() => {
+        setDemoStatus(message);
+        setTimeout(() => location.reload(), 400);
+      });
+    }
+
     window.loadDemoData = function() {
       const S = window.appState;
       if (!S) return;
@@ -21872,10 +21857,7 @@ body.sidebar-open #pros-mobile-nav {
         });
       }
 
-      persistAll().then(() => {
-        setDemoStatus(added + ' demo records loaded — reloading...');
-        setTimeout(() => location.reload(), 400);
-      });
+      persistAll().then(() => reloadAfterCloudFlush(added + ' demo records loaded — reloading...'));
     };
 
     window.clearDemoData = function() {
@@ -21911,10 +21893,7 @@ body.sidebar-open #pros-mobile-nav {
       S.noteFolders = (S.noteFolders || []).filter(f =>
         (S.mindmapNodes || []).some(n => n.id === f.nodeId) || !f.isNodeFolder);
 
-      persistAll().then(() => {
-        setDemoStatus(removed + ' demo records removed — reloading...');
-        setTimeout(() => location.reload(), 400);
-      });
+      persistAll().then(() => reloadAfterCloudFlush(removed + ' demo records removed — reloading...'));
     };
 
     /* Show how many demo records exist */
@@ -24568,7 +24547,10 @@ body.sidebar-open #pros-mobile-nav {
 
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
     import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-    import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+    import {
+      getFirestore, initializeFirestore, persistentLocalCache, persistentMultipleTabManager,
+      doc, getDoc, writeBatch
+    } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
     const myFirebaseConfig = {
       apiKey: "AIzaSyDm4Bk028dnveRhn748cPrYS0OYkIbigA8",
@@ -24582,7 +24564,353 @@ body.sidebar-open #pros-mobile-nav {
 
     let app, auth, db;
     let currentUser = null;
-    let firestoreUnsubscribe = null;
+
+    /* ==================================================================== */
+    /* CLOUD SYNC ENGINE — tuned for the Firestore Spark (free) tier        */
+    /*                                                                      */
+    /* Previous behaviour: every single edit rewrote ONE document holding    */
+    /* the entire database (~360 KB with 100 records per module) and an      */
+    /* onSnapshot listener pulled a copy back on every write. On Spark that  */
+    /* meant 1 write + 1 read of a 360 KB payload per tap, against a hard     */
+    /* 1 MiB per-document ceiling — the thing that "hits limits instantly".  */
+    /*                                                                      */
+    /* Now:                                                                  */
+    /*  • state is split into 7 modules; only the touched module is written  */
+    /*    (10–85 KB instead of 360 KB)                                       */
+    /*  • small accounts keep everything inline in one `main` document, so   */
+    /*    sign-in still costs exactly 1 read                                 */
+    /*  • a module larger than 48 KB moves to its own document (1 extra      */
+    /*    read only for heavy accounts, never near the 1 MiB ceiling)        */
+    /*  • writes are debounced, coalesced, content-hashed (no no-op writes), */
+    /*    single-flight, rate-limited to ~1/s and exponential-backoff'd     */
+    /*  • no realtime listener: cloud is read on sign-in and when the tab    */
+    /*    regains focus, so reads stay at ~1 per session instead of 1/action */
+    /* ==================================================================== */
+
+    const CLOUD_SCHEMA = 2;
+    const CLOUD_COLLECTION = 'commandhub_data';
+
+    /* Which appState keys belong together. A write only touches the module
+       that actually changed. */
+    const CLOUD_MODULES = {
+      tasks:    ['tasks', 'taskLists'],
+      goals:    ['goals', 'goalFolders', 'goalCategories'],
+      notes:    ['notes', 'noteFolders'],
+      mindmap:  ['mindmaps', 'mindmapNodes', 'stickyNotes', 'linkBlocks', 'mindmapConnections'],
+      finance:  ['transactions', 'subscriptions', 'fuelLogs', 'vehicleMetrics'],
+      habits:   ['habits', 'habitCategories'],
+      activity: ['timeLogs', 'timeProjects', 'bookmarks', 'bookmarkTags', 'calendarEvents', 'diaryEntries', 'categories', 'categoryBudgets', 'moodLogs']
+    };
+
+    const CLOUD_SHARD_AT = 48 * 1024;   // move a module out of `main` above this
+    const CLOUD_UNSHARD_AT = 32 * 1024; // …and bring it back below this (hysteresis)
+    const CLOUD_WRITE_DELAY = 2000;     // coalesce a burst of edits into one write
+    const CLOUD_MAX_WAIT = 12000;       // …but never hold changes longer than this
+    const CLOUD_MIN_GAP = 1200;         // Firestore likes ~1 write/s per document
+    const CLOUD_QUOTA_PAUSE = 15 * 60 * 1000;
+    const CLOUD_PULL_AFTER = 5 * 60 * 1000;
+
+    const _cloudEncoder = new TextEncoder();
+    const cloudByteSize = (str) => _cloudEncoder.encode(str).length;
+
+    const cloudSync = {
+      uid: null,
+      ready: false,
+      dirty: false,
+      firstDirtyAt: 0,
+      timer: null,
+      inFlight: null,
+      queued: false,
+      lastInlineJson: null,
+      lastShardJson: {},
+      shards: [],
+      failures: 0,
+      backoffUntil: 0,
+      lastWriteAt: 0,
+      lastReadAt: 0
+    };
+
+    /* ---------- status indicator ---------- */
+    function cloudStatus(kind) {
+      const el = document.getElementById('sync-status-indicator');
+      if (!el) return;
+      const states = {
+        loading: ['bg-sky-400 animate-pulse', 'Loading cloud backup…', 'text-sky-400'],
+        saving:  ['bg-sky-400 animate-pulse', 'Saving…', 'text-sky-400'],
+        synced:  ['bg-emerald-400', 'Synced · cloud backup', 'text-emerald-400'],
+        offline: ['bg-amber-400 animate-pulse', 'Offline — saved locally', 'text-amber-400'],
+        paused:  ['bg-rose-400', 'Cloud paused (quota) — local safe', 'text-rose-400'],
+        error:   ['bg-rose-400 animate-pulse', 'Sync error — retrying', 'text-rose-400'],
+        guest:   ['bg-amber-400 animate-pulse', 'Local only — not synced', 'text-amber-400']
+      };
+      const s = states[kind] || states.guest;
+      el.innerHTML = `<span class="w-1.5 h-1.5 rounded-full ${s[0]}"></span> ${s[1]}`;
+      el.className = `text-[10px] ${s[2]} flex items-center gap-1 font-semibold`;
+    }
+
+    /* ---------- payload assembly ---------- */
+    function cloudModules() {
+      const S = window.appState || {};
+      const out = {};
+      Object.keys(CLOUD_MODULES).forEach(name => {
+        const part = {};
+        CLOUD_MODULES[name].forEach(key => {
+          if (S[key] !== undefined) part[key] = S[key];
+        });
+        const json = JSON.stringify(part);
+        out[name] = { part, json, bytes: cloudByteSize(json) };
+      });
+      return out;
+    }
+
+    function cloudRef(name) {
+      return doc(db, 'users', currentUser.uid, CLOUD_COLLECTION, name);
+    }
+
+    /* ---------- scheduling ---------- */
+    function cloudSchedule(waitMs) {
+      if (!currentUser || !db) return;
+      if (!cloudSync.dirty) cloudSync.firstDirtyAt = Date.now();
+      cloudSync.dirty = true;
+      if (cloudSync.timer) clearTimeout(cloudSync.timer);
+      let delay = (waitMs === undefined) ? CLOUD_WRITE_DELAY : waitMs;
+      if (Date.now() - cloudSync.firstDirtyAt >= CLOUD_MAX_WAIT) delay = 0;
+      cloudStatus('saving');
+      cloudSync.timer = setTimeout(() => {
+        cloudSync.timer = null;
+        cloudFlush();
+      }, Math.max(0, delay));
+    }
+
+    /* ---------- write path ---------- */
+    function cloudFlush(immediate) {
+      if (!currentUser || !db || !cloudSync.dirty) return Promise.resolve({ skipped: true });
+      if (cloudSync.inFlight) { cloudSync.queued = true; return cloudSync.inFlight; }
+      if (navigator.onLine === false) { cloudStatus('offline'); return Promise.resolve({ offline: true }); }
+      if (!immediate && Date.now() < cloudSync.backoffUntil) {
+        cloudSchedule(cloudSync.backoffUntil - Date.now());
+        return Promise.resolve({ backedOff: true });
+      }
+
+      const gap = Math.max(0, CLOUD_MIN_GAP - (Date.now() - cloudSync.lastWriteAt));
+      cloudSync.inFlight = (async () => {
+        if (gap) await new Promise(r => setTimeout(r, gap));
+        cloudSync.dirty = false;
+        try {
+          const res = await cloudWrite();
+          cloudSync.failures = 0;
+          cloudSync.backoffUntil = 0;
+          cloudSync.lastWriteAt = Date.now();
+          cloudStatus('synced');
+          return res;
+        } catch (e) {
+          cloudSync.failures++;
+          cloudSync.dirty = true;
+          const code = String((e && (e.code || e.message)) || '');
+          const quota = /resource-exhausted|429|quota/i.test(code);
+          const denied = /permission-denied|unauthenticated/i.test(code);
+          const wait = quota ? CLOUD_QUOTA_PAUSE
+            : Math.min(5 * 60 * 1000, 3000 * Math.pow(2, Math.min(cloudSync.failures, 6)));
+          cloudSync.backoffUntil = Date.now() + wait;
+          cloudStatus(quota ? 'paused' : 'error');
+          console.warn('[cloud] write failed:', code || e);
+          if (denied) {
+            // Rules rejected the write — stop retrying until something changes.
+            cloudSync.dirty = false;
+          }
+          return { error: code };
+        } finally {
+          cloudSync.inFlight = null;
+          if (cloudSync.dirty) {
+            cloudSync.queued = false;
+            const wait = Math.max(0, cloudSync.backoffUntil - Date.now());
+            cloudSchedule(wait);
+          } else {
+            cloudSync.queued = false;
+          }
+        }
+      })();
+      return cloudSync.inFlight;
+    }
+
+    async function cloudWrite() {
+      const modules = cloudModules();
+
+      // Which modules live in their own document?
+      const prevShards = cloudSync.shards.slice();
+      const nextShards = Object.keys(CLOUD_MODULES).filter(name => {
+        const wasSharded = prevShards.includes(name);
+        const limit = wasSharded ? CLOUD_UNSHARD_AT : CLOUD_SHARD_AT;
+        return modules[name].bytes > limit;
+      });
+      const shardSetChanged = nextShards.length !== prevShards.length ||
+        nextShards.some(n => !prevShards.includes(n));
+
+      const inline = {};
+      Object.keys(CLOUD_MODULES).forEach(name => {
+        if (!nextShards.includes(name)) Object.assign(inline, modules[name].part);
+      });
+      const inlineJson = JSON.stringify(inline);
+
+      const ops = [];
+      if (inlineJson !== cloudSync.lastInlineJson || shardSetChanged) {
+        ops.push({
+          name: 'main',
+          data: { schema: CLOUD_SCHEMA, inline, shards: nextShards, updatedAt: new Date().toISOString() }
+        });
+      }
+      nextShards.forEach(name => {
+        if (cloudSync.lastShardJson[name] !== modules[name].json || !prevShards.includes(name)) {
+          ops.push({ name, data: modules[name].part });
+        }
+      });
+      prevShards.filter(n => !nextShards.includes(n)).forEach(name => {
+        ops.push({ name, remove: true });
+      });
+
+      if (!ops.length) return { skipped: true, bytes: 0 };
+
+      const batch = writeBatch(db);
+      ops.forEach(op => {
+        const ref = cloudRef(op.name);
+        if (op.remove) batch.delete(ref);
+        else batch.set(ref, op.data);
+      });
+      await batch.commit();
+
+      cloudSync.lastInlineJson = inlineJson;
+      cloudSync.shards = nextShards;
+      nextShards.forEach(n => { cloudSync.lastShardJson[n] = modules[n].json; });
+      prevShards.filter(n => !nextShards.includes(n)).forEach(n => { delete cloudSync.lastShardJson[n]; });
+
+      return {
+        writes: ops.length,
+        docs: ops.map(o => o.name),
+        bytes: ops.reduce((sum, o) => sum + (o.data ? cloudByteSize(JSON.stringify(o.data)) : 0), 0)
+      };
+    }
+
+    /* ---------- read path ---------- */
+    async function cloudLoad(opts) {
+      opts = opts || {};
+      if (!db || !currentUser) return { ok: false, reason: 'no-user' };
+      if (cloudSync.inFlight) { await cloudSync.inFlight; }
+      if (cloudSync.dirty) { await cloudFlush(true); }
+
+      cloudStatus('loading');
+      try {
+        const mainSnap = await getDoc(cloudRef('main'));
+        let merged = {};
+        let shards = [];
+
+        if (!mainSnap.exists()) {
+          // Brand-new account: push whatever exists locally.
+          cloudSync.ready = true;
+          cloudSync.lastInlineJson = null;
+          cloudSync.lastShardJson = {};
+          cloudSync.shards = [];
+          cloudSync.lastReadAt = Date.now();
+          cloudStatus('synced');
+          cloudSchedule(0);
+          return { ok: true, fresh: true };
+        }
+
+        const data = mainSnap.data() || {};
+        if (data.schema === CLOUD_SCHEMA) {
+          merged = Object.assign({}, data.inline || {});
+          shards = Array.isArray(data.shards) ? data.shards.filter(n => CLOUD_MODULES[n]) : [];
+        } else {
+          // Legacy single-document layout — take it as-is, then migrate on save.
+          Object.keys(data).forEach(k => {
+            if (k === 'schema' || k === 'updatedAt' || k === 'shards') return;
+            merged[k] = data[k];
+          });
+        }
+
+        const appliedShards = [];
+        if (shards.length) {
+          const results = await Promise.all(shards.map(name =>
+            getDoc(cloudRef(name))
+              .then(snap => ({ name, data: snap.exists() ? (snap.data() || {}) : null }))
+              .catch(() => ({ name, data: null }))
+          ));
+          results.forEach(r => {
+            if (r.data) { Object.assign(merged, r.data); appliedShards.push(r.name); }
+          });
+        }
+
+        const changed = cloudApply(merged);
+
+        // Prime the dedupe baselines from what the cloud actually holds, so the
+        // first save after a pull doesn't rewrite documents that are unchanged.
+        const modules = cloudModules();
+        cloudSync.shards = shards;
+        const inline = {};
+        Object.keys(CLOUD_MODULES).forEach(name => {
+          if (!shards.includes(name)) Object.assign(inline, modules[name].part);
+        });
+        cloudSync.lastInlineJson = JSON.stringify(inline);
+        cloudSync.lastShardJson = {};
+        shards.forEach(name => {
+          if (appliedShards.includes(name)) cloudSync.lastShardJson[name] = modules[name].json;
+          else cloudSync.lastShardJson[name] = null; // missing upstream → will be written
+        });
+
+        cloudSync.ready = true;
+        cloudSync.lastReadAt = Date.now();
+        cloudStatus('synced');
+
+        // A shard that the manifest lists but the server doesn't have means the
+        // local copy is the only one left — push it back up.
+        if (shards.some(name => cloudSync.lastShardJson[name] === null)) cloudSchedule(0);
+
+        if (changed && !opts.silent && typeof window.refreshAllViews === 'function') {
+          window.refreshAllViews();
+        }
+        return { ok: true, changed, shards };
+      } catch (e) {
+        console.warn('[cloud] load failed:', e);
+        cloudStatus('error');
+        return { ok: false, error: String(e && (e.code || e.message) || e) };
+      }
+    }
+
+    function cloudApply(cloud) {
+      const S = window.appState;
+      if (!S) return false;
+      let changed = false;
+      Object.keys(CLOUD_MODULES).forEach(name => {
+        CLOUD_MODULES[name].forEach(key => {
+          if (cloud[key] === undefined) return;
+          const next = cloud[key];
+          if (JSON.stringify(S[key]) === JSON.stringify(next)) return;
+          S[key] = next;
+          changed = true;
+        });
+      });
+      if (changed) {
+        try { if (window.saveLocalCache) window.saveLocalCache(); } catch (e) {}
+      }
+      return changed;
+    }
+
+    /* ---------- browser lifecycle ---------- */
+    window.addEventListener('online', () => {
+      if (cloudSync.backoffUntil) cloudSync.backoffUntil = 0;
+      if (cloudSync.dirty) cloudFlush(true);
+    });
+    window.addEventListener('offline', () => { if (currentUser) cloudStatus('offline'); });
+    window.addEventListener('pagehide', () => { if (cloudSync.dirty) cloudFlush(true); });
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'hidden') {
+        if (cloudSync.dirty) cloudFlush(true);
+        return;
+      }
+      // Back in the tab: pull remote edits, but never clobber unsaved local ones.
+      if (currentUser && !cloudSync.dirty && Date.now() - cloudSync.lastReadAt > CLOUD_PULL_AFTER) {
+        cloudLoad({ silent: false }).catch(() => {});
+      }
+    });
 
     const todayDateStr = new Date().toISOString().split('T')[0];
 
@@ -24731,11 +25059,18 @@ body.sidebar-open #pros-mobile-nav {
       try {
         app = initializeApp(myFirebaseConfig);
         auth = getAuth(app);
-        db = getFirestore(app);
+        try {
+          // Offline persistence: queued writes survive a reload, and repeat
+          // sign-ins can be served from cache while revalidating.
+          db = initializeFirestore(app, {
+            localCache: persistentLocalCache({ tabManager: persistentMultipleTabManager() })
+          });
+        } catch (e) {
+          db = getFirestore(app);
+        }
 
         onAuthStateChanged(auth, (user) => {
           currentUser = user;
-          const statusEl = document.getElementById('sync-status-indicator');
           const emailEl = document.getElementById('user-display-email');
           const loginBtn = document.getElementById('btn-google-login');
           const logoutBtn = document.getElementById('btn-user-logout');
@@ -24743,96 +25078,64 @@ body.sidebar-open #pros-mobile-nav {
 
           if (user) {
             if (emailEl) emailEl.textContent = user.displayName || user.email || 'Google User';
-            if (statusEl) statusEl.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span> Synced · cloud backup`;
-            if (statusEl) statusEl.className = 'text-[10px] text-emerald-400 flex items-center gap-1 font-semibold';
             if (loginBtn) loginBtn.classList.add('hidden');
             if (logoutBtn) logoutBtn.classList.remove('hidden');
             if (avatarImg && user.photoURL) avatarImg.src = user.photoURL;
 
-            subscribeToUserFirestore(user.uid);
+            cloudSync.uid = user.uid;
+            cloudLoad({ silent: false }).catch(() => {});
           } else {
+            cloudSync.uid = null;
+            cloudSync.ready = false;
+            cloudSync.lastInlineJson = null;
+            cloudSync.lastShardJson = {};
+            cloudSync.shards = [];
+            if (cloudSync.timer) { clearTimeout(cloudSync.timer); cloudSync.timer = null; }
+
             if (emailEl) emailEl.textContent = 'Offline Guest';
-            if (statusEl) statusEl.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse"></span> Local only — not synced`;
-            if (statusEl) statusEl.className = 'text-[10px] text-amber-400 flex items-center gap-1 font-semibold';
             if (loginBtn) loginBtn.classList.remove('hidden');
             if (logoutBtn) logoutBtn.classList.add('hidden');
-
-            if (firestoreUnsubscribe) {
-              firestoreUnsubscribe();
-              firestoreUnsubscribe = null;
-            }
+            cloudStatus('guest');
           }
         });
       } catch (e) {
         console.warn('Firebase initialization skipped or failed:', e);
+        cloudStatus('guest');
       }
     };
 
-    function subscribeToUserFirestore(uid) {
-      if (!db || !uid) return;
-      const userDocRef = doc(db, 'users', uid, 'commandhub_data', 'main');
-
-      firestoreUnsubscribe = onSnapshot(userDocRef, (docSnap) => {
-        if (docSnap.exists()) {
-          const cloudData = docSnap.data();
-          if (cloudData) {
-            if (cloudData.transactions) window.appState.transactions = cloudData.transactions;
-            if (cloudData.subscriptions) window.appState.subscriptions = cloudData.subscriptions;
-            if (cloudData.fuelLogs) window.appState.fuelLogs = cloudData.fuelLogs;
-            if (cloudData.taskLists) window.appState.taskLists = cloudData.taskLists;
-            if (cloudData.tasks) window.appState.tasks = cloudData.tasks;
-            if (cloudData.goals) window.appState.goals = cloudData.goals;
-            if (cloudData.timeLogs) window.appState.timeLogs = cloudData.timeLogs;
-            if (cloudData.notes) window.appState.notes = cloudData.notes;
-            if (cloudData.habits) window.appState.habits = cloudData.habits;
-            if (cloudData.categories) window.appState.categories = cloudData.categories;
-            if (cloudData.categoryBudgets) window.appState.categoryBudgets = cloudData.categoryBudgets;
-            if (cloudData.bookmarks) window.appState.bookmarks = cloudData.bookmarks;
-            if (cloudData.mindmapNodes) window.appState.mindmapNodes = cloudData.mindmapNodes;
-            if (cloudData.stickyNotes) window.appState.stickyNotes = cloudData.stickyNotes;
-            if (cloudData.linkBlocks) window.appState.linkBlocks = cloudData.linkBlocks;
-            if (cloudData.mindmapConnections) window.appState.mindmapConnections = cloudData.mindmapConnections;
-            if (cloudData.moodLogs) window.appState.moodLogs = cloudData.moodLogs;
-
-            window.saveLocalCache();
-            window.refreshAllViews();
-          }
-        } else {
-          window.saveCloudData();
-        }
-      }, (err) => {
-        console.error('Firestore sync error:', err);
-      });
-    }
-
+    /* Public API — the ~40 existing call sites keep working unchanged, but a
+       call is now a *request* to sync, not an immediate full-document write. */
     window.saveCloudData = function() {
-      window.saveLocalCache();
-      if (currentUser && db) {
-        const userDocRef = doc(db, 'users', currentUser.uid, 'commandhub_data', 'main');
-        setDoc(userDocRef, {
-          transactions: window.appState.transactions,
-          subscriptions: window.appState.subscriptions,
-          fuelLogs: window.appState.fuelLogs,
-          taskLists: window.appState.taskLists,
-          tasks: window.appState.tasks,
-          goals: window.appState.goals,
-          timeLogs: window.appState.timeLogs,
-          notes: window.appState.notes,
-          noteFolders: window.appState.noteFolders,
-          goalFolders: window.appState.goalFolders,
-          mindmaps: window.appState.mindmaps,
-          habits: window.appState.habits,
-          categories: window.appState.categories,
-          categoryBudgets: window.appState.categoryBudgets,
-          bookmarks: window.appState.bookmarks,
-          mindmapNodes: window.appState.mindmapNodes,
-          stickyNotes: window.appState.stickyNotes,
-          linkBlocks: window.appState.linkBlocks,
-          mindmapConnections: window.appState.mindmapConnections,
-          moodLogs: window.appState.moodLogs,
-          updatedAt: new Date().toISOString()
-        }, { merge: true }).catch(err => console.error('Cloud save failed:', err));
+      try { if (window.saveLocalCache) window.saveLocalCache(); } catch (e) {}
+      cloudSchedule();
+    };
+
+    /* Force the pending change out now (used before a deliberate reload).
+       Drains the queue so a write that was already in flight can't swallow
+       the newest edits. */
+    window.flushCloudData = async function() {
+      for (let i = 0; i < 3; i++) {
+        await cloudFlush(true);
+        if (!cloudSync.dirty) break;
       }
+      return { dirty: cloudSync.dirty };
+    };
+
+    /* Manual pull (Studio button / debugging). */
+    window.syncCloudNow = function() { return cloudLoad({ silent: false }); };
+
+    /* Small diagnostics surface used by the integrity tests. */
+    window.cloudSyncInfo = function() {
+      return {
+        signedIn: !!currentUser,
+        ready: cloudSync.ready,
+        dirty: cloudSync.dirty,
+        failures: cloudSync.failures,
+        shards: cloudSync.shards.slice(),
+        lastWriteAt: cloudSync.lastWriteAt,
+        lastReadAt: cloudSync.lastReadAt
+      };
     };
 
     window.googleSignIn = function() {

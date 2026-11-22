@@ -5,7 +5,7 @@
  *  - CDN assets (Tailwind/Lucide/Chart.js/Firebase/Fonts): stale-while-revalidate, precached where possible
  *  - Install is tolerant: precache failures don't block activation
  */
-const CACHE_NAME = 'pros-cache-v3';
+const CACHE_NAME = 'pros-cache-v4';
 
 const APP_SHELL = [
   './',
